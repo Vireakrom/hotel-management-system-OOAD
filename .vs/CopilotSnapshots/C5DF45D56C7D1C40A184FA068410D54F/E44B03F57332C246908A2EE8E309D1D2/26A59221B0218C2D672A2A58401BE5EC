@@ -1,0 +1,308 @@
+﻿using HotelManagementSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HotelManagementSystem.DAL
+{
+    public class RoomRepository : IRepository<Room>
+    {
+        /// <summary>
+        /// Insert a new room
+        /// </summary>
+        public int Insert(Room room)
+        {
+            string query = @"
+                INSERT INTO Rooms (RoomNumber, RoomType, FloorNumber, Status, BasePrice, MaxOccupancy, Description)
+                VALUES (@RoomNumber, @RoomType, @FloorNumber, @Status, @BasePrice, @MaxOccupancy, @Description);
+                SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomNumber", room.RoomNumber);
+                    cmd.Parameters.AddWithValue("@RoomType", room.RoomType);
+                    cmd.Parameters.AddWithValue("@FloorNumber", room.FloorNumber);
+                    cmd.Parameters.AddWithValue("@Status", room.Status);
+                    cmd.Parameters.AddWithValue("@BasePrice", room.BasePrice);
+                    cmd.Parameters.AddWithValue("@MaxOccupancy", room.MaxOccupancy);
+                    cmd.Parameters.AddWithValue("@Description", room.Description ?? (object)DBNull.Value);
+
+                    conn.Open();
+                    int newId = (int)cmd.ExecuteScalar();
+                    return newId;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get room by ID
+        /// </summary>
+        public Room GetById(int id)
+        {
+            string query = "SELECT * FROM Rooms WHERE RoomId = @RoomId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomId", id);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapReaderToRoom(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get all rooms
+        /// </summary>
+        public List<Room> GetAll()
+        {
+            List<Room> rooms = new List<Room>();
+            string query = "SELECT * FROM Rooms ORDER BY RoomNumber";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            rooms.Add(MapReaderToRoom(reader));
+                        }
+                    }
+                }
+            }
+            return rooms;
+        }
+
+        /// <summary>
+        /// Update room
+        /// </summary>
+        public bool Update(Room room)
+        {
+            string query = @"
+                UPDATE Rooms 
+                SET RoomNumber = @RoomNumber,
+                    RoomType = @RoomType,
+                    FloorNumber = @FloorNumber,
+                    Status = @Status,
+                    BasePrice = @BasePrice,
+                    MaxOccupancy = @MaxOccupancy,
+                    Description = @Description,
+                    ModifiedDate = GETDATE()
+                WHERE RoomId = @RoomId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomId", room.RoomId);
+                    cmd.Parameters.AddWithValue("@RoomNumber", room.RoomNumber);
+                    cmd.Parameters.AddWithValue("@RoomType", room.RoomType);
+                    cmd.Parameters.AddWithValue("@FloorNumber", room.FloorNumber);
+                    cmd.Parameters.AddWithValue("@Status", room.Status);
+                    cmd.Parameters.AddWithValue("@BasePrice", room.BasePrice);
+                    cmd.Parameters.AddWithValue("@MaxOccupancy", room.MaxOccupancy);
+                    cmd.Parameters.AddWithValue("@Description", room.Description ?? (object)DBNull.Value);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete room (sets status to Maintenance)
+        /// Note: Rooms are not physically deleted, just marked as Maintenance
+        /// </summary>
+        public bool Delete(int id)
+        {
+            string query = "UPDATE Rooms SET Status = 'Maintenance', ModifiedDate = GETDATE() WHERE RoomId = @RoomId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomId", id);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get available rooms by date range
+        /// </summary>
+        public List<Room> GetAvailableRooms(DateTime checkIn, DateTime checkOut)
+        {
+            List<Room> rooms = new List<Room>();
+            string query = @"
+                SELECT * FROM Rooms 
+                WHERE Status = 'Available'
+                AND RoomId NOT IN (
+                    SELECT RoomId FROM Bookings 
+                    WHERE Status IN ('Confirmed', 'CheckedIn')
+                    AND (
+                        (CheckInDate <= @CheckOut AND CheckOutDate >= @CheckIn)
+                    )
+                )
+                ORDER BY RoomNumber";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CheckIn", checkIn);
+                    cmd.Parameters.AddWithValue("@CheckOut", checkOut);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            rooms.Add(MapReaderToRoom(reader));
+                        }
+                    }
+                }
+            }
+            return rooms;
+        }
+
+        /// <summary>
+        /// Update room status
+        /// </summary>
+        public bool UpdateRoomStatus(int roomId, string status)
+        {
+            string query = "UPDATE Rooms SET Status = @Status, ModifiedDate = GETDATE() WHERE RoomId = @RoomId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomId", roomId);
+                    cmd.Parameters.AddWithValue("@Status", status);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get room by room number
+        /// </summary>
+        public Room GetByRoomNumber(string roomNumber)
+        {
+            string query = "SELECT * FROM Rooms WHERE RoomNumber = @RoomNumber";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomNumber", roomNumber);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapReaderToRoom(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Add method - required by IRepository interface
+        /// </summary>
+        public bool Add(Room room)
+        {
+            string query = @"
+                INSERT INTO Rooms (RoomNumber, RoomType, FloorNumber, Status, BasePrice, MaxOccupancy, 
+                                   BedType, Area, ViewType, Description, Amenities, HasBalcony, HasSeaView, 
+                                   HasJacuzzi, HasPrivatePool, CreatedDate)
+                VALUES (@RoomNumber, @RoomType, @FloorNumber, @Status, @BasePrice, @MaxOccupancy,
+                        @BedType, @Area, @ViewType, @Description, @Amenities, @HasBalcony, @HasSeaView,
+                        @HasJacuzzi, @HasPrivatePool, @CreatedDate)";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomNumber", room.RoomNumber);
+                    cmd.Parameters.AddWithValue("@RoomType", room.RoomType);
+                    cmd.Parameters.AddWithValue("@FloorNumber", room.FloorNumber);
+                    cmd.Parameters.AddWithValue("@Status", room.Status);
+                    cmd.Parameters.AddWithValue("@BasePrice", room.BasePrice);
+                    cmd.Parameters.AddWithValue("@MaxOccupancy", room.MaxOccupancy);
+                    cmd.Parameters.AddWithValue("@BedType", room.BedType ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Area", room.Area > 0 ? (object)room.Area : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@ViewType", room.ViewType ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Description", room.Description ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Amenities", room.Amenities ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@HasBalcony", room.HasBalcony);
+                    cmd.Parameters.AddWithValue("@HasSeaView", room.HasSeaView);
+                    cmd.Parameters.AddWithValue("@HasJacuzzi", room.HasJacuzzi);
+                    cmd.Parameters.AddWithValue("@HasPrivatePool", room.HasPrivatePool);
+                    cmd.Parameters.AddWithValue("@CreatedDate", room.CreatedDate);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper method to map SqlDataReader to Room object
+        /// NOW USES FACTORY PATTERN - delegates room creation to RoomFactory
+        /// </summary>
+        private Room MapReaderToRoom(SqlDataReader reader)
+        {
+            // Use Factory Pattern to create the correct room type
+            Room room = RoomFactory.CreateRoomFromDatabase(
+                roomType: reader["RoomType"].ToString(),
+                roomId: (int)reader["RoomId"],
+                roomNumber: reader["RoomNumber"].ToString(),
+                floorNumber: (int)reader["FloorNumber"],
+                basePrice: (decimal)reader["BasePrice"],
+                status: reader["Status"].ToString(),
+                maxOccupancy: (int)reader["MaxOccupancy"],
+                bedType: reader["BedType"] != DBNull.Value ? reader["BedType"].ToString() : null,
+                area: reader["Area"] != DBNull.Value ? (decimal?)reader["Area"] : null,
+                viewType: reader["ViewType"] != DBNull.Value ? reader["ViewType"].ToString() : null,
+                description: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : null,
+                amenities: reader["Amenities"] != DBNull.Value ? reader["Amenities"].ToString() : null,
+                hasBalcony: reader["HasBalcony"] != DBNull.Value && (bool)reader["HasBalcony"],
+                hasSeaView: reader["HasSeaView"] != DBNull.Value && (bool)reader["HasSeaView"],
+                hasJacuzzi: reader["HasJacuzzi"] != DBNull.Value && (bool)reader["HasJacuzzi"],
+                hasPrivatePool: reader["HasPrivatePool"] != DBNull.Value && (bool)reader["HasPrivatePool"],
+                createdDate: (DateTime)reader["CreatedDate"],
+                modifiedDate: reader["ModifiedDate"] != DBNull.Value ? (DateTime?)reader["ModifiedDate"] : null
+            );
+
+            return room;
+        }
+    }
+}

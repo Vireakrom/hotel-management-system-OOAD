@@ -1,0 +1,1186 @@
+﻿# 📚 Days 1-5 Complete Reference Guide
+## Hotel Management System - What We've Built So Far
+
+**Last Updated:** February 8, 2026  
+**Status:** Day 5 Complete ✅  
+**Progress:** 14.3% (5/35 days)
+
+---
+
+## 🎯 EXECUTIVE SUMMARY
+
+In the first 5 days, you've built:
+- ✅ Complete database (12 tables with sample data)
+- ✅ Solid project foundation with proper architecture
+- ✅ 3/5 design patterns (Singleton, Repository, Factory)
+- ✅ Data access layer (4 repositories)
+- ✅ Working authentication system
+- ✅ Main application window with menu navigation
+- ✅ Role-based access control
+
+**Code Quality:** 🟢 High  
+**Architecture:** 🟢 Solid  
+**Technical Debt:** 🟢 Low  
+
+---
+
+## 📂 PROJECT STRUCTURE (Current State)
+
+```
+HotelManagementSystem/
+│
+├── Models/                          ✅ Complete
+│   ├── User.cs                      ✅ Day 1
+│   ├── Guest.cs                     ✅ Day 1
+│   ├── Room.cs                      ✅ Day 1 (Base class)
+│   ├── SingleRoom.cs                ✅ Day 1
+│   ├── DoubleRoom.cs                ✅ Day 1
+│   ├── SuiteRoom.cs                 ✅ Day 1
+│   ├── DeluxeRoom.cs                ✅ Day 1
+│   ├── Booking.cs                   ✅ Day 3
+│   └── RoomFactory.cs               ✅ Day 5 - Factory Pattern
+│
+├── DAL/ (Data Access Layer)         ✅ Foundation Complete
+│   ├── DatabaseManager.cs           ✅ Day 1 - Singleton Pattern
+│   ├── IRepository.cs               ✅ Day 2 - Generic Interface
+│   ├── GuestRepository.cs           ✅ Day 2 - Full CRUD
+│   ├── RoomRepository.cs            ✅ Day 2 - Full CRUD + Custom Methods
+│   ├── UserRepository.cs            ✅ Day 3 - Authentication + CRUD
+│   └── BookingRepository.cs         ✅ Day 3 - Full CRUD + Custom Methods
+│
+├── Helpers/                         ✅ Complete
+│   ├── PasswordHelper.cs            ✅ Day 1 - SHA256 hashing
+│   └── SessionManager.cs            ✅ Day 1 - Current user tracking
+│
+├── UI/                              🟡 In Progress
+│   ├── Auth/
+│   │   └── LoginForm.cs             ✅ Day 3 - Login screen
+│   └── MainForm.cs                  ✅ Day 4 - MDI Container
+│
+├── BLL/ (Business Logic)            ✅ Pattern Layer Started
+│   └── Factories/                   ✅ Day 5
+│       ├── RoomFactory.cs           ✅ (Also in Models/)
+│       └── FactoryPatternDemo.cs    ✅ Day 5 - Demo code
+│
+├── Program.cs                       ✅ Day 3 - Entry point with DB test
+└── App.config                       ✅ Day 1 - Connection string
+```
+
+---
+
+## 💾 DATABASE STATUS
+
+### ✅ Database: HotelManagementDB (Complete)
+
+**Tables Created:** 12/12
+
+| # | Table | Purpose | Status |
+|---|-------|---------|--------|
+| 1 | Guests | Customer information | ✅ Ready |
+| 2 | Rooms | Room inventory | ✅ Ready |
+| 3 | Users | System users/staff | ✅ Ready |
+| 4 | Bookings | Reservations | ✅ Ready |
+| 5 | Invoices | Billing documents | ✅ Ready |
+| 6 | Payments | Payment transactions | ✅ Ready |
+| 7 | AdditionalServices | Service catalog | ✅ Ready |
+| 8 | BookingServices | Services per booking | ✅ Ready |
+| 9 | HousekeepingTasks | Cleaning tasks | ✅ Ready |
+| 10 | AuditLogs | Activity tracking | ✅ Ready |
+| 11 | SystemSettings | Configuration | ✅ Ready |
+| 12 | Notifications | User alerts | ✅ Ready |
+
+**Sample Data:** ✅ Loaded
+- 1 Admin user (admin / Admin@123)
+- 3 Staff users
+- 10 Rooms (various types)
+- 4 Sample guests
+- 8 Additional services
+- System settings
+
+---
+
+## 🎯 DESIGN PATTERNS IMPLEMENTED (2/5)
+
+### ✅ Pattern 1: Singleton Pattern (Day 1)
+**Class:** `DatabaseManager`  
+**Purpose:** Single database connection instance  
+**Location:** `DAL/DatabaseManager.cs`
+
+```csharp
+// Usage:
+SqlConnection conn = DatabaseManager.Instance.GetConnection();
+
+// Only one instance exists throughout the app
+// Thread-safe implementation
+```
+
+**Key Features:**
+- Private static instance
+- Private constructor prevents external instantiation
+- Thread-safe lazy initialization with double-check locking
+- Provides connection management methods
+
+---
+
+### ✅ Pattern 2: Repository Pattern (Day 2)
+**Interface:** `IRepository<T>`  
+**Implementations:** `GuestRepository`, `RoomRepository`, `UserRepository`, `BookingRepository`  
+**Purpose:** Abstract data access from business logic  
+**Location:** `DAL/*.cs`
+
+```csharp
+// Usage:
+GuestRepository guestRepo = new GuestRepository();
+
+// CRUD operations
+int id = guestRepo.Insert(newGuest);
+Guest guest = guestRepo.GetById(id);
+List<Guest> all = guestRepo.GetAll();
+bool updated = guestRepo.Update(guest);
+bool deleted = guestRepo.Delete(id);
+
+// Custom methods
+List<Guest> results = guestRepo.Search("john");
+```
+
+**Generic Interface:**
+```csharp
+public interface IRepository<T> where T : class
+{
+    int Insert(T entity);
+    T GetById(int id);
+    List<T> GetAll();
+    bool Update(T entity);
+    bool Delete(int id);  // Soft delete (IsActive = 0)
+}
+```
+
+---
+
+### ✅ Pattern 3: Factory Pattern (Day 5)
+**Class:** `RoomFactory`  
+**Purpose:** Create different room type objects without exposing instantiation logic  
+**Status:** ✅ Implemented  
+**Location:** `Models/RoomFactory.cs` (also `BLL/Factories/RoomFactory.cs`)
+
+```csharp
+// IMPLEMENTED IN DAY 5:
+public class RoomFactory
+{
+    // Basic factory method
+    public static Room CreateRoom(string roomType)
+    {
+        switch (roomType)
+        {
+            case "Single": return new SingleRoom { RoomType = "Single", MaxOccupancy = 1 };
+            case "Double": return new DoubleRoom { RoomType = "Double", MaxOccupancy = 2 };
+            case "Suite": return new SuiteRoom { RoomType = "Suite", MaxOccupancy = 4 };
+            case "Deluxe": return new DeluxeRoom { RoomType = "Deluxe", MaxOccupancy = 4 };
+            default: throw new ArgumentException("Invalid room type");
+        }
+    }
+    
+    // Fully configured room
+    public static Room CreateRoom(string roomType, string roomNumber, int floorNumber, decimal basePrice, string status = "Available")
+    {
+        Room room = CreateRoom(roomType);
+        room.RoomNumber = roomNumber;
+        room.FloorNumber = floorNumber;
+        room.BasePrice = basePrice;
+        room.Status = status;
+        ConfigureRoomDefaults(room);
+        return room;
+    }
+    
+    // From database (used by RoomRepository)
+    public static Room CreateRoomFromDatabase(string roomType, int roomId, string roomNumber, ...)
+    {
+        Room room = CreateRoom(roomType);
+        // ... set all properties from database
+        return room;
+    }
+    
+    // Helper methods
+    public static decimal GetDefaultPrice(string roomType) { }
+    public static string[] GetValidRoomTypes() { }
+    public static bool IsValidRoomType(string roomType) { }
+}
+```
+
+**Usage:**
+```csharp
+// Create a room
+Room room = RoomFactory.CreateRoom("Suite");
+
+// Fully configured
+Room room101 = RoomFactory.CreateRoom("Single", "101", 1, 50.00m);
+
+// Repository now uses Factory
+private Room MapReaderToRoom(SqlDataReader reader)
+{
+    return RoomFactory.CreateRoomFromDatabase(
+        roomType: reader["RoomType"].ToString(),
+        roomId: (int)reader["RoomId"],
+        // ... other parameters
+    );
+}
+```
+
+**Benefits:**
+- ✅ Encapsulates object creation logic
+- ✅ Client code doesn't need to know concrete classes
+- ✅ Easy to add new room types
+- ✅ Promotes loose coupling
+- ✅ Single Responsibility Principle
+
+**Test it:** Help → Test Factory Pattern (shows live demonstration)
+
+---
+
+### ⏳ Pattern 4: Facade Pattern (Planned Day 14)
+**Class:** `BookingFacade`  
+**Purpose:** Simplify complex booking operations  
+**Status:** Not started
+
+---
+
+### ⏳ Pattern 5: Strategy Pattern (Planned Day 23)
+**Interface:** `IPaymentStrategy`  
+**Purpose:** Interchangeable payment methods  
+**Status:** Not started
+
+---
+
+## 📦 MODELS (Entity Classes)
+
+### ✅ User.cs
+```csharp
+public class User
+{
+    public int UserId { get; set; }
+    public string Username { get; set; }
+    public string PasswordHash { get; set; }
+    public string Salt { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    public string Role { get; set; }  // Admin, Receptionist, Manager, Housekeeping
+    public bool IsActive { get; set; }
+    public DateTime? LastLogin { get; set; }
+    public DateTime CreatedDate { get; set; }
+    
+    public string FullName => $"{FirstName} {LastName}";
+}
+```
+
+### ✅ Guest.cs
+```csharp
+public class Guest
+{
+    public int GuestId { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    public string IDNumber { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public string Address { get; set; }
+    public string Nationality { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+    public bool IsActive { get; set; }
+    
+    public string FullName => $"{FirstName} {LastName}";
+}
+```
+
+### ✅ Room.cs (Hierarchy)
+```csharp
+// Base class (abstract)
+public abstract class Room
+{
+    public int RoomId { get; set; }
+    public string RoomNumber { get; set; }
+    public string RoomType { get; set; }
+    public int FloorNumber { get; set; }
+    public string Status { get; set; }  // Available, Occupied, Reserved, Cleaning, Maintenance
+    public decimal BasePrice { get; set; }
+    public int MaxOccupancy { get; set; }
+    public string Description { get; set; }
+    // ... other properties
+    
+    public abstract decimal GetPrice();
+    public abstract string GetDescription();
+}
+
+// Concrete implementations
+public class SingleRoom : Room { }
+public class DoubleRoom : Room { }
+public class SuiteRoom : Room { }
+public class DeluxeRoom : Room { }
+```
+
+### ✅ Booking.cs
+```csharp
+public class Booking
+{
+    public int BookingId { get; set; }
+    public int GuestId { get; set; }
+    public int RoomId { get; set; }
+    public int CreatedByUserId { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
+    public DateTime? ActualCheckInDate { get; set; }
+    public DateTime? ActualCheckOutDate { get; set; }
+    public string Status { get; set; }  // Pending, Confirmed, CheckedIn, CheckedOut, Cancelled
+    public int NumberOfGuests { get; set; }
+    public decimal RoomCharges { get; set; }
+    public decimal ServiceCharges { get; set; }
+    public decimal TotalAmount { get; set; }
+    public string SpecialRequests { get; set; }
+    public DateTime CreatedDate { get; set; }
+}
+```
+
+---
+
+## 🔧 HELPERS & UTILITIES
+
+### ✅ PasswordHelper.cs
+**Purpose:** Secure password hashing
+
+```csharp
+public static class PasswordHelper
+{
+    // Generate random salt
+    public static string GenerateSalt() { }
+    
+    // Hash password with salt using SHA256
+    public static string HashPassword(string password, string salt) { }
+    
+    // Verify password
+    public static bool VerifyPassword(string password, string salt, string storedHash) { }
+}
+```
+
+**Usage:**
+```csharp
+// Creating new user
+string salt = PasswordHelper.GenerateSalt();
+string hash = PasswordHelper.HashPassword("password123", salt);
+
+// Verifying login
+bool isValid = PasswordHelper.VerifyPassword(enteredPassword, storedSalt, storedHash);
+```
+
+---
+
+### ✅ SessionManager.cs
+**Purpose:** Track current logged-in user
+
+```csharp
+public static class SessionManager
+{
+    public static User CurrentUser { get; set; }
+    
+    public static bool IsLoggedIn => CurrentUser != null;
+    public static bool IsAdmin => CurrentUser?.Role == "Admin";
+    public static bool IsReceptionist => CurrentUser?.Role == "Receptionist";
+    
+    public static void Logout()
+    {
+        CurrentUser = null;
+    }
+}
+```
+
+**Usage:**
+```csharp
+// After successful login
+SessionManager.CurrentUser = user;
+
+// Check if logged in
+if (SessionManager.IsLoggedIn)
+{
+    string name = SessionManager.CurrentUser.FullName;
+}
+
+// Check role
+if (SessionManager.IsAdmin)
+{
+    // Admin-only functionality
+}
+
+// Logout
+SessionManager.Logout();
+```
+
+---
+
+## 💾 DATA ACCESS LAYER (DAL)
+
+### ✅ DatabaseManager.cs (Singleton)
+
+**Key Methods:**
+```csharp
+// Get connection
+SqlConnection conn = DatabaseManager.Instance.GetConnection();
+
+// Execute query (SELECT)
+DataTable dt = DatabaseManager.Instance.ExecuteQuery(query, parameters);
+
+// Execute non-query (INSERT, UPDATE, DELETE)
+int rowsAffected = DatabaseManager.Instance.ExecuteNonQuery(query, parameters);
+
+// Execute scalar (COUNT, SUM, etc.)
+object result = DatabaseManager.Instance.ExecuteScalar(query, parameters);
+
+// Test connection
+bool isConnected = DatabaseManager.Instance.TestConnection();
+```
+
+---
+
+### ✅ GuestRepository.cs
+
+**Methods Implemented:**
+```csharp
+// CRUD
+int Insert(Guest guest)
+Guest GetById(int id)
+List<Guest> GetAll()
+bool Update(Guest guest)
+bool Delete(int id)  // Soft delete
+
+// Custom
+List<Guest> Search(string searchTerm)  // Search by name, email, phone
+```
+
+**Example Usage:**
+```csharp
+GuestRepository repo = new GuestRepository();
+
+// Create
+Guest guest = new Guest {
+    FirstName = "John",
+    LastName = "Doe",
+    Email = "john@email.com",
+    Phone = "555-0123"
+};
+int guestId = repo.Insert(guest);
+
+// Read
+Guest retrieved = repo.GetById(guestId);
+List<Guest> allGuests = repo.GetAll();
+
+// Search
+List<Guest> results = repo.Search("john");
+
+// Update
+retrieved.Phone = "555-9999";
+repo.Update(retrieved);
+
+// Delete (soft)
+repo.Delete(guestId);
+```
+
+---
+
+### ✅ RoomRepository.cs
+
+**Methods Implemented:**
+```csharp
+// CRUD
+int Insert(Room room)
+Room GetById(int id)
+List<Room> GetAll()
+bool Update(Room room)
+bool Delete(int id)
+
+// Custom
+List<Room> GetAvailableRooms(DateTime checkIn, DateTime checkOut)
+bool UpdateRoomStatus(int roomId, string status)
+```
+
+**Key Feature:** Polymorphic room mapping
+```csharp
+private Room MapReaderToRoom(SqlDataReader reader)
+{
+    string roomType = reader["RoomType"].ToString();
+    Room room;
+    
+    // Create correct subclass based on type
+    switch (roomType)
+    {
+        case "Single": room = new SingleRoom(); break;
+        case "Double": room = new DoubleRoom(); break;
+        case "Suite": room = new SuiteRoom(); break;
+        case "Deluxe": room = new DeluxeRoom(); break;
+        default: throw new InvalidOperationException($"Unknown room type: {roomType}");
+    }
+    
+    // Set properties from database
+    room.RoomId = (int)reader["RoomId"];
+    room.RoomNumber = reader["RoomNumber"].ToString();
+    // ... etc
+    
+    return room;
+}
+```
+
+---
+
+### ✅ UserRepository.cs
+
+**Methods Implemented:**
+```csharp
+// CRUD
+int Insert(User user)
+User GetById(int id)
+List<User> GetAll()
+bool Update(User user)
+bool Delete(int id)
+
+// Authentication
+User Authenticate(string username, string password)
+void UpdateLastLogin(int userId)
+
+// Custom
+User GetByUsername(string username)
+List<User> GetByRole(string role)
+```
+
+**Authentication Logic:**
+```csharp
+public User Authenticate(string username, string password)
+{
+    // Get user by username
+    User user = GetByUsername(username);
+    if (user == null || !user.IsActive)
+        return null;
+    
+    // Verify password
+    bool isValid = PasswordHelper.VerifyPassword(password, user.Salt, user.PasswordHash);
+    
+    return isValid ? user : null;
+}
+```
+
+---
+
+### ✅ BookingRepository.cs
+
+**Methods Implemented:**
+```csharp
+// CRUD
+int Insert(Booking booking)
+Booking GetById(int id)
+List<Booking> GetAll()
+bool Update(Booking booking)
+bool Delete(int id)
+
+// Custom
+List<Booking> GetBookingsByGuest(int guestId)
+List<Booking> GetBookingsByRoom(int roomId)
+List<Booking> GetBookingsByStatus(string status)
+List<Booking> GetBookingsByDateRange(DateTime startDate, DateTime endDate)
+bool CheckIn(int bookingId)
+bool CheckOut(int bookingId)
+```
+
+**Check-In/Check-Out:**
+```csharp
+public bool CheckIn(int bookingId)
+{
+    // Update booking status to CheckedIn
+    // Update ActualCheckInDate to now
+    // Update room status to Occupied
+}
+
+public bool CheckOut(int bookingId)
+{
+    // Update booking status to CheckedOut
+    // Update ActualCheckOutDate to now
+    // Update room status to Cleaning
+    // FUTURE: Trigger Observer pattern for housekeeping
+}
+```
+
+---
+
+## 🖥️ USER INTERFACE
+
+### ✅ LoginForm.cs (Day 3)
+
+**Location:** `UI/Auth/LoginForm.cs`  
+**Namespace:** `HotelManagementSystem.UI.Auth`
+
+**Features:**
+- Username/password input
+- Error label for validation messages
+- Login button → Authenticates user
+- Cancel button → Exits application
+
+**YOUR ACTUAL IMPLEMENTATION:**
+```csharp
+private void btnLogin_Click(object sender, EventArgs e)
+{
+    // Hide previous error
+    lblError.Visible = false;
+    
+    // Validate inputs
+    if (string.IsNullOrWhiteSpace(txtUsername.Text))
+    {
+        ShowError("Please enter username");
+        txtUsername.Focus();
+        return;
+    }
+    
+    if (string.IsNullOrWhiteSpace(txtPassword.Text))
+    {
+        ShowError("Please enter password");
+        txtPassword.Focus();
+        return;
+    }
+    
+    try
+    {
+        // Attempt authentication
+        User user = userRepo.Authenticate(txtUsername.Text.Trim(), txtPassword.Text);
+        
+        if (user != null)
+        {
+            // Set current user in session
+            SessionManager.CurrentUser = user;
+            
+            // Close login form with success
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+        else
+        {
+            ShowError("Invalid username or password");
+            txtPassword.Clear();
+            txtPassword.Focus();
+        }
+    }
+    catch (Exception ex)
+    {
+        ShowError($"Login error: {ex.Message}");
+    }
+}
+
+private void ShowError(string message)
+{
+    lblError.Text = message;
+    lblError.Visible = true;
+}
+```
+
+**DialogResult Pattern:** Uses `DialogResult.OK` to signal success to Program.cs
+
+---
+
+### ✅ MainForm.cs (Day 4)
+
+**Location:** `UI/MainForm.cs`  
+**Type:** MDI Container
+
+**Features:**
+- Maximized window
+- Complete menu system
+- Role-based menu visibility
+- Status bar with user info and time
+- Timer that updates every second
+
+**Menu Structure:**
+```
+File → Logout, Exit
+Rooms → Room Management, Room Status Dashboard
+Guests → Guest Management, Search Guests
+Bookings → New Booking, View All Bookings, Check-In, Check-Out
+Housekeeping → View Tasks
+Reports → Daily Operations, Revenue Report, Occupancy Statistics
+Help → User Guide, About
+```
+
+**Role-Based Access:**
+```csharp
+private void ApplyRoleBasedAccess()
+{
+    string role = SessionManager.CurrentUser.Role;
+    
+    switch (role)
+    {
+        case "Admin":
+            // See everything
+            break;
+        case "Receptionist":
+            reportsToolStripMenuItem.Visible = false;
+            housekeepingToolStripMenuItem.Visible = false;
+            break;
+        case "Manager":
+            housekeepingToolStripMenuItem.Visible = false;
+            break;
+        case "Housekeeping":
+            roomsToolStripMenuItem.Visible = false;
+            guestsToolStripMenuItem.Visible = false;
+            bookingsToolStripMenuItem.Visible = false;
+            reportsToolStripMenuItem.Visible = false;
+            break;
+    }
+}
+```
+
+**Helper Method for Child Forms:**
+```csharp
+private void OpenChildForm(Form childForm)
+{
+    // Check if form already open
+    foreach (Form openForm in this.MdiChildren)
+    {
+        if (openForm.GetType() == childForm.GetType())
+        {
+            openForm.Activate();
+            return;
+        }
+    }
+    
+    // Open new instance
+    childForm.MdiParent = this;
+    childForm.WindowState = FormWindowState.Maximized;
+    childForm.Show();
+}
+```
+
+---
+
+## 🚀 APPLICATION FLOW
+
+### YOUR ACTUAL Program.cs
+
+```csharp
+namespace HotelManagementSystem
+{
+    static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            
+            // Test database connection
+            if (!DatabaseManager.Instance.TestConnection())
+            {
+                MessageBox.Show("Cannot connect to database. Please check your connection string.",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+            // Show login form
+            LoginForm loginForm = new LoginForm();
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                // Login successful
+                MessageBox.Show(
+                    $"Welcome, {SessionManager.CurrentUser.FullName}!\n\n" +
+                    $"Role: {SessionManager.CurrentUser.Role}\n" +
+                    $"Last Login: {SessionManager.CurrentUser.LastLogin?.ToString("MMM dd, yyyy hh:mm tt") ?? "First login"}",
+                    "Login Successful",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                
+                // Show MainForm
+                Application.Run(new MainForm());
+            }
+            else
+            {
+                // User cancelled login
+                Application.Exit();
+            }
+        }
+    }
+}
+```
+
+**Flow Diagram:**
+```
+App Start
+  ↓
+Test DB Connection
+  ↓ (if fails)
+  → Error Message → Exit
+  ↓ (if success)
+Show LoginForm (ShowDialog)
+  ↓ (if DialogResult.OK)
+  → Welcome Message
+  → Application.Run(new MainForm())
+  ↓ (if DialogResult.Cancel)
+  → Application.Exit()
+```
+
+---
+
+## 🎯 WHAT WORKS RIGHT NOW
+
+### ✅ You Can Do This Today:
+
+1. **Login System:**
+   ```csharp
+   // Login as admin
+   Username: admin
+   Password: Admin@123
+   // Welcome message shows
+   // MainForm appears
+   ```
+
+2. **Guest Management (Backend):**
+   ```csharp
+   GuestRepository repo = new GuestRepository();
+   
+   // Create guest
+   int id = repo.Insert(newGuest);
+   
+   // Search guests
+   List<Guest> results = repo.Search("john");
+   
+   // Update guest
+   repo.Update(guest);
+   ```
+
+3. **Room Management (Backend):**
+   ```csharp
+   RoomRepository repo = new RoomRepository();
+   
+   // Find available rooms
+   List<Room> available = repo.GetAvailableRooms(checkIn, checkOut);
+   
+   // Update room status
+   repo.UpdateRoomStatus(roomId, "Occupied");
+   ```
+
+4. **Booking Management (Backend):**
+   ```csharp
+   BookingRepository repo = new BookingRepository();
+   
+   // Create booking
+   int bookingId = repo.Insert(booking);
+   
+   // Check-in
+   repo.CheckIn(bookingId);
+   
+   // Check-out
+   repo.CheckOut(bookingId);
+   ```
+
+5. **Factory Pattern (NEW!):**
+   ```csharp
+   // Create rooms using Factory Pattern
+   Room single = RoomFactory.CreateRoom("Single");
+   Room room101 = RoomFactory.CreateRoom("Single", "101", 1, 50.00m);
+   
+   // Test it in the UI:
+   // Help → Test Factory Pattern
+   ```
+
+6. **Navigation:**
+   - Login → MainForm
+   - View all menus (based on role)
+   - Click menus (shows "Coming Soon")
+   - Test Factory Pattern (Help menu)
+   - Logout → Returns to LoginForm
+   - Exit → Closes app
+
+---
+
+## 📊 PROGRESS METRICS
+
+### Days Complete: 4 / 35 (11.4%)
+
+```
+✅ Day 1: Project Setup + Singleton Pattern
+✅ Day 2: Repository Pattern
+✅ Day 3: Authentication + Booking Repository
+✅ Day 4: MainForm (MDI Container)
+⏳ Day 5: Navigation Polish
+⏳ Day 6: Factory Pattern
+⏳ Day 7: Testing & Validation
+```
+
+### Week 1 Progress: 57% (4/7 days)
+
+### Design Patterns: 2 / 5 (40%)
+- ✅ Singleton (DatabaseManager)
+- ✅ Repository (4 repositories)
+- ⏳ Factory (Day 6)
+- ⏳ Facade (Day 14)
+- ⏳ Strategy (Day 23)
+
+### Components Complete:
+- ✅ Database: 100%
+- ✅ Models: 62% (4/8)
+- ✅ DAL: 67% (4/6 repositories)
+- ✅ Helpers: 100%
+- ✅ UI: 20% (2 forms)
+- ⏳ BLL: 0%
+
+---
+
+## 🎯 WHAT'S NEXT (DAY 5)
+
+### Goal: Navigation Polish & Refinement
+
+**Tasks:**
+1. Add keyboard shortcuts to menus (Ctrl+L for Logout)
+2. Add icons to menu items (optional)
+3. Create Window menu (Cascade, Tile, Close All)
+4. Test with Receptionist role
+5. Minor UI improvements
+
+**Expected Files:**
+- Update `MainForm.cs` with shortcuts
+- Test with different user roles
+- Polish status bar
+
+**Time:** 2 hours
+
+---
+
+## 💡 CODING STANDARDS YOU'RE USING
+
+### Naming Conventions:
+```csharp
+// Classes: PascalCase
+public class GuestRepository { }
+
+// Methods: PascalCase
+public Guest GetById(int id) { }
+
+// Variables: camelCase
+int guestId = 5;
+
+// Private fields: _camelCase
+private static DatabaseManager _instance;
+
+// Constants: ALL_CAPS
+private const int MAX_LOGIN_ATTEMPTS = 3;
+```
+
+### Best Practices You're Following:
+1. ✅ **Parameterized queries** - Prevent SQL injection
+2. ✅ **Using statements** - Proper resource disposal
+3. ✅ **Soft deletes** - IsActive = 0 instead of DELETE
+4. ✅ **Try-catch blocks** - Error handling
+5. ✅ **Null checks** - DBNull.Value handling
+6. ✅ **Validation** - Check inputs before processing
+7. ✅ **DialogResult pattern** - Proper form communication
+
+---
+
+## 🔑 KEY CONCEPTS TO REMEMBER
+
+### 1. Singleton Pattern
+```csharp
+// Only one instance
+DatabaseManager.Instance.GetConnection();
+```
+
+### 2. Repository Pattern
+```csharp
+// Generic interface
+IRepository<Guest> repo = new GuestRepository();
+```
+
+### 3. Soft Deletes
+```csharp
+// Don't DELETE, set IsActive = 0
+UPDATE Guests SET IsActive = 0 WHERE GuestId = @Id
+```
+
+### 4. Session Management
+```csharp
+// Track current user
+SessionManager.CurrentUser = user;
+if (SessionManager.IsAdmin) { }
+```
+
+### 5. MDI Container
+```csharp
+// Parent form
+this.IsMdiContainer = true;
+
+// Child forms
+childForm.MdiParent = this;
+childForm.Show();
+```
+
+### 6. DialogResult Communication
+```csharp
+// In child form
+this.DialogResult = DialogResult.OK;
+this.Close();
+
+// In parent
+if (loginForm.ShowDialog() == DialogResult.OK)
+{
+    // Success
+}
+```
+
+---
+
+## 🧪 HOW TO TEST CURRENT FEATURES
+
+### Test 1: Database Connection
+```csharp
+bool connected = DatabaseManager.Instance.TestConnection();
+// Should return true
+```
+
+### Test 2: Authentication
+```csharp
+UserRepository userRepo = new UserRepository();
+User user = userRepo.Authenticate("admin", "Admin@123");
+// Should return User object
+```
+
+### Test 3: Guest CRUD
+```csharp
+GuestRepository repo = new GuestRepository();
+
+// Create
+Guest guest = new Guest { FirstName = "Test", LastName = "User", Email = "test@test.com" };
+int id = repo.Insert(guest);
+
+// Read
+Guest retrieved = repo.GetById(id);
+
+// Update
+retrieved.Phone = "555-0000";
+repo.Update(retrieved);
+
+// Delete
+repo.Delete(id);
+```
+
+### Test 4: Room Availability
+```csharp
+RoomRepository repo = new RoomRepository();
+List<Room> available = repo.GetAvailableRooms(
+    DateTime.Now.AddDays(1),
+    DateTime.Now.AddDays(3)
+);
+// Should return available rooms
+```
+
+### Test 5: Login Flow
+1. Run application (F5)
+2. See database connection test
+3. See LoginForm
+4. Enter: admin / Admin@123
+5. See welcome message
+6. See MainForm with menus
+
+---
+
+## 📝 QUICK REFERENCE CHEAT SHEET
+
+### Common Operations:
+
+**Get Current User:**
+```csharp
+string name = SessionManager.CurrentUser.FullName;
+string role = SessionManager.CurrentUser.Role;
+```
+
+**Database Query:**
+```csharp
+var conn = DatabaseManager.Instance.GetConnection();
+using (SqlCommand cmd = new SqlCommand(query, conn))
+{
+    cmd.Parameters.AddWithValue("@param", value);
+    conn.Open();
+    // Execute
+}
+```
+
+**Repository Usage:**
+```csharp
+GuestRepository repo = new GuestRepository();
+List<Guest> guests = repo.GetAll();
+```
+
+**Password Hashing:**
+```csharp
+string salt = PasswordHelper.GenerateSalt();
+string hash = PasswordHelper.HashPassword(password, salt);
+```
+
+**Open Child Form:**
+```csharp
+OpenChildForm(new SomeForm());
+```
+
+---
+
+## 🎓 WHAT YOU'VE MASTERED
+
+### Technical Skills:
+- ✅ ADO.NET database operations
+- ✅ Singleton pattern implementation
+- ✅ Repository pattern with generics
+- ✅ Password hashing and security
+- ✅ Windows Forms development
+- ✅ MDI containers
+- ✅ Menu systems
+- ✅ Role-based access control
+- ✅ Object-oriented inheritance (Room hierarchy)
+- ✅ Polymorphism (MapReaderToRoom)
+
+### Software Engineering:
+- ✅ Separation of concerns (DAL, Models, UI)
+- ✅ SOLID principles
+- ✅ Clean code practices
+- ✅ Error handling
+- ✅ Input validation
+- ✅ Code organization
+
+---
+
+## 🚀 YOU'RE READY FOR DAY 5!
+
+### What You Have:
+- ✅ Solid foundation
+- ✅ Working authentication
+- ✅ Complete data access layer
+- ✅ Professional navigation
+- ✅ Clean architecture
+
+### What You'll Build Next:
+- Day 5: Navigation polish
+- Day 6: Factory Pattern
+- Week 2: UI forms (Rooms, Guests)
+- Week 3: Booking workflow
+- Week 4: Billing & payments
+
+**You're 11.4% done and ahead of schedule!** 🎉
+
+---
+
+**Last Updated:** February 8, 2026  
+**Next Review:** After Day 5  
+**Status:** 🟢 EXCELLENT PROGRESS
+
+---
+
+## 📞 NEED HELP?
+
+**Quick Troubleshooting:**
+1. Can't connect to DB? → Check App.config connection string
+2. Login fails? → Verify admin user exists in DB
+3. Menus don't show? → Check role in SessionManager
+4. Form won't open? → Check MdiParent is set
+
+**You've got this!** 💪

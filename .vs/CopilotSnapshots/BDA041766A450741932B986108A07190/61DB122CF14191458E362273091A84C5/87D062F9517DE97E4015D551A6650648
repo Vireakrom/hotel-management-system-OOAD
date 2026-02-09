@@ -1,0 +1,279 @@
+﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.UI.Rooms
+{
+    /// <summary>
+    /// Visual dashboard displaying room status with color-coded panels
+    /// Day 10 Implementation - Room Status Dashboard
+    /// </summary>
+    public partial class RoomStatusDashboard : Form
+    {
+        private RoomRepository roomRepository;
+        private List<Room> allRooms;
+        private string selectedStatusFilter = "All";
+
+        public RoomStatusDashboard()
+        {
+            InitializeComponent();
+            roomRepository = new RoomRepository();
+            LoadDashboard();
+        }
+
+        /// <summary>
+        /// Load the dashboard with room panels
+        /// </summary>
+        private void LoadDashboard()
+        {
+            try
+            {
+                // Get all rooms from database
+                allRooms = roomRepository.GetAll();
+
+                if (allRooms == null || allRooms.Count == 0)
+                {
+                    MessageBox.Show("No rooms found in the database.", "Information",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Apply filter if selected
+                List<Room> filteredRooms = ApplyFilter(allRooms);
+
+                // Clear existing panels
+                flowLayoutPanelRooms.Controls.Clear();
+
+                // Create a panel for each room
+                foreach (var room in filteredRooms.OrderBy(r => r.RoomNumber))
+                {
+                    Panel roomPanel = CreateRoomPanel(room);
+                    flowLayoutPanelRooms.Controls.Add(roomPanel);
+                }
+
+                // Update status counts
+                UpdateStatusCounts();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading dashboard: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Create a visual panel for a room
+        /// </summary>
+        private Panel CreateRoomPanel(Room room)
+        {
+            Panel panel = new Panel
+            {
+                Width = 180,
+                Height = 150,
+                Margin = new Padding(10),
+                BorderStyle = BorderStyle.FixedSingle,
+                Cursor = Cursors.Hand,
+                Tag = room // Store room object in Tag for later use
+            };
+
+            // Set background color based on status
+            panel.BackColor = GetStatusColor(room.Status);
+
+            // Room Number Label
+            Label lblRoomNumber = new Label
+            {
+                Text = $"Room {room.RoomNumber}",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(10, 10),
+                AutoSize = true
+            };
+
+            // Room Type Label
+            Label lblRoomType = new Label
+            {
+                Text = room.RoomType,
+                Font = new Font("Segoe UI", 10, FontStyle.Regular),
+                ForeColor = Color.White,
+                Location = new Point(10, 40),
+                AutoSize = true
+            };
+
+            // Floor Label
+            Label lblFloor = new Label
+            {
+                Text = $"Floor {room.FloorNumber}",
+                Font = new Font("Segoe UI", 9, FontStyle.Regular),
+                ForeColor = Color.White,
+                Location = new Point(10, 65),
+                AutoSize = true
+            };
+
+            // Status Label
+            Label lblStatus = new Label
+            {
+                Text = room.Status.ToUpper(),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(10, 90),
+                AutoSize = true
+            };
+
+            // Price Label
+            Label lblPrice = new Label
+            {
+                Text = $"${room.BasePrice:F2}/night",
+                Font = new Font("Segoe UI", 9, FontStyle.Regular),
+                ForeColor = Color.White,
+                Location = new Point(10, 115),
+                AutoSize = true
+            };
+
+            // Add labels to panel
+            panel.Controls.Add(lblRoomNumber);
+            panel.Controls.Add(lblRoomType);
+            panel.Controls.Add(lblFloor);
+            panel.Controls.Add(lblStatus);
+            panel.Controls.Add(lblPrice);
+
+            // Add click event to show room details
+            panel.Click += (s, e) => ShowRoomDetails(room);
+            foreach (Control ctrl in panel.Controls)
+            {
+                ctrl.Click += (s, e) => ShowRoomDetails(room);
+            }
+
+            return panel;
+        }
+
+        /// <summary>
+        /// Get color based on room status
+        /// </summary>
+        private Color GetStatusColor(string status)
+        {
+            switch (status?.ToLower())
+            {
+                case "available":
+                    return Color.FromArgb(46, 125, 50); // Green
+                case "occupied":
+                    return Color.FromArgb(198, 40, 40); // Red
+                case "reserved":
+                    return Color.FromArgb(251, 192, 45); // Yellow/Orange
+                case "cleaning":
+                    return Color.FromArgb(2, 136, 209); // Blue
+                case "maintenance":
+                    return Color.FromArgb(117, 117, 117); // Gray
+                default:
+                    return Color.Gray;
+            }
+        }
+
+        /// <summary>
+        /// Show detailed information about a room
+        /// </summary>
+        private void ShowRoomDetails(Room room)
+        {
+            string details = $"Room Details\n\n" +
+                           $"Room Number: {room.RoomNumber}\n" +
+                           $"Room Type: {room.RoomType}\n" +
+                           $"Floor: {room.FloorNumber}\n" +
+                           $"Status: {room.Status}\n" +
+                           $"Base Price: ${room.BasePrice:F2}/night\n" +
+                           $"Max Occupancy: {room.MaxOccupancy} guest(s)\n" +
+                           $"Bed Type: {room.BedType ?? "N/A"}\n" +
+                           $"Area: {room.Area} sq.m\n" +
+                           $"View Type: {room.ViewType ?? "Standard"}\n\n" +
+                           $"Special Features:\n" +
+                           $"  • Balcony: {(room.HasBalcony ? "Yes" : "No")}\n" +
+                           $"  • Sea View: {(room.HasSeaView ? "Yes" : "No")}\n" +
+                           $"  • Jacuzzi: {(room.HasJacuzzi ? "Yes" : "No")}\n" +
+                           $"  • Private Pool: {(room.HasPrivatePool ? "Yes" : "No")}\n\n";
+
+            if (!string.IsNullOrWhiteSpace(room.Description))
+            {
+                details += $"Description: {room.Description}";
+            }
+
+            MessageBox.Show(details, $"Room {room.RoomNumber} - Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Apply status filter to rooms
+        /// </summary>
+        private List<Room> ApplyFilter(List<Room> rooms)
+        {
+            if (selectedStatusFilter == "All")
+                return rooms;
+
+            return rooms.Where(r => r.Status.Equals(selectedStatusFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        /// <summary>
+        /// Update status count labels
+        /// </summary>
+        private void UpdateStatusCounts()
+        {
+            if (allRooms == null) return;
+
+            int totalRooms = allRooms.Count;
+            int available = allRooms.Count(r => r.Status.Equals("Available", StringComparison.OrdinalIgnoreCase));
+            int occupied = allRooms.Count(r => r.Status.Equals("Occupied", StringComparison.OrdinalIgnoreCase));
+            int reserved = allRooms.Count(r => r.Status.Equals("Reserved", StringComparison.OrdinalIgnoreCase));
+            int cleaning = allRooms.Count(r => r.Status.Equals("Cleaning", StringComparison.OrdinalIgnoreCase));
+            int maintenance = allRooms.Count(r => r.Status.Equals("Maintenance", StringComparison.OrdinalIgnoreCase));
+
+            lblTotalRooms.Text = $"Total Rooms: {totalRooms}";
+            lblAvailable.Text = $"Available: {available}";
+            lblOccupied.Text = $"Occupied: {occupied}";
+            lblReserved.Text = $"Reserved: {reserved}";
+            lblCleaning.Text = $"Cleaning: {cleaning}";
+            lblMaintenance.Text = $"Maintenance: {maintenance}";
+
+            // Calculate occupancy rate
+            int unavailable = occupied + reserved;
+            double occupancyRate = totalRooms > 0 ? (unavailable * 100.0 / totalRooms) : 0;
+            lblOccupancyRate.Text = $"Occupancy Rate: {occupancyRate:F1}%";
+        }
+
+        #region Event Handlers
+
+        /// <summary>
+        /// Filter by status dropdown changed
+        /// </summary>
+        private void cmbFilterStatus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedStatusFilter = cmbFilterStatus.SelectedItem?.ToString() ?? "All";
+            LoadDashboard();
+        }
+
+        /// <summary>
+        /// Refresh button clicked
+        /// </summary>
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            LoadDashboard();
+            MessageBox.Show("Dashboard refreshed successfully!", "Refresh",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Close button clicked
+        /// </summary>
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion
+
+        private void RoomStatusDashboard_Load(object sender, EventArgs e)
+        {
+            // Form load event - already loaded in constructor
+        }
+    }
+}

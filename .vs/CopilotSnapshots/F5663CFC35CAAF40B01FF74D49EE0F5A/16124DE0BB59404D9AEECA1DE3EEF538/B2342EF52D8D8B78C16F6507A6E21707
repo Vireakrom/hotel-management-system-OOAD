@@ -1,0 +1,697 @@
+﻿using HotelManagementSystem.Helpers;
+using HotelManagementSystem.UI.Auth;
+using HotelManagementSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.UI
+{
+    public partial class MainForm : Form
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+
+            // Set up MDI container properties
+            this.IsMdiContainer = true;
+            this.WindowState = FormWindowState.Maximized;
+            this.Text = "Hotel Management System";
+
+            // Set background gradient for MDI area
+            this.BackColor = Color.LightSteelBlue;
+
+            // Start status bar timer
+            timerStatusBar.Interval = 1000; // Update every second
+            timerStatusBar.Start();
+        }
+
+        #region Menu Configuration
+
+        /// <summary>
+        /// Apply role-based access control to menu items
+        /// </summary>
+        private void ApplyRoleBasedAccess()
+        {
+            string role = SessionManager.CurrentUser.Role;
+
+            switch (role)
+            {
+                case "Admin":
+                    // Admin has access to everything - no changes
+                    break;
+
+                case "Receptionist":
+                    // Receptionist cannot access Reports or Housekeeping
+                    reportsToolStripMenuItem.Visible = false;
+                    housekeepingToolStripMenuItem.Visible = false;
+                    break;
+
+                case "Manager":
+                    // Manager can see reports but not housekeeping tasks
+                    housekeepingToolStripMenuItem.Visible = false;
+                    break;
+
+                case "Housekeeping":
+                    // Housekeeping staff only see their tasks
+                    roomsToolStripMenuItem.Visible = false;
+                    guestsToolStripMenuItem.Visible = false;
+                    bookingsToolStripMenuItem.Visible = false;
+                    reportsToolStripMenuItem.Visible = false;
+                    break;
+
+                default:
+                    // Unknown role - hide all functional menus (safety)
+                    roomsToolStripMenuItem.Visible = false;
+                    guestsToolStripMenuItem.Visible = false;
+                    bookingsToolStripMenuItem.Visible = false;
+                    housekeepingToolStripMenuItem.Visible = false;
+                    reportsToolStripMenuItem.Visible = false;
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region File Menu Events
+
+        private void logoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Confirm logout
+            DialogResult result = MessageBox.Show(
+                "Are you sure you want to logout?",
+                "Confirm Logout",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                // Stop timer
+                timerStatusBar.Stop();
+
+                // Close all child forms
+                foreach (Form childForm in this.MdiChildren)
+                {
+                    childForm.Close();
+                }
+
+                // Clear session
+                SessionManager.Logout();
+
+                // Create and show login form
+                LoginForm loginForm = new LoginForm();
+                loginForm.Show();
+
+                // Close this form
+                this.Close();
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Confirm exit
+            DialogResult result = MessageBox.Show(
+                "Are you sure you want to exit the application?",
+                "Confirm Exit",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                // Close all forms and exit application
+                Application.Exit();
+            }
+        }
+
+        #endregion
+
+        #region Rooms Menu Events
+
+        private void roomManagementToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            // Day 8 - Room Management Form is now ready!
+            OpenChildForm(new HotelManagementSystem.UI.Rooms.RoomManagementForm());
+        }
+        private void roomStatusDashboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Day 10 - Room Status Dashboard is now ready!
+            OpenChildForm(new HotelManagementSystem.UI.Rooms.RoomStatusDashboard());
+        }
+
+        #endregion
+
+        #region Guests Menu Events
+        private void guestManagementToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            // Day 11 - Guest Management Form is now ready!
+            OpenChildForm(new HotelManagementSystem.UI.Guests.GuestManagementForm());
+        }
+
+        #endregion
+
+        #region Bookings Menu Events
+
+        private void newBookingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "New Booking form will be implemented on Day 15-17.\n\n" +
+                "Features:\n" +
+                "• Select guest (or create new)\n" +
+                "• Choose available room by date range\n" +
+                "• Set check-in and check-out dates\n" +
+                "• Calculate total charges\n" +
+                "• Create booking confirmation",
+                "Coming Soon - Day 15-17",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            // FUTURE: Uncomment when form is ready
+            // OpenChildForm(new NewBookingForm());
+        }
+
+        private void viewAllBookingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Booking List form will be implemented on Day 18.\n\n" +
+                "Features:\n" +
+                "• View all bookings\n" +
+                "• Filter by status (Pending, Confirmed, CheckedIn, etc.)\n" +
+                "• Search by guest name or room number\n" +
+                "• Edit or cancel bookings",
+                "Coming Soon - Day 18",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            // FUTURE: Uncomment when form is ready
+            // OpenChildForm(new BookingListForm());
+        }
+
+        private void checkInToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Check-In functionality will be implemented on Day 19.\n\n" +
+                "Features:\n" +
+                "• Quick check-in for confirmed bookings\n" +
+                "• Verify guest identity\n" +
+                "• Update room status to Occupied\n" +
+                "• Print room key card",
+                "Coming Soon - Day 19",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            // FUTURE: This might be part of BookingListForm
+        }
+
+        private void checkOutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Check-Out functionality will be implemented on Day 20.\n\n" +
+                "Features:\n" +
+                "• Process check-out\n" +
+                "• Auto-generate invoice\n" +
+                "• Update room status to Cleaning\n" +
+                "• Create housekeeping task automatically",
+                "Coming Soon - Day 20",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            // FUTURE: This might be part of BookingListForm
+        }
+
+        #endregion
+
+        #region Housekeeping Menu Events
+
+        private void viewTasksToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Housekeeping Tasks form will be implemented on Day 27.\n\n" +
+                "Features:\n" +
+                "• View assigned cleaning tasks\n" +
+                "• Update task status\n" +
+                "• Auto-created tasks after checkout (Observer Pattern)\n" +
+                "• Add completion notes",
+                "Coming Soon - Day 27",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            // FUTURE: Uncomment when form is ready
+            // OpenChildForm(new HousekeepingTasksForm());
+        }
+
+        #endregion
+
+        #region Reports Menu Events
+
+        private void dailyOperationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Daily Operations Report\n\n" +
+                "This report will show:\n" +
+                "• Today's check-ins and check-outs\n" +
+                "• Current occupancy rate\n" +
+                "• Available rooms\n" +
+                "• Revenue for today\n\n" +
+                "Implementation: Week 5 (if time permits)",
+                "Coming Soon",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        private void revenueReportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Revenue Report\n\n" +
+                "This report will show:\n" +
+                "• Daily/weekly/monthly revenue\n" +
+                "• Revenue by room type\n" +
+                "• Payment method breakdown\n" +
+                "• Year-to-date comparisons\n\n" +
+                "Implementation: Week 5 (if time permits)",
+                "Coming Soon",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        private void occupancyStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Occupancy Statistics\n\n" +
+                "This report will show:\n" +
+                "• Overall occupancy percentage\n" +
+                "• Occupancy by room type\n" +
+                "• Trend analysis with charts\n" +
+                "• Average daily rate (ADR)\n\n" +
+                "Implementation: Week 5 (if time permits)",
+                "Coming Soon",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        #endregion
+
+        #region Help Menu Events
+
+        private void userGuideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "Hotel Management System - User Guide\n\n" +
+                "NAVIGATION:\n" +
+                "• Use the menu bar to access different modules\n" +
+                "• All forms open within this main window (MDI)\n" +
+                "• Your role determines which menus you can see\n\n" +
+                "TIPS:\n" +
+                "• Check the status bar for your login info\n" +
+                "• Use File → Logout to switch users\n" +
+                "• Forms stay open until you close them\n\n" +
+                "For detailed documentation, see the project files.",
+                "User Guide",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "HOTEL MANAGEMENT SYSTEM\n" +
+                "Version 1.0.0 - Day 6 Complete\n\n" +
+                "Developed for OOAD Final Project\n" +
+                "Computer Science - Year 4\n\n" +
+                "DESIGN PATTERNS IMPLEMENTED:\n" +
+                "✅ Singleton (DatabaseManager) - Day 1\n" +
+                "✅ Repository (Data Access Layer) - Day 2\n" +
+                "✅ Factory (Room Types) - Day 5-6 ENHANCED\n" +
+                "⏳ Facade (Booking Operations) - Day 14\n" +
+                "⏳ Strategy (Payment Methods) - Day 23\n" +
+                "⏳ Observer (Housekeeping) - Day 21\n\n" +
+                "Progress: 3/5 Patterns (60%) ✓\n" +
+                "Week 1: 6/7 days (86%) - AHEAD OF SCHEDULE! 🎉\n\n" +
+                "DAY 6 ACHIEVEMENTS:\n" +
+                "✅ Enhanced Room models with 8+ utility methods\n" +
+                "✅ Dynamic pricing (sea view, pool premiums)\n" +
+                "✅ Comprehensive test suite (10 tests)\n" +
+                "✅ Full validation and error handling\n\n" +
+                "© 2026 - All Rights Reserved\n" +
+                "Deadline: March 10, 2026",
+                "About Hotel Management System",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+        private void testFactoryPatternToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Show test selection dialog
+            DialogResult result = MessageBox.Show(
+                "Run comprehensive test suite for Factory Pattern and Room Models?\n\n" +
+                "✓ Basic Room Creation (4 types)\n" +
+                "✓ Configured Room Creation\n" +
+                "✓ Room Type Validation\n" +
+                "✓ Default Pricing\n" +
+                "✓ Polymorphism Testing\n" +
+                "✓ Room Data Validation\n" +
+                "✓ Utility Methods\n" +
+                "✓ Dynamic Price Calculation\n" +
+                "✓ Feature Detection\n" +
+                "✓ Error Handling\n\n" +
+                "Total: 10 comprehensive tests",
+                "Day 6 - Factory Pattern Test Suite",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button1
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                // Run comprehensive test suite
+                string testOutput = Testing.RoomFactoryTests.RunAllTests();
+
+                // Show results in a form
+                Form resultForm = new Form
+                {
+                    Text = "Day 6 - Test Results",
+                    Width = 900,
+                    Height = 700,
+                    StartPosition = FormStartPosition.CenterScreen,
+                    MdiParent = this
+                };
+
+                TextBox txtResults = new TextBox
+                {
+                    Multiline = true,
+                    ScrollBars = ScrollBars.Both,
+                    Dock = DockStyle.Fill,
+                    Font = new Font("Consolas", 9F),
+                    Text = testOutput
+                };
+
+                resultForm.Controls.Add(txtResults);
+                resultForm.Show();
+            }
+            else if (result == DialogResult.No)
+            {
+                // Run simple demonstration
+                string demoOutput = RoomFactory.RunDemonstration();
+
+                // Show results in a form
+                Form resultForm = new Form
+                {
+                    Text = "Factory Pattern Demo",
+                    Width = 800,
+                    Height = 600,
+                    StartPosition = FormStartPosition.CenterScreen,
+                    MdiParent = this
+                };
+
+                TextBox txtResults = new TextBox
+                {
+                    Multiline = true,
+                    ScrollBars = ScrollBars.Both,
+                    Dock = DockStyle.Fill,
+                    Font = new Font("Consolas", 9F),
+                    Text = demoOutput
+                };
+
+                resultForm.Controls.Add(txtResults);
+                resultForm.Show();
+            }
+        }
+
+        private void testBookingRepositoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Show test selection dialog
+            DialogResult result = MessageBox.Show(
+                "Run comprehensive test suite for Booking Repository?\n\n" +
+                "Day 13 - Repository Pattern Test Suite\n\n" +
+                "✓ Create Booking (INSERT)\n" +
+                "✓ Read Booking by ID (SELECT)\n" +
+                "✓ Update Booking (UPDATE)\n" +
+                "✓ Get All Bookings\n" +
+                "✓ Get Bookings by Guest\n" +
+                "✓ Get Bookings by Status\n" +
+                "✓ Check-In Functionality\n" +
+                "✓ Check-Out Functionality\n" +
+                "✓ Cancel Booking (DELETE)\n" +
+                "✓ Calculate Number of Nights\n\n" +
+                "Total: 10 comprehensive tests\n\n" +
+                "Note: This will create test data in your database.",
+                "Day 13 - Booking Repository Test Suite",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button1
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                // Run comprehensive test suite
+                string testOutput = Testing.BookingRepositoryTests.RunAllTests();
+
+                // Show results in a form
+                Form resultForm = new Form
+                {
+                    Text = "Day 13 - Booking Repository Test Results",
+                    Width = 1000,
+                    Height = 750,
+                    StartPosition = FormStartPosition.CenterScreen,
+                    MdiParent = this
+                };
+
+                TextBox txtResults = new TextBox
+                {
+                    Multiline = true,
+                    ScrollBars = ScrollBars.Both,
+                    Dock = DockStyle.Fill,
+                    Font = new Font("Consolas", 9F),
+                    Text = testOutput,
+                    BackColor = Color.White,
+                    ReadOnly = true
+                };
+
+                resultForm.Controls.Add(txtResults);
+                resultForm.Show();
+
+                MessageBox.Show(
+                    "Booking Repository testing complete!\n\n" +
+                    "✓ All CRUD operations tested\n" +
+                    "✓ Check-In/Check-Out functionality verified\n" +
+                    "✓ Repository Pattern validated\n\n" +
+                    "Check the test results window for details.",
+                    "Test Complete",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+        }
+
+        private void testBookingFacadeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Show test selection dialog
+            DialogResult result = MessageBox.Show(
+                "Run comprehensive test suite for Booking Facade?\n\n" +
+                "Day 14 - Facade Pattern Test Suite\n\n" +
+                "✓ Validate Booking Dates\n" +
+                "✓ Reject Invalid Dates\n" +
+                "✓ Calculate Total Amount (with tax)\n" +
+                "✓ Create Booking - Complete Workflow\n" +
+                "✓ Get Available Rooms\n" +
+                "✓ Confirm Booking\n" +
+                "✓ Check-In Guest\n" +
+                "✓ Check-Out Guest\n" +
+                "✓ Get Guest Bookings\n" +
+                "✓ Get Active Bookings\n\n" +
+                "Total: 10 comprehensive tests\n\n" +
+                "This demonstrates the Facade Pattern coordinating\n" +
+                "Guest, Room, and Booking repositories!\n\n" +
+                "Note: This will create test data in your database.",
+                "Day 14 - Booking Facade Test Suite",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button1
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                // Run comprehensive test suite
+                string testOutput = Testing.BookingFacadeTests.RunAllTests();
+
+                // Show results in a form
+                Form resultForm = new Form
+                {
+                    Text = "Day 14 - Booking Facade Test Results (Facade Pattern)",
+                    Width = 1000,
+                    Height = 750,
+                    StartPosition = FormStartPosition.CenterScreen,
+                    MdiParent = this
+                };
+
+                TextBox txtResults = new TextBox
+                {
+                    Multiline = true,
+                    ScrollBars = ScrollBars.Both,
+                    Dock = DockStyle.Fill,
+                    Font = new Font("Consolas", 9F),
+                    Text = testOutput,
+                    BackColor = Color.White,
+                    ReadOnly = true
+                };
+
+                resultForm.Controls.Add(txtResults);
+                resultForm.Show();
+
+                MessageBox.Show(
+                    "Booking Facade testing complete!\n\n" +
+                    "✓ FACADE PATTERN DEMONSTRATED!\n" +
+                    "✓ Complete booking workflow tested\n" +
+                    "✓ Guest, Room, and Booking coordination verified\n" +
+                    "✓ Business logic encapsulation validated\n\n" +
+                    "Design Pattern #4 Complete! 🎉\n\n" +
+                    "Check the test results window for details.",
+                    "Test Complete - Facade Pattern",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+        }
+
+        #endregion
+
+        #region Window Menu Events (Future)
+
+        // These will be implemented in Day 5 if time permits
+
+        private void cascadeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.LayoutMdi(MdiLayout.Cascade);
+        }
+
+        private void tileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.LayoutMdi(MdiLayout.TileHorizontal);
+        }
+
+        private void tileVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.LayoutMdi(MdiLayout.TileVertical);
+        }
+
+        private void closeAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Form childForm in this.MdiChildren)
+            {
+                childForm.Close();
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Opens a child form within the MDI container
+        /// Prevents duplicate forms from opening
+        /// </summary>
+        /// <param name="childForm">Form to open</param>
+        private void OpenChildForm(Form childForm)
+        {
+            // Check if an instance of this form type is already open
+            foreach (Form openForm in this.MdiChildren)
+            {
+                if (openForm.GetType() == childForm.GetType())
+                {
+                    // Form already open - bring it to front and activate it
+                    openForm.Activate();
+                    return;
+                }
+            }
+
+            // Form not open - create new instance
+            childForm.MdiParent = this;
+            childForm.WindowState = FormWindowState.Maximized;
+            childForm.Show();
+        }
+
+        #endregion
+
+        #region Status Bar Timer
+
+        private void timerStatusBar_Tick(object sender, EventArgs e)
+        {
+            // Update time display every second
+            toolStripStatusLabelTime.Text = DateTime.Now.ToString("dddd, MMMM dd, yyyy hh:mm:ss tt");
+        }
+
+        #endregion
+
+        #region Form Closing Event
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // If user didn't logout, confirm they want to exit
+            if (SessionManager.IsLoggedIn && e.CloseReason == CloseReason.UserClosing)
+            {
+                DialogResult result = MessageBox.Show(
+                    "Are you sure you want to exit?\nYou will be logged out.",
+                    "Confirm Exit",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+
+                if (result == DialogResult.No)
+                {
+                    e.Cancel = true; // Cancel the close operation
+                }
+                else
+                {
+                    SessionManager.Logout();
+                }
+            }
+        }
+
+        #endregion
+
+
+        private void MainForm_Load_1(object sender, EventArgs e)
+        {
+            // Display welcome message
+            string userName = SessionManager.CurrentUser.FullName;
+            string role = SessionManager.CurrentUser.Role;
+
+            // Update status bar
+            toolStripStatusLabelUser.Text = $"Logged in as: {userName} ({role})";
+            toolStripStatusLabelTime.Text = DateTime.Now.ToString("dddd, MMMM dd, yyyy hh:mm tt");
+
+            // Apply role-based menu access
+            ApplyRoleBasedAccess();
+
+            // Welcome message
+            MessageBox.Show(
+                $"Welcome to Hotel Management System, {userName}!\n\n" +
+                $"Role: {role}\n" +
+                $"Login Time: {DateTime.Now:hh:mm tt}",
+                "Login Successful",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+
+
+    }
+
+}

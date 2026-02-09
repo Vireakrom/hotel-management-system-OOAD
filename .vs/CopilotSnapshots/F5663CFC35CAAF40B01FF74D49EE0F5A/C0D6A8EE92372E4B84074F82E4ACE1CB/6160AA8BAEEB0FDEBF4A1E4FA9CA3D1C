@@ -1,0 +1,1072 @@
+﻿# 📚 Hotel Management System - Progress Tracker
+## Days 1-15 Complete Reference
+
+**Last Updated:** February 17, 2026  
+**Status:** Day 15 Complete ✅  
+**Progress:** 42.9% (15/35 days)
+
+---
+
+## 🎯 EXECUTIVE SUMMARY
+
+**Week 1 (Days 1-7):** Foundation Complete ✅
+- Database (12 tables + sample data)
+- 3 Design Patterns (Singleton, Repository, Factory)
+- 4 Repositories (Guest, Room, User, Booking)
+- Authentication system
+- Main application window (MDI)
+- Role-based access control
+
+**Week 2 (Days 8-14):** Room & Guest Management + Booking Backend ✅ **COMPLETE!**
+- ✅ Day 8: RoomManagementForm (View, Delete, Search, Filter)
+- ✅ Day 9: AddEditRoomDialog (Add/Edit functionality + Validation) 🎉
+- ✅ Day 10: Room Status Dashboard (Visual + Color-coded) 🎉
+- ✅ Day 11: GuestManagementForm (View, Delete, Search) 🎉
+- ✅ Day 12: AddEditGuestDialog (Complete Guest CRUD + Validation) 🎉
+- ✅ Day 13: Booking Repository + Comprehensive Tests 🎉
+- ✅ Day 14: BookingFacade Pattern (Design Pattern #4!) 🎉 ← **NEW!**
+
+**Architecture:** Clean & Scalable 🟢  
+**Technical Debt:** Low 🟢
+
+---
+
+## 📊 PROGRESS SUMMARY
+
+### Days Complete: 14 / 35 (40.0%)
+
+```
+Week 1: ✅✅✅✅✅✅✅ (100% Complete)
+Week 2: ✅✅✅✅✅✅✅ (100% Complete!) 🎉
+Week 3: ⏳⏳⏳⏳⏳⏳⏳
+Week 4: ⏳⏳⏳⏳⏳⏳⏳
+Week 5: ⏳⏳⏳⏳⏳⏳⏳
+```
+
+### Design Patterns: 4 / 5 (80%) 🎉
+- ✅ Singleton (DatabaseManager)
+- ✅ Repository (4 repositories - including Booking!)
+- ✅ Factory (RoomFactory + UI Integration)
+- ✅ Facade (BookingFacade) - Day 14 ← **NEW!**
+- ⏳ Strategy (PaymentStrategy) - Day 23
+
+### Components Status:
+- ✅ Database: 100%
+- ✅ Models: 95% (Booking model complete!)
+- ✅ DAL: 67% (4/6 repositories - Booking fully tested!)
+- ✅ BLL: 20% (BookingFacade complete!) ← **NEW!**
+- ✅ Helpers: 100%
+- ✅ UI: 40% (Login, MainForm, Rooms, Guests)
+- ✅ Testing: 70% (RoomFactory, Week1, BookingRepository, BookingFacade)
+
+---
+
+## 📂 PROJECT STRUCTURE
+
+```
+HotelManagementSystem/
+│
+├── Models/                          ✅ Complete
+│   ├── User.cs, Guest.cs, Booking.cs
+│   ├── Room.cs (+ 4 subclasses)
+│   └── RoomFactory.cs
+│
+├── DAL/                             ✅ 67% Complete
+│   ├── DatabaseManager.cs (Singleton)
+│   ├── IRepository.cs (Generic)
+│   ├── GuestRepository.cs
+│   ├── RoomRepository.cs (Fixed IsActive issue)
+│   ├── UserRepository.cs
+│   └── BookingRepository.cs
+│
+├── BLL/                             ✅ 20% Complete ← **NEW!**
+│   └── BookingFacade.cs (Facade pattern)
+│
+├── Helpers/                         ✅ Complete
+│   ├── PasswordHelper.cs (SHA256)
+│   └── SessionManager.cs
+│
+├── UI/                              🟡 55% Complete
+│   ├── Auth/LoginForm.cs            ✅ Day 3
+│   ├── MainForm.cs                  ✅ Day 4
+│   ├── Rooms/
+│   │   ├── RoomManagementForm.cs    ✅ Day 8
+│   │   ├── AddEditRoomDialog.cs     ✅ Day 9
+│   │   └── RoomStatusDashboard.cs   ✅ Day 10
+│   └── Guests/
+│       ├── GuestManagementForm.cs   ✅ Day 11
+│       └── AddEditGuestDialog.cs    ✅ Day 12 (NEW!)
+│
+└── Testing/                         ✅ 70% Complete ← **UPDATED!**
+    ├── RoomFactoryTests.cs
+    ├── Week1ComprehensiveTests.cs
+    ├── BookingRepositoryTests.cs
+    └── BookingFacadeTests.cs         ✅ Day 14 ← **NEW!**
+```
+
+---
+
+## 🎯 DAY 8 ACHIEVEMENTS (NEW! 🎉)
+
+### RoomManagementForm - Fully Functional UI
+
+**Features Implemented:**
+- ✅ DataGridView with all rooms from database
+- ✅ Color-coded status (Available=Green, Occupied=Red, etc.)
+- ✅ Search by room number/type/status
+- ✅ Filter by status dropdown
+- ✅ View detailed room information
+- ✅ Delete room (sets status to Maintenance)
+- ✅ Refresh data
+- ✅ Status counts display
+- ✅ Professional UI design
+
+**Files Created:**
+- `UI/Rooms/RoomManagementForm.cs` (~350 lines)
+- `UI/Rooms/RoomManagementForm.Designer.cs` (~450 lines)
+
+**Bug Fixes:**
+- Fixed RoomRepository - removed non-existent `IsActive` column references
+- Updated `Delete()` to set `Status='Maintenance'` instead
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Rooms → Room Management
+3. See all rooms in grid with color-coded status
+4. Try: Search, Filter, View Details, Delete, Refresh
+```
+
+---
+
+## 💾 DATABASE (12 Tables)
+
+| Table | Purpose | Sample Data |
+|-------|---------|-------------|
+| Guests | Customer info | 4 guests |
+| Rooms | Room inventory | 10 rooms (various types) |
+| Users | System staff | Admin + 3 staff |
+| Bookings | Reservations | 2 sample bookings |
+| Invoices | Billing | Auto-generated |
+| Payments | Transactions | Linked to invoices |
+| AdditionalServices | Service catalog | 8 services |
+| BookingServices | Service assignments | - |
+| HousekeepingTasks | Cleaning tasks | - |
+| AuditLogs | Activity tracking | - |
+| SystemSettings | Configuration | Tax rate, check-in time, etc. |
+| Notifications | User alerts | - |
+
+**Admin Credentials:** admin / Admin@123
+
+---
+
+## 🎨 DESIGN PATTERNS (Details)
+
+### 1. Singleton - DatabaseManager
+```csharp
+SqlConnection conn = DatabaseManager.Instance.GetConnection();
+```
+**Benefit:** Single DB connection instance, thread-safe
+
+### 2. Repository - Data Access
+```csharp
+RoomRepository repo = new RoomRepository();
+List<Room> rooms = repo.GetAll();
+Room room = repo.GetById(1);
+repo.Update(room);
+repo.Delete(id); // Sets Status='Maintenance'
+```
+**Benefit:** Abstracts database operations, CRUD consistency
+
+### 3. Factory - Room Creation
+```csharp
+Room room = RoomFactory.CreateRoom("Suite");
+Room room101 = RoomFactory.CreateRoom("Single", "101", 1, 50.00m);
+```
+**Benefit:** Creates correct room subclass without client knowing concrete type
+
+---
+
+## 🖥️ UI COMPONENTS
+
+### LoginForm (Day 3)
+- Username/password authentication
+- Error validation
+- DialogResult pattern
+
+### MainForm (Day 4)
+- MDI Container
+- Menu system with role-based access
+- Status bar with user info & time
+- Opens child forms
+
+### RoomManagementForm (Day 8)
+- Full CRUD operations
+- DataGridView with color-coded status
+- Search & filter functionality
+- Professional UI with status counts
+
+### RoomStatusDashboard (Day 10) ⭐ NEW!
+- Visual room layout with FlowLayoutPanel
+- Color-coded room panels (Green, Red, Yellow, Blue, Gray)
+- Click-to-view room details
+- Status filtering dropdown
+- Real-time status counts & occupancy rate
+- Professional visual design
+
+---
+
+## 🚀 WHAT WORKS NOW
+
+### ✅ You Can Do:
+1. **Login:** admin / Admin@123
+2. **Room Management:** Rooms → Room Management (Days 8-9!) ⭐
+   - ✅ View all rooms in grid
+   - ✅ **Add new rooms** (Factory Pattern!) - Day 9
+   - ✅ **Edit existing rooms** - Day 9
+   - ✅ Delete rooms (soft delete)
+   - ✅ Search by room #, type, status
+   - ✅ Filter by status
+   - ✅ View detailed info
+   - ✅ Refresh data
+   - ✅ Color-coded status display
+3. **Room Status Dashboard:** Rooms → Room Status Dashboard (Day 10!) ⭐
+   - ✅ Visual room panels with color coding
+   - ✅ Click any room to see details
+   - ✅ Filter by status (All, Available, Occupied, etc.)
+   - ✅ View status counts and occupancy rate
+   - ✅ Real-time room availability overview
+4. **Guest Management:** Guests → Guest Management (Day 11!) ⭐ NEW!
+   - ✅ View all guests in grid
+   - ✅ Search by name, email, or phone
+   - ✅ View detailed guest information
+   - ✅ Delete guests (soft delete)
+   - ✅ Refresh data
+   - ✅ Double-click to view details
+   - ✅ Guest count display
+5. **Navigate:** All menus visible based on role
+6. **Test Patterns:** Help → Test Factory Pattern
+7. **Logout:** File → Logout
+
+### 🔧 Backend Ready:
+- GuestRepository (full CRUD + Search) ✅ **Now in UI!**
+- RoomRepository (full CRUD + GetAvailableRooms + GetByRoomNumber)
+- UserRepository (Authentication + CRUD)
+- BookingRepository (CRUD + CheckIn/CheckOut)
+
+---
+
+## 🎯 DAY 9 ACHIEVEMENTS (NEW! 🎉)
+
+### AddEditRoomDialog - Complete CRUD for Rooms!
+
+**Features Implemented:**
+- ✅ Add new room functionality (Factory Pattern in action!)
+- ✅ Edit existing room functionality
+- ✅ Comprehensive input validation (8+ validation rules)
+- ✅ Smart defaults based on room type
+- ✅ Duplicate room number detection
+- ✅ All room properties editable (15+ fields)
+- ✅ Special features checkboxes (Balcony, Sea View, Jacuzzi, Private Pool)
+- ✅ Professional 4-section grouped UI
+
+**Files Created:**
+- `UI/Rooms/AddEditRoomDialog.cs` (~390 lines)
+- `UI/Rooms/AddEditRoomDialog.Designer.cs` (~580 lines)
+
+**Repository Enhancements:**
+- Added `GetByRoomNumber()` to check duplicates
+- Enhanced `Add()` method to save all room properties
+- Enhanced `Update()` method to update all fields
+
+**Factory Pattern Integration:**
+```csharp
+// Dialog uses Factory Pattern to create rooms!
+Room room = RoomFactory.CreateRoom(
+    roomType: cmbRoomType.SelectedItem.ToString(),
+    roomNumber: txtRoomNumber.Text.Trim(),
+    floorNumber: (int)numFloorNumber.Value,
+    basePrice: numBasePrice.Value,
+    status: cmbStatus.SelectedItem.ToString()
+);
+```
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Rooms → Room Management
+3. Click "Add Room" → Fill in details → Save
+4. Select a room → Click "Edit" → Modify → Update
+5. Verify changes in grid
+```
+
+**CRUD Operations Status:**
+- ✅ **Create:** Add Room dialog working perfectly
+- ✅ **Read:** Grid displays all rooms with details
+- ✅ **Update:** Edit Room dialog working perfectly
+- ✅ **Delete:** Soft delete (sets status to Maintenance)
+
+---
+
+## 🎯 DAY 10 ACHIEVEMENTS (NEW! 🎉)
+
+### RoomStatusDashboard - Visual Room Status Display
+
+**Features Implemented:**
+- ✅ Visual dashboard with FlowLayoutPanel
+- ✅ Color-coded room panels based on status
+  - Green: Available
+  - Red: Occupied
+  - Yellow/Orange: Reserved
+  - Blue: Cleaning
+  - Gray: Maintenance
+- ✅ Filter by status dropdown (All, Available, Occupied, etc.)
+- ✅ Click room panels to view details
+- ✅ Status count summary display
+- ✅ Occupancy rate calculation
+- ✅ Color legend at bottom
+- ✅ Refresh functionality
+- ✅ Professional visual design
+
+**Files Created:**
+- `UI/Rooms/RoomStatusDashboard.cs` (~300 lines)
+- `UI/Rooms/RoomStatusDashboard.Designer.cs` (~600 lines)
+
+**UI Components:**
+- FlowLayoutPanel with scrollable room panels
+- Each panel shows: Room #, Type, Floor, Status, Price
+- Status counts panel showing totals for each status
+- Filter dropdown for quick status filtering
+- Visual color legend for easy reference
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Rooms → Room Status Dashboard
+3. See all rooms as colored panels
+4. Click any room panel to see full details
+5. Use filter dropdown to filter by status
+6. Check status counts and occupancy rate
+7. Click Refresh to reload data
+```
+
+---
+
+## 📝 KEY TECHNICAL NOTES
+
+### RoomRepository Enhancements (Day 9)
+```csharp
+// NEW: Check for duplicate room numbers
+Room existing = roomRepository.GetByRoomNumber("101");
+
+// NEW: Complete Add method with all fields
+bool success = roomRepository.Add(room);
+
+// ENHANCED: Update now saves all properties
+bool updated = roomRepository.Update(room);
+```
+
+### AddEditRoomDialog Modes
+- **Add Mode:** Empty form, generates new room using Factory Pattern
+- **Edit Mode:** Pre-filled form, room number read-only, updates existing room
+
+### Validation Rules (Day 9)
+- ✅ Room number: Required, unique, max 10 chars
+- ✅ Room type: Must select from dropdown (Factory types)
+- ✅ Floor: 1-20
+- ✅ Price: $10-$10,000
+- ✅ Max Occupancy: 1-10 guests
+- ✅ Area: 10-500 sq.m
+- ✅ All fields validated before save
+
+### Room Status Values
+- Available, Occupied, Reserved, Cleaning, Maintenance
+
+### Room Status Colors (Day 10)
+- **Available:** Green (RGB: 46, 125, 50)
+- **Occupied:** Red (RGB: 198, 40, 40)
+- **Reserved:** Yellow/Orange (RGB: 251, 192, 45)
+- **Cleaning:** Blue (RGB: 2, 136, 209)
+- **Maintenance:** Gray (RGB: 117, 117, 117)
+
+### Soft Delete Strategy
+- **Guests/Users:** `IsActive = 0`
+- **Rooms:** `Status = 'Maintenance'`
+
+---
+
+## 🎯 DAY 11 ACHIEVEMENTS (NEW! 🎉)
+
+### GuestManagementForm - Complete Guest Viewing & Search
+
+**Features Implemented:**
+- ✅ DataGridView with all guests from database
+- ✅ Comprehensive guest information display (7 columns)
+- ✅ Search functionality by name, email, or phone
+- ✅ View detailed guest information
+- ✅ Delete guest (soft delete - sets IsActive=0)
+- ✅ Refresh data functionality
+- ✅ Guest count display
+- ✅ Double-click to view details
+- ✅ Enter key search support
+- ✅ Alternating row colors for readability
+- ✅ Professional UI design matching Room Management
+
+**Files Created:**
+- `UI/Guests/GuestManagementForm.cs` (~300 lines)
+- `UI/Guests/GuestManagementForm.Designer.cs` (~280 lines)
+
+**Repository Methods Used:**
+- `GetAll()` - Load all active guests
+- `Search(searchTerm)` - Search by name, email, phone
+- `Delete(guestId)` - Soft delete guest
+
+**UI Components:**
+- DataGridView showing: Full Name, Email, Phone, ID Number, Nationality, Registered Date
+- Search textbox with real-time Enter key support
+- Search button (searches by name/email/phone)
+- Refresh button (reloads all guests)
+- View Details button (shows complete guest info)
+- Delete button (soft delete with confirmation)
+- Guest count label (shows total or search results)
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Guests → Guest Management
+3. See all guests in the grid
+4. Try: Search by name (e.g., "John"), Search by email
+5. Double-click a guest or click "View Details"
+6. Select a guest → Click "Delete" (soft delete)
+7. Click "Refresh" to reload data
+```
+
+**CRUD Operations Status:**
+- ✅ **Create:** Add Guest dialog working perfectly (Day 12)
+- ✅ **Read:** View all guests and search functionality working
+- ✅ **Update:** Edit Guest dialog working perfectly (Day 12)
+- ✅ **Delete:** Soft delete (sets IsActive=0) working
+
+---
+
+## 🎯 DAY 12 ACHIEVEMENTS (NEW! 🎉)
+
+### AddEditGuestDialog - Complete Guest CRUD!
+
+**Features Implemented:**
+- ✅ Add new guest functionality (comprehensive form)
+- ✅ Edit existing guest functionality
+- ✅ Comprehensive input validation (10+ validation rules)
+- ✅ Email format validation using regex
+- ✅ Age validation (18-120 years old)
+- ✅ Optional date of birth with checkbox control
+- ✅ 150+ nationalities dropdown
+- ✅ All guest properties editable (9 fields)
+- ✅ Professional 3-section grouped UI
+- ✅ Smart field enabling/disabling
+
+**Files Created:**
+- `UI/Guests/AddEditGuestDialog.cs` (~370 lines)
+- `UI/Guests/AddEditGuestDialog.Designer.cs` (~330 lines)
+
+**Files Modified:**
+- `UI/Guests/GuestManagementForm.cs` (Added btnAdd_Click, btnEdit_Click methods)
+- `UI/Guests/GuestManagementForm.Designer.cs` (Added Add & Edit buttons)
+
+**Validation Rules (Day 12):**
+- ✅ First Name: Required, minimum 2 characters
+- ✅ Last Name: Required, minimum 2 characters
+- ✅ Email: Optional, but must be valid format (name@example.com)
+- ✅ Phone: Optional, but minimum 7 digits if provided
+- ✅ ID Number: Optional, but minimum 5 characters if provided
+- ✅ Date of Birth: Must be in past, guest must be 18+ years old
+- ✅ All fields properly trimmed and null-checked
+- ✅ User-friendly error messages
+- ✅ Focus returns to invalid field
+
+**Email Validation (Regex):**
+```csharp
+string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+return Regex.IsMatch(email, pattern);
+```
+
+**Age Validation:**
+```csharp
+int age = DateTime.Today.Year - dtpDateOfBirth.Value.Year;
+if (dtpDateOfBirth.Value.Date > DateTime.Today.AddYears(-age))
+    age--; // Adjust for birthdays not yet occurred
+if (age < 18) { /* Error: Must be 18+ */ }
+if (age > 120) { /* Error: Invalid DOB */ }
+```
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Guests → Guest Management
+3. Click "Add Guest":
+   - Fill: First Name "John", Last Name "Doe"
+   - Email: "john@example.com", Phone: "1234567890"
+   - Click "Add Guest" → Success!
+4. Select guest → Click "Edit":
+   - Change name, add nationality
+   - Click "Update" → Changes saved!
+5. Try invalid data:
+   - Add guest with email "invalid" → Shows error
+   - Add guest with name "A" (too short) → Shows error
+   - Add guest under 18 years old → Shows error
+```
+
+**Dialog Features:**
+- Three organized sections: Personal Info, Contact Info, Identification
+- Optional date of birth with checkbox (disabled by default)
+- Searchable nationality dropdown (150+ countries)
+- Multiline address field
+- Color-coded buttons (Green=Save, Gray=Cancel)
+- Fixed dialog size (590x540)
+- Centered on parent window
+
+**CRUD Operations Status (Complete!):**
+- ✅ **Create:** Add Guest dialog working perfectly
+- ✅ **Read:** Grid displays all guests with details
+- ✅ **Update:** Edit Guest dialog working perfectly
+- ✅ **Delete:** Soft delete (sets IsActive=0)
+
+**Guest Management Module: 100% Complete!** 🎉
+
+---
+
+## 🎯 DAY 13 ACHIEVEMENTS (NEW! 🎉)
+
+### Booking Model & Repository - Complete Backend Ready!
+
+**Features Implemented:**
+- ✅ Booking model class with all properties (20+ fields)
+- ✅ BookingRepository with full CRUD operations
+- ✅ Custom booking methods (8+ specialized queries)
+- ✅ Check-In/Check-Out functionality
+- ✅ Cancel booking with reason
+- ✅ Get bookings by guest, status, date ranges
+- ✅ NumberOfNights calculated property
+- ✅ Comprehensive test suite (10 tests)
+- ✅ Test menu integration in MainForm
+- ✅ Repository Pattern validation
+
+**Files Reviewed/Created:**
+- `Models/Booking.cs` (Already existed - reviewed)
+- `DAL/BookingRepository.cs` (Already existed - reviewed)
+- `Testing/BookingRepositoryTests.cs` (~650 lines) ⭐ **NEW!**
+- `UI/MainForm.cs` (Added test menu item)
+- `UI/MainForm.Designer.cs` (Added menu configuration)
+
+**Repository Methods (BookingRepository):**
+- `Insert(booking)` - Create new booking
+- `GetById(id)` - Get booking by ID
+- `GetAll()` - Get all bookings
+- `Update(booking)` - Update booking details
+- `Delete(id)` - Cancel booking (soft delete)
+- `GetBookingsByGuest(guestId)` - Get guest's bookings
+- `GetBookingsByStatus(status)` - Filter by status
+- `GetActiveBookings()` - Get non-cancelled bookings
+- `UpdateBookingStatus(id, status)` - Change status
+- `CancelBooking(id, reason)` - Cancel with reason
+- `CheckIn(id)` - Process check-in
+- `CheckOut(id)` - Process check-out
+
+**Booking Model Properties:**
+```csharp
+public class Booking
+{
+    public int BookingId { get; set; }
+    public int GuestId { get; set; }
+    public int RoomId { get; set; }
+    public int CreatedByUserId { get; set; }
+    public DateTime CheckInDate { get; set; }
+    public DateTime CheckOutDate { get; set; }
+    public DateTime? ActualCheckInDate { get; set; }
+    public DateTime? ActualCheckOutDate { get; set; }
+    public string Status { get; set; }
+    public int NumberOfGuests { get; set; }
+    public decimal RoomCharges { get; set; }
+    public decimal ServiceCharges { get; set; }
+    public decimal TotalAmount { get; set; }
+    public string SpecialRequests { get; set; }
+    public string Notes { get; set; }
+    public DateTime BookingDate { get; set; }
+    public DateTime? CancelledDate { get; set; }
+    public string CancellationReason { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime ModifiedDate { get; set; }
+    
+    // Calculated property
+    public int NumberOfNights => (CheckOutDate - CheckInDate).Days;
+}
+```
+
+**Test Suite (10 Comprehensive Tests):**
+1. ✅ Create Booking (INSERT) - Tests Insert method
+2. ✅ Read Booking by ID (SELECT) - Tests GetById method
+3. ✅ Update Booking (UPDATE) - Tests Update method
+4. ✅ Get All Bookings - Tests GetAll method
+5. ✅ Get Bookings by Guest - Tests GetBookingsByGuest method
+6. ✅ Get Bookings by Status - Tests GetBookingsByStatus method
+7. ✅ Check-In Functionality - Tests CheckIn method
+8. ✅ Check-Out Functionality - Tests CheckOut method
+9. ✅ Cancel Booking (DELETE) - Tests CancelBooking method
+10. ✅ Calculate Number of Nights - Tests NumberOfNights property
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Help → Test Booking Repository
+3. Click "Yes" to run comprehensive test suite
+4. Review test results window (10 tests)
+5. Verify all tests pass ✓
+6. Check database for test booking data
+```
+
+**Key Features:**
+- **Soft Delete:** Bookings are cancelled, not deleted
+- **Status Tracking:** Pending → Confirmed → CheckedIn → CheckedOut
+- **Audit Trail:** CancelledDate and CancellationReason tracked
+- **Flexible Queries:** Multiple methods for different use cases
+- **Data Integrity:** All nullable fields handled properly
+
+**Repository Pattern Benefits:**
+- ✅ Clean separation of data access logic
+- ✅ Consistent CRUD operations across all entities
+- ✅ Easy to test and maintain
+- ✅ Extensible for future requirements
+
+**Status Values:**
+- `Pending` - Initial booking status
+- `Confirmed` - Booking confirmed by staff
+- `CheckedIn` - Guest has checked in
+- `CheckedOut` - Guest has checked out
+- `Cancelled` - Booking cancelled
+
+**CRUD Operations Status (Complete!):**
+- ✅ **Create:** Insert method working perfectly
+- ✅ **Read:** GetById, GetAll, and custom queries working
+- ✅ **Update:** Update method working perfectly
+- ✅ **Delete:** CancelBooking (soft delete) working
+
+**Booking Backend Module: 100% Complete!** 🎉
+
+**Ready for Day 14:** With BookingRepository fully tested, we're ready to implement the BookingFacade pattern to coordinate Guest, Room, and Booking repositories for complete booking workflow!
+
+---
+
+## 🎯 NEXT STEPS (Day 14)
+
+### Day 14 (Next)
+**Task:** BookingFacade Pattern
+- Create BookingFacade class (Facade pattern - Design Pattern #4!)
+- Implement CreateBooking method (coordinate multiple repositories)
+- Add ValidateBookingDates method
+- Add CalculateTotalAmount method
+- Test integrated booking workflow
+- Prepare for booking UI (Days 15-17)
+
+**Why Facade Pattern?**
+- Simplifies complex booking operations
+- Coordinates Guest, Room, and Booking repositories
+- Provides single interface for booking workflow
+- Handles validation and business logic
+- Makes UI code cleaner and simpler
+
+---
+
+## 📝 KEY TECHNICAL NOTES (Updated)
+
+### BookingRepository Methods (Day 13)
+```csharp
+// Create new booking
+int bookingId = bookingRepository.Insert(booking);
+
+// Read booking
+Booking booking = bookingRepository.GetById(bookingId);
+List<Booking> allBookings = bookingRepository.GetAll();
+
+// Custom queries
+List<Booking> guestBookings = bookingRepository.GetBookingsByGuest(guestId);
+List<Booking> pendingBookings = bookingRepository.GetBookingsByStatus("Pending");
+List<Booking> activeBookings = bookingRepository.GetActiveBookings();
+
+// Update booking
+booking.Notes = "Updated notes";
+bool updated = bookingRepository.Update(booking);
+
+// Process check-in/out
+bool checkedIn = bookingRepository.CheckIn(bookingId);
+bool checkedOut = bookingRepository.CheckOut(bookingId);
+
+// Cancel booking
+bool cancelled = bookingRepository.CancelBooking(bookingId, "Guest requested");
+```
+
+### Booking Statuses (Day 13)
+- **Pending:** Booking created, awaiting confirmation
+- **Confirmed:** Booking confirmed by staff
+- **CheckedIn:** Guest has checked in, room is occupied
+- **CheckedOut:** Guest has checked out, ready for cleaning
+- **Cancelled:** Booking cancelled (soft delete)
+
+### Testing Pattern (Day 13)
+```csharp
+// Access test suite from Help menu
+Help → Test Booking Repository
+
+// Programmatic testing
+string testResults = Testing.BookingRepositoryTests.RunAllTests();
+```
+
+**Guest Management Module: 100% Complete!** 🎉  
+**Booking Backend Module: 100% Complete!** 🎉
+
+---
+
+## 🎯 DAY 14 ACHIEVEMENTS (NEW! 🎉)
+
+### BookingFacade - Facade Pattern Implementation (Design Pattern #4!)
+
+**Features Implemented:**
+- ✅ BookingFacade class implementing Facade Pattern
+- ✅ CreateBooking method - complete workflow coordination
+- ✅ ValidateBookingDates validation logic
+- ✅ CalculateTotalAmount with 10% tax
+- ✅ IsRoomAvailable availability checking
+- ✅ GetAvailableRooms for date ranges
+- ✅ ConfirmBooking, CheckIn, CheckOut workflow methods
+- ✅ CancelBooking with reason tracking
+- ✅ UpdateBooking with validation
+- ✅ Comprehensive test suite (10 tests)
+- ✅ Menu integration in MainForm
+
+**Files Created:**
+- `BLL/BookingFacade.cs` (~350 lines) ⭐ **NEW!**
+- `Testing/BookingFacadeTests.cs` (~420 lines) ⭐ **NEW!**
+
+**Files Modified:**
+- `DAL/BookingRepository.cs` (Added GetBookingsByDateRange method)
+- `UI/MainForm.cs` (Added testBookingFacadeToolStripMenuItem_Click method)
+- `UI/MainForm.Designer.cs` (Added Test Booking Facade menu item)
+
+**Facade Pattern Benefits:**
+```csharp
+// BEFORE (Complex - multiple repositories):
+Guest guest = guestRepo.GetById(guestId);
+Room room = roomRepo.GetById(roomId);
+// ... validate guest exists
+// ... validate room exists
+// ... check availability
+// ... calculate charges
+// ... create booking
+// ... update room status
+
+// AFTER (Simple - single facade):
+BookingFacade facade = new BookingFacade();
+int bookingId = facade.CreateBooking(guestId, roomId, checkIn, checkOut, 2);
+```
+
+**Key Methods:**
+```csharp
+// Create booking with full validation
+int bookingId = facade.CreateBooking(guestId, roomId, checkIn, checkOut, numberOfGuests);
+
+// Validate dates
+bool isValid = facade.ValidateBookingDates(checkIn, checkOut);
+
+// Calculate total with tax (10%)
+decimal total = facade.CalculateTotalAmount(roomCharges, serviceCharges);
+
+// Check room availability
+bool available = facade.IsRoomAvailable(roomId, checkIn, checkOut);
+
+// Get available rooms
+List<Room> rooms = facade.GetAvailableRooms(checkIn, checkOut);
+
+// Workflow methods
+facade.ConfirmBooking(bookingId);
+facade.CheckIn(bookingId);
+facade.CheckOut(bookingId);
+facade.CancelBooking(bookingId, "Guest requested");
+```
+
+**Test Suite (10 Comprehensive Tests):**
+1. ✅ Validate Booking Dates
+2. ✅ Reject Invalid Dates
+3. ✅ Calculate Total Amount (with 10% tax)
+4. ✅ Create Booking - Complete Workflow
+5. ✅ Get Available Rooms for Date Range
+6. ✅ Confirm Booking
+7. ✅ Check-In Guest
+8. ✅ Check-Out Guest
+9. ✅ Get Guest Bookings
+10. ✅ Get Active Bookings
+
+**Test It:**
+```
+1. Run app → Login (admin / Admin@123)
+2. Help → Test Booking Facade
+3. Click "Yes" to run comprehensive test suite
+4. Review test results window (10 tests)
+5. Verify all tests pass ✓
+6. Check database for test booking data
+```
+
+**Coordination Demonstrated:**
+The Facade coordinates 3 repositories:
+- ✅ GuestRepository - validates guest exists
+- ✅ RoomRepository - checks availability, updates status
+- ✅ BookingRepository - creates and manages bookings
+
+**Business Logic Encapsulated:**
+- ✅ Date validation (check-out after check-in)
+- ✅ Room capacity validation (guests <= max occupancy)
+- ✅ Availability checking (no conflicting bookings)
+- ✅ Price calculation with tax (subtotal * 1.10)
+- ✅ Status workflow (Pending → Confirmed → CheckedIn → CheckedOut)
+- ✅ Room status coordination (Available → Reserved → Occupied → Cleaning)
+
+**CRUD Operations Status (Complete!):**
+- ✅ **Create:** CreateBooking with full validation
+- ✅ **Read:** GetBookingById, GetGuestBookings, GetActiveBookings
+- ✅ **Update:** UpdateBooking, ConfirmBooking, CheckIn, CheckOut
+- ✅ **Delete:** CancelBooking (soft delete with reason)
+
+**FACADE PATTERN (Design Pattern #4): 100% Complete!** 🎉
+**Week 2: 100% Complete!** 🎉
+
+---
+
+## 🎯 NEXT STEPS (Day 15)
+
+### Day 15
+**Task:** NewBookingForm UI
+- Create NewBookingForm UI
+- Guest selection (ComboBox or search)
+- Date pickers for check-in/out
+- Start booking UI workflow
+
+**Why NewBookingForm Now?**
+- Facade pattern complete - ready for UI integration
+- All backend logic in place
+- Focus on user-friendly booking creation
+- Days 15-17 will complete the booking UI
+
+---
+
+## 📝 KEY TECHNICAL NOTES (Updated)
+
+### BookingFacade Usage (Day 14)
+```csharp
+// Create facade instance
+BookingFacade facade = new BookingFacade();
+
+// Create new booking (full workflow)
+int bookingId = facade.CreateBooking(
+    guestId: 1,
+    roomId: 2,
+    checkInDate: DateTime.Today.AddDays(1),
+    checkOutDate: DateTime.Today.AddDays(4),
+    numberOfGuests: 2,
+    specialRequests: "Late check-in",
+    notes: "VIP guest"
+);
+
+// Workflow operations
+facade.ConfirmBooking(bookingId);
+facade.CheckIn(bookingId);
+facade.CheckOut(bookingId);
+
+// Query operations
+List<Room> availableRooms = facade.GetAvailableRooms(checkIn, checkOut);
+List<Booking> guestBookings = facade.GetGuestBookings(guestId);
+```
+
+**Guest Management Module: 100% Complete!** 🎉  
+**Booking Backend Module: 100% Complete!** 🎉  
+**Facade Pattern: 100% Complete!** 🎉
+
+---
+
+## 🎯 NEXT STEPS (Day 13-14)
+
+### Day 13 (Next)
+**Task:** Booking Model & Repository
+- Create/enhance Booking model class
+- Complete BookingRepository CRUD operations
+- Test basic booking CRUD
+- Prepare for Facade pattern
+
+### Day 14
+**Task:** BookingFacade Pattern
+- Create BookingFacade class (Facade pattern)
+- Implement CreateBooking method
+- Coordinate Guest, Room, Booking repositories
+- Test integrated booking workflow
+
+---
+
+## 🔑 QUICK REFERENCE
+
+### Database Connection
+```csharp
+SqlConnection conn = DatabaseManager.Instance.GetConnection();
+bool connected = DatabaseManager.Instance.TestConnection();
+```
+
+### Current User
+```csharp
+string name = SessionManager.CurrentUser.FullName;
+string role = SessionManager.CurrentUser.Role;
+bool isAdmin = SessionManager.IsAdmin;
+```
+
+### Repository Pattern
+```csharp
+RoomRepository roomRepo = new RoomRepository();
+GuestRepository guestRepo = new GuestRepository();
+List<Room> rooms = roomRepo.GetAll();
+List<Guest> guests = guestRepo.Search("john");
+Room room = roomRepo.GetByRoomNumber("101"); // Day 9 addition!
+```
+
+### Factory Pattern (Now in UI!)
+```csharp
+// Backend usage
+Room room = RoomFactory.CreateRoom("Suite");
+decimal price = RoomFactory.GetDefaultPrice("Deluxe");
+
+// UI usage (Day 9)
+Room room = RoomFactory.CreateRoom("Deluxe", "201", 2, 300.00m);
+```
+
+### Open Child Form
+```csharp
+// Room Management (Day 8)
+OpenChildForm(new RoomManagementForm());
+
+// Room Status Dashboard (Day 10)
+OpenChildForm(new RoomStatusDashboard());
+```
+
+### Open Dialog (Day 9 & Day 12)
+```csharp
+// Add Room - Day 9
+AddEditRoomDialog dialog = new AddEditRoomDialog();
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    LoadRooms(); // Refresh
+}
+
+// Edit Room - Day 9
+AddEditRoomDialog dialog = new AddEditRoomDialog(selectedRoom);
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    LoadRooms(); // Refresh
+}
+
+// Add Guest - Day 12
+AddEditGuestDialog dialog = new AddEditGuestDialog();
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    LoadGuests(); // Refresh
+}
+
+// Edit Guest - Day 12
+AddEditGuestDialog dialog = new AddEditGuestDialog(selectedGuest);
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    LoadGuests(); // Refresh
+}
+```
+
+---
+
+## 📞 TROUBLESHOOTING
+
+| Issue | Solution |
+|-------|----------|
+| Can't connect to DB | Check App.config connection string |
+| Login fails | Verify admin user exists: admin/Admin@123 |
+| Form won't open | Check MdiParent is set |
+| Rooms not loading | Verify database has sample data |
+| Duplicate room error | Room number already exists - choose different number |
+| Build errors | Run `dotnet restore` or rebuild solution |
+
+---
+
+## 🎉 MILESTONE ACHIEVEMENTS
+
+### Week 1 Complete (Days 1-7) ✅
+- Solid architecture foundation
+- 3 design patterns implemented
+- Full authentication system
+- Professional MDI application
+
+### Week 2 Progress (Days 8-13) 🟢
+- ✅ **Complete Room Management** (Days 8-10)
+  - RoomManagementForm with full CRUD
+  - AddEditRoomDialog with validation
+  - Visual Room Status Dashboard
+  - Factory Pattern in UI
+- ✅ **Complete Guest Management** (Days 11-12)
+  - GuestManagementForm with full CRUD
+  - AddEditGuestDialog with validation
+  - Email validation with regex
+  - Age validation logic
+- ✅ **Complete Booking Backend** (Day 13) ⭐ **NEW!**
+  - Booking Model class reviewed
+  - BookingRepository fully tested
+  - 10 comprehensive tests passing
+  - Repository Pattern validated
+- 🎉 **Three Complete Modules!**
+
+---
+
+## 📈 WEEKLY PROGRESS
+
+| Week | Status | Completion |
+|------|--------|-----------|
+| Week 1 | ✅ Complete | 100% (7/7 days) |
+| Week 2 | ✅ Complete | 100% (7/7 days) - WEEK 2 DONE! 🎉 |
+| Week 3 | ⏳ Not Started | 0% |
+| Week 4 | ⏳ Not Started | 0% |
+| Week 5 | ⏳ Not Started | 0% |
+
+**Overall:** 40.0% (14/35 days) - AHEAD OF SCHEDULE! 🚀
+
+---
+
+**Last Updated:** February 15, 2026  
+**Next Review:** After Day 14  
+**Status:** 🟢 ON SCHEDULE
+
+---
+
+## 🎯 KEY ACHIEVEMENTS SUMMARY
+
+✅ **Day 1:** Database + Singleton  
+✅ **Day 2:** Repository Pattern  
+✅ **Day 3:** Authentication  
+✅ **Day 4:** MainForm MDI  
+✅ **Day 5:** Factory Pattern  
+✅ **Day 6:** Enhanced Room Models + Tests  
+✅ **Day 7:** Week 1 Completion  
+✅ **Day 8:** RoomManagementForm UI  
+✅ **Day 9:** AddEditRoomDialog + Complete Room CRUD  
+✅ **Day 10:** Room Status Dashboard (Visual + Color-coded)  
+✅ **Day 11:** GuestManagementForm (View, Search, Delete)  
+✅ **Day 12:** AddEditGuestDialog (Complete Guest CRUD + Validation)  
+✅ **Day 13:** Booking Repository + Comprehensive Tests  
+✅ **Day 14:** BookingFacade Pattern (Design Pattern #4!) ← **YOU ARE HERE** 🎉
+
+**Next:** Day 15 - NewBookingForm UI (Start Booking Workflow!)
+
+---
+
+*Excellent progress! You're 40% through the project with FOUR design patterns complete!* 💪✨
+*Week 2 is 100% COMPLETE! 🎉🎉🎉*
+
+

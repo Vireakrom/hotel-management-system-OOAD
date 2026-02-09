@@ -1,0 +1,935 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Management System - Complete Features List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .overview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        .overview h2 {
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .overview-item {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .overview-item .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        .overview-item .label {
+            font-size: 0.9em;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        .module {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .module-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .module-header .icon {
+            font-size: 2em;
+        }
+        .module-header h3 {
+            font-size: 1.8em;
+        }
+        .module-content {
+            padding: 30px;
+            background: #fafafa;
+        }
+        .feature-section {
+            margin-bottom: 25px;
+        }
+        .feature-section h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            color: #333;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .sub-features {
+            list-style: none;
+            padding-left: 25px;
+            margin-top: 8px;
+        }
+        .sub-features li {
+            padding: 5px 0 5px 20px;
+            color: #666;
+            font-size: 0.95em;
+        }
+        .sub-features li:before {
+            content: "→";
+            position: absolute;
+            left: 25px;
+            color: #999;
+        }
+        .design-patterns {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 8px;
+        }
+        .design-patterns h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .pattern-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        .pattern-card h4 {
+            color: #2196f3;
+            margin-bottom: 10px;
+        }
+        .pattern-card p {
+            color: #555;
+            font-size: 0.95em;
+        }
+        .tech-stack {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 8px;
+        }
+        .tech-stack h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .tech-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .tech-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tech-item strong {
+            color: #856404;
+            min-width: 100px;
+        }
+        .user-roles {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 8px;
+        }
+        .user-roles h3 {
+            color: #7b1fa2;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .role-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #9c27b0;
+        }
+        .role-card h4 {
+            color: #9c27b0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .role-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .role-card ul li {
+            padding: 5px 0 5px 20px;
+            position: relative;
+            color: #555;
+            font-size: 0.9em;
+        }
+        .role-card ul li:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: #9c27b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏨 Hotel Management System</h1>
+            <p>Complete Features & Functionality Documentation</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">OOAD Final Project - C# WinForms with Design Patterns</p>
+        </div>
+
+        <div class="content">
+            <div class="overview">
+                <h2>📊 System Overview</h2>
+                <p>A comprehensive hotel management system designed for real-world use with professional features, demonstrating 7+ design patterns for academic excellence.</p>
+                <div class="overview-grid">
+                    <div class="overview-item">
+                        <span class="number">8</span>
+                        <span class="label">Core Modules</span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="number">50+</span>
+                        <span class="label">Features</span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="number">7+</span>
+                        <span class="label">Design Patterns</span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="number">12</span>
+                        <span class="label">Database Tables</span>
+                    </div>
+                    <div class="overview-item">
+                        <span class="number">4</span>
+                        <span class="label">User Roles</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 1: USER MANAGEMENT & AUTHENTICATION -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">👤</span>
+                    <h3>1. User Management & Authentication</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Authentication & Security</h4>
+                        <ul class="feature-list">
+                            <li>User login with username/password
+                                <ul class="sub-features">
+                                    <li>Password hashing with salt (SHA256 or BCrypt)</li>
+                                    <li>Account lockout after multiple failed attempts</li>
+                                    <li>Session management with auto-logout</li>
+                                </ul>
+                            </li>
+                            <li>Role-based access control (RBAC)
+                                <ul class="sub-features">
+                                    <li>Admin, Manager, Receptionist, Housekeeping roles</li>
+                                    <li>Different permissions per role</li>
+                                    <li>Menu/form access restrictions based on role</li>
+                                </ul>
+                            </li>
+                            <li>Password management
+                                <ul class="sub-features">
+                                    <li>Change password functionality</li>
+                                    <li>Force password change on first login</li>
+                                    <li>Password strength validation</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>User Account Management</h4>
+                        <ul class="feature-list">
+                            <li>Add new staff users (Admin only)</li>
+                            <li>Edit user details (name, email, phone, role)</li>
+                            <li>Activate/deactivate user accounts</li>
+                            <li>View user activity logs</li>
+                            <li>Track last login time</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 2: ROOM MANAGEMENT -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">🏨</span>
+                    <h3>2. Room Management</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Room Configuration</h4>
+                        <ul class="feature-list">
+                            <li>Add new rooms with details
+                                <ul class="sub-features">
+                                    <li>Room number, type (Single, Double, Suite, Deluxe)</li>
+                                    <li>Floor number, bed type, room area</li>
+                                    <li>Base price, max occupancy</li>
+                                    <li>Amenities (WiFi, TV, Mini Bar, etc.)</li>
+                                    <li>Special features (Balcony, Sea View, Jacuzzi, Private Pool)</li>
+                                </ul>
+                            </li>
+                            <li>Edit room information</li>
+                            <li>Delete rooms (with validation)</li>
+                            <li>Room type categorization using Factory Pattern</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Room Status Management</h4>
+                        <ul class="feature-list">
+                            <li>Real-time room status tracking
+                                <ul class="sub-features">
+                                    <li>Available - ready for booking</li>
+                                    <li>Occupied - guest checked in</li>
+                                    <li>Reserved - booking confirmed</li>
+                                    <li>Cleaning - housekeeping in progress</li>
+                                    <li>Maintenance - under repair</li>
+                                </ul>
+                            </li>
+                            <li>Visual room status dashboard with color coding</li>
+                            <li>Filter rooms by status, type, floor</li>
+                            <li>Quick status updates</li>
+                            <li>Observer Pattern: Auto-notify housekeeping on status change</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Room Search & Availability</h4>
+                        <ul class="feature-list">
+                            <li>Search available rooms by date range</li>
+                            <li>Filter by room type, price range</li>
+                            <li>View room details and amenities</li>
+                            <li>Check room occupancy calendar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 3: GUEST MANAGEMENT -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">👥</span>
+                    <h3>3. Guest/Customer Management</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Guest Registration</h4>
+                        <ul class="feature-list">
+                            <li>Add new guest profile
+                                <ul class="sub-features">
+                                    <li>Personal info (name, email, phone)</li>
+                                    <li>ID verification (ID number, nationality)</li>
+                                    <li>Address and date of birth</li>
+                                </ul>
+                            </li>
+                            <li>Update guest information</li>
+                            <li>Guest profile activation/deactivation</li>
+                            <li>Duplicate detection (by email or ID number)</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Guest Search & History</h4>
+                        <ul class="feature-list">
+                            <li>Search guests by name, email, phone, ID</li>
+                            <li>View complete booking history per guest</li>
+                            <li>Track guest preferences and special requests</li>
+                            <li>Guest loyalty/repeat customer identification</li>
+                            <li>Export guest list to Excel/PDF</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 4: BOOKING & RESERVATION -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">📅</span>
+                    <h3>4. Booking & Reservation System</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Create Booking</h4>
+                        <ul class="feature-list">
+                            <li>New booking creation using Facade Pattern
+                                <ul class="sub-features">
+                                    <li>Select guest (existing or new)</li>
+                                    <li>Choose available room</li>
+                                    <li>Set check-in and check-out dates</li>
+                                    <li>Specify number of guests</li>
+                                    <li>Add special requests/notes</li>
+                                    <li>Auto-calculate total cost</li>
+                                </ul>
+                            </li>
+                            <li>Booking validation
+                                <ul class="sub-features">
+                                    <li>Check room availability</li>
+                                    <li>Validate date ranges</li>
+                                    <li>Check max occupancy</li>
+                                </ul>
+                            </li>
+                            <li>Generate booking confirmation</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Booking Management</h4>
+                        <ul class="feature-list">
+                            <li>View all bookings (list/calendar view)</li>
+                            <li>Filter bookings by status, date, guest, room</li>
+                            <li>Edit booking details (before check-in)</li>
+                            <li>Cancel bookings with reason tracking</li>
+                            <li>Booking status workflow
+                                <ul class="sub-features">
+                                    <li>Pending → Confirmed → CheckedIn → CheckedOut</li>
+                                    <li>Cancelled status</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Check-In Process</h4>
+                        <ul class="feature-list">
+                            <li>Quick check-in for confirmed bookings</li>
+                            <li>Verify guest identity</li>
+                            <li>Update room status to Occupied</li>
+                            <li>Record actual check-in time</li>
+                            <li>Print room key card/receipt</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Check-Out Process</h4>
+                        <ul class="feature-list">
+                            <li>Process check-out</li>
+                            <li>Auto-generate final invoice</li>
+                            <li>Verify all payments completed</li>
+                            <li>Update room status to Cleaning</li>
+                            <li>Create housekeeping task automatically (Observer Pattern)</li>
+                            <li>Record actual check-out time</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Additional Services (Decorator Pattern)</h4>
+                        <ul class="feature-list">
+                            <li>Add services to bookings dynamically
+                                <ul class="sub-features">
+                                    <li>Breakfast packages</li>
+                                    <li>Spa treatments</li>
+                                    <li>Airport transfer</li>
+                                    <li>Laundry service</li>
+                                    <li>Extra bed, late checkout</li>
+                                </ul>
+                            </li>
+                            <li>Calculate service charges</li>
+                            <li>Track service status (Pending, Completed)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 5: BILLING & PAYMENT -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">💰</span>
+                    <h3>5. Billing & Payment System</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Invoice Management</h4>
+                        <ul class="feature-list">
+                            <li>Auto-generate invoice on check-out</li>
+                            <li>Invoice details
+                                <ul class="sub-features">
+                                    <li>Unique invoice number</li>
+                                    <li>Room charges breakdown</li>
+                                    <li>Additional services charges</li>
+                                    <li>Subtotal, tax calculation (configurable rate)</li>
+                                    <li>Discount application</li>
+                                    <li>Total amount due</li>
+                                </ul>
+                            </li>
+                            <li>View invoice history</li>
+                            <li>Print invoice (PDF format)</li>
+                            <li>Email invoice to guest</li>
+                            <li>Invoice status tracking (Pending, Paid, Partially Paid)</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Payment Processing (Strategy Pattern)</h4>
+                        <ul class="feature-list">
+                            <li>Multiple payment methods
+                                <ul class="sub-features">
+                                    <li>Cash payment</li>
+                                    <li>Credit/Debit card</li>
+                                    <li>Online transfer</li>
+                                    <li>Check</li>
+                                </ul>
+                            </li>
+                            <li>Partial payment support</li>
+                            <li>Record payment details
+                                <ul class="sub-features">
+                                    <li>Transaction ID</li>
+                                    <li>Payment date/time</li>
+                                    <li>Amount paid</li>
+                                    <li>Payment method</li>
+                                    <li>Card details (last 4 digits only)</li>
+                                </ul>
+                            </li>
+                            <li>Payment receipt generation</li>
+                            <li>Refund processing</li>
+                            <li>Track payment status</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Financial Tracking</h4>
+                        <ul class="feature-list">
+                            <li>View outstanding invoices</li>
+                            <li>Track paid vs unpaid amounts</li>
+                            <li>Payment history per guest</li>
+                            <li>Daily/monthly revenue summary</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 6: HOUSEKEEPING -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">🧹</span>
+                    <h3>6. Housekeeping Management</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Task Management</h4>
+                        <ul class="feature-list">
+                            <li>Create housekeeping tasks
+                                <ul class="sub-features">
+                                    <li>Cleaning (after checkout, scheduled)</li>
+                                    <li>Maintenance (repairs)</li>
+                                    <li>Inspection (quality check)</li>
+                                </ul>
+                            </li>
+                            <li>Assign tasks to housekeeping staff</li>
+                            <li>Set task priority (Low, Medium, High, Urgent)</li>
+                            <li>Schedule tasks with date/time</li>
+                            <li>Track task status (Pending, InProgress, Completed, Cancelled)</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Task Tracking (Observer Pattern)</h4>
+                        <ul class="feature-list">
+                            <li>Auto-create cleaning task on checkout</li>
+                            <li>Real-time task notifications to staff</li>
+                            <li>View assigned tasks (housekeeping staff view)</li>
+                            <li>Update task progress</li>
+                            <li>Add completion notes</li>
+                            <li>Track start and end time</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Room Maintenance</h4>
+                        <ul class="feature-list">
+                            <li>Report room issues</li>
+                            <li>Create maintenance requests</li>
+                            <li>Track maintenance history per room</li>
+                            <li>Update room status (Maintenance)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 7: REPORTS & ANALYTICS -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">📊</span>
+                    <h3>7. Reports & Analytics</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>Operational Reports</h4>
+                        <ul class="feature-list">
+                            <li>Daily operations report
+                                <ul class="sub-features">
+                                    <li>Today's check-ins/check-outs</li>
+                                    <li>Current occupancy</li>
+                                    <li>Available rooms</li>
+                                </ul>
+                            </li>
+                            <li>Booking reports
+                                <ul class="sub-features">
+                                    <li>Bookings by date range</li>
+                                    <li>Cancelled bookings</li>
+                                    <li>Future reservations</li>
+                                </ul>
+                            </li>
+                            <li>Guest reports
+                                <ul class="sub-features">
+                                    <li>New guest registrations</li>
+                                    <li>Repeat guests</li>
+                                    <li>Guest demographics</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Financial Reports</h4>
+                        <ul class="feature-list">
+                            <li>Revenue reports
+                                <ul class="sub-features">
+                                    <li>Daily/weekly/monthly revenue</li>
+                                    <li>Revenue by room type</li>
+                                    <li>Additional services revenue</li>
+                                    <li>Year-to-date comparisons</li>
+                                </ul>
+                            </li>
+                            <li>Payment reports
+                                <ul class="sub-features">
+                                    <li>Payment by method</li>
+                                    <li>Outstanding payments</li>
+                                    <li>Refund tracking</li>
+                                </ul>
+                            </li>
+                            <li>Tax reports</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Performance Analytics</h4>
+                        <ul class="feature-list">
+                            <li>Occupancy rate statistics
+                                <ul class="sub-features">
+                                    <li>Overall occupancy %</li>
+                                    <li>By room type</li>
+                                    <li>By floor</li>
+                                    <li>Trend analysis</li>
+                                </ul>
+                            </li>
+                            <li>Popular room types analysis</li>
+                            <li>Average daily rate (ADR)</li>
+                            <li>Revenue per available room (RevPAR)</li>
+                            <li>Charts and graphs (bar, line, pie charts)</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Export & Print</h4>
+                        <ul class="feature-list">
+                            <li>Export reports to PDF</li>
+                            <li>Export reports to Excel</li>
+                            <li>Print reports directly</li>
+                            <li>Email reports</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 8: SYSTEM ADMINISTRATION -->
+            <div class="module">
+                <div class="module-header">
+                    <span class="icon">⚙️</span>
+                    <h3>8. System Administration & Settings</h3>
+                </div>
+                <div class="module-content">
+                    <div class="feature-section">
+                        <h4>System Configuration</h4>
+                        <ul class="feature-list">
+                            <li>Hotel information settings
+                                <ul class="sub-features">
+                                    <li>Hotel name, address, contact</li>
+                                    <li>Logo upload</li>
+                                    <li>Business hours</li>
+                                </ul>
+                            </li>
+                            <li>Business rules configuration
+                                <ul class="sub-features">
+                                    <li>Tax rate setting</li>
+                                    <li>Check-in/check-out times</li>
+                                    <li>Cancellation penalty %</li>
+                                    <li>Maximum advance booking days</li>
+                                    <li>Minimum stay nights</li>
+                                </ul>
+                            </li>
+                            <li>Currency settings</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Additional Services Setup</h4>
+                        <ul class="feature-list">
+                            <li>Add/edit/delete services</li>
+                            <li>Set service prices</li>
+                            <li>Define service categories</li>
+                            <li>Service unit types (per person, per item, fixed)</li>
+                            <li>Activate/deactivate services</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Audit & Security</h4>
+                        <ul class="feature-list">
+                            <li>Audit log tracking
+                                <ul class="sub-features">
+                                    <li>User actions logging</li>
+                                    <li>Data changes (before/after)</li>
+                                    <li>Timestamp and IP address</li>
+                                </ul>
+                            </li>
+                            <li>View audit logs</li>
+                            <li>Filter logs by user, action, date</li>
+                            <li>Database backup functionality</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-section">
+                        <h4>Notifications</h4>
+                        <ul class="feature-list">
+                            <li>In-app notification system
+                                <ul class="sub-features">
+                                    <li>Booking notifications</li>
+                                    <li>Payment reminders</li>
+                                    <li>Housekeeping alerts</li>
+                                    <li>System notifications</li>
+                                </ul>
+                            </li>
+                            <li>Notification center with read/unread status</li>
+                            <li>Mark as read functionality</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESIGN PATTERNS SECTION -->
+            <div class="design-patterns">
+                <h3>🎯 Design Patterns Implementation</h3>
+                <p>This system implements 7+ design patterns to demonstrate OOAD principles:</p>
+                <div class="pattern-grid">
+                    <div class="pattern-card">
+                        <h4>1. Singleton Pattern</h4>
+                        <p><strong>Used in:</strong> DatabaseManager class</p>
+                        <p><strong>Purpose:</strong> Ensures only one database connection instance exists throughout the application, managing connection pooling efficiently.</p>
+                    </div>
+
+                    <div class="pattern-card">
+                        <h4>2. Factory Pattern</h4>
+                        <p><strong>Used in:</strong> RoomFactory class</p>
+                        <p><strong>Purpose:</strong> Creates different room types (Single, Double, Suite, Deluxe) without exposing instantiation logic to the client.</p>
+                    </div>
+
+                    <div class="pattern-card">
+                        <h4>3. Strategy Pattern</h4>
+                        <p><strong>Used in:</strong> Payment processing (IPaymentStrategy interface)</p>
+                        <p><strong>Purpose:</strong> Allows interchangeable payment methods (Cash, Credit Card, Online Transfer) at runtime.</p>
+                    </div>
+
+                    <div class="pattern-card">
+                        <h4>4. Observer Pattern</h4>
+                        <p><strong>Used in:</strong> Room status notifications</p>
+                        <p><strong>Purpose:</strong> Automatically notifies housekeeping staff when room status changes (e.g., checkout triggers cleaning task).</p>
+                    </div>
+
+                    <div class="pattern-card">
+                        <h4>5. Decorator Pattern</h4>
+                        <p><strong>Used in:</strong> Adding additional services to bookings</p>
+                        <p><strong>Purpose:</strong> Dynamically adds extra services (breakfast, spa, airport transfer) to bookings without modifying base booking class.</p>
+                    </div>
+
+                    <div class="pattern-card">
+                        <h4>6. Repository Pattern</h4>
+                        <p><strong>Used in:</strong> Data access layer (BookingRepository, RoomRepository, GuestRepository)</p>
+                        <p><strong>Purpose:</strong> Abstracts data access logic, making code more testable and maintainable.</p>
+                    </div>
+
+                    <div class="pattern-card">
+                        <h4>7. Facade Pattern</h4>
+                        <p><strong>Used in:</strong> BookingFacade class</p>
+                        <p><strong>Purpose:</strong> Simplifies complex booking operations by providing a unified interface to multiple subsystems.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- USER ROLES SECTION -->
+            <div class="user-roles">
+                <h3>👥 User Roles & Permissions</h3>
+                <div class="roles-grid">
+                    <div class="role-card">
+                        <h4>🔑 Administrator</h4>
+                        <ul>
+                            <li>Full system access</li>
+                            <li>Manage users and roles</li>
+                            <li>Configure system settings</li>
+                            <li>View all reports and analytics</li>
+                            <li>Access audit logs</li>
+                            <li>Database backup/restore</li>
+                            <li>Manage room types and pricing</li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card">
+                        <h4>📊 Manager</h4>
+                        <ul>
+                            <li>View all bookings and guests</li>
+                            <li>Generate reports</li>
+                            <li>Manage room pricing</li>
+                            <li>Override booking restrictions</li>
+                            <li>Process refunds</li>
+                            <li>View financial reports</li>
+                            <li>Cannot manage users</li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card">
+                        <h4>🛎️ Receptionist</h4>
+                        <ul>
+                            <li>Create/edit bookings</li>
+                            <li>Check-in/check-out guests</li>
+                            <li>Process payments</li>
+                            <li>Register new guests</li>
+                            <li>Add additional services</li>
+                            <li>Print invoices/receipts</li>
+                            <li>View room availability</li>
+                            <li>Limited reporting access</li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card">
+                        <h4>🧹 Housekeeping</h4>
+                        <ul>
+                            <li>View assigned cleaning tasks</li>
+                            <li>Update task status</li>
+                            <li>Report room issues</li>
+                            <li>View room status</li>
+                            <li>Add completion notes</li>
+                            <li>Create maintenance requests</li>
+                            <li>No access to bookings/payments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TECHNOLOGY STACK -->
+            <div class="tech-stack">
+                <h3>💻 Technology Stack</h3>
+                <div class="tech-list">
+                    <div class="tech-item">
+                        <strong>Frontend:</strong>
+                        <span>C# WinForms (.NET Framework 4.8+)</span>
+                    </div>
+                    <div class="tech-item">
+                        <strong>Backend:</strong>
+                        <span>C# with ADO.NET or Entity Framework</span>
+                    </div>
+                    <div class="tech-item">
+                        <strong>Database:</strong>
+                        <span>SQL Server 2017+</span>
+                    </div>
+                    <div class="tech-item">
+                        <strong>Security:</strong>
+                        <span>SHA256/BCrypt Password Hashing</span>
+                    </div>
+                    <div class="tech-item">
+                        <strong>Reporting:</strong>
+                        <span>Crystal Reports / iTextSharp (PDF)</span>
+                    </div>
+                    <div class="tech-item">
+                        <strong>Excel Export:</strong>
+                        <span>EPPlus / ClosedXML</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

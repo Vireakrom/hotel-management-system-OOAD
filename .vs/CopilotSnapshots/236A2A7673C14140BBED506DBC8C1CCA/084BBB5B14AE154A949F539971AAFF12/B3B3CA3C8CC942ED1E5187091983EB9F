@@ -1,0 +1,291 @@
+﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.UI.Guests
+{
+    public partial class GuestManagementForm : Form
+    {
+        private GuestRepository guestRepository;
+        private List<Guest> allGuests;
+
+        public GuestManagementForm()
+        {
+            InitializeComponent();
+            guestRepository = new GuestRepository();
+            this.Load += GuestManagementForm_Load;
+        }
+
+        private void GuestManagementForm_Load(object sender, EventArgs e)
+        {
+            LoadGuests();
+            SetupDataGridView();
+            UpdateGuestCount();
+        }
+
+        /// <summary>
+        /// Load all guests from database
+        /// </summary>
+        private void LoadGuests()
+        {
+            try
+            {
+                allGuests = guestRepository.GetAll();
+
+                // Bind to DataGridView
+                dgvGuests.DataSource = null;
+                dgvGuests.DataSource = allGuests;
+
+                // Update count label
+                lblTotalGuests.Text = $"Total Guests: {allGuests.Count}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading guests: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Setup DataGridView columns and formatting
+        /// </summary>
+        private void SetupDataGridView()
+        {
+            dgvGuests.AutoGenerateColumns = false;
+            dgvGuests.AllowUserToAddRows = false;
+            dgvGuests.AllowUserToDeleteRows = false;
+            dgvGuests.ReadOnly = true;
+            dgvGuests.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvGuests.MultiSelect = false;
+            dgvGuests.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            // Clear existing columns
+            dgvGuests.Columns.Clear();
+
+            // Add columns
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "GuestId",
+                HeaderText = "ID",
+                DataPropertyName = "GuestId",
+                Width = 50,
+                Visible = false
+            });
+
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FullName",
+                HeaderText = "Full Name",
+                DataPropertyName = "FullName",
+                Width = 150
+            });
+
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Email",
+                HeaderText = "Email",
+                DataPropertyName = "Email",
+                Width = 180
+            });
+
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Phone",
+                HeaderText = "Phone",
+                DataPropertyName = "Phone",
+                Width = 120
+            });
+
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "IDNumber",
+                HeaderText = "ID Number",
+                DataPropertyName = "IDNumber",
+                Width = 120
+            });
+
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Nationality",
+                HeaderText = "Nationality",
+                DataPropertyName = "Nationality",
+                Width = 100
+            });
+
+            dgvGuests.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CreatedDate",
+                HeaderText = "Registered",
+                DataPropertyName = "CreatedDate",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MM/dd/yyyy" }
+            });
+
+            // Alternating row colors for better readability
+            dgvGuests.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+            dgvGuests.RowsDefaultCellStyle.BackColor = Color.White;
+        }
+
+        /// <summary>
+        /// Update guest count display
+        /// </summary>
+        private void UpdateGuestCount()
+        {
+            if (allGuests != null)
+            {
+                lblTotalGuests.Text = $"Total Guests: {allGuests.Count}";
+            }
+        }
+
+        /// <summary>
+        /// View selected guest details
+        /// </summary>
+        private void btnView_Click(object sender, EventArgs e)
+        {
+            if (dgvGuests.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a guest to view.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            Guest selectedGuest = (Guest)dgvGuests.SelectedRows[0].DataBoundItem;
+
+            string details = $"GUEST DETAILS\n" +
+                           $"{'=',50}\n\n" +
+                           $"ID: {selectedGuest.GuestId}\n" +
+                           $"Name: {selectedGuest.FullName}\n" +
+                           $"Email: {selectedGuest.Email ?? "N/A"}\n" +
+                           $"Phone: {selectedGuest.Phone ?? "N/A"}\n" +
+                           $"ID Number: {selectedGuest.IDNumber ?? "N/A"}\n" +
+                           $"Date of Birth: {(selectedGuest.DateOfBirth.HasValue ? selectedGuest.DateOfBirth.Value.ToShortDateString() : "N/A")}\n" +
+                           $"Nationality: {selectedGuest.Nationality ?? "N/A"}\n" +
+                           $"Address: {selectedGuest.Address ?? "N/A"}\n\n" +
+                           $"Registered: {selectedGuest.CreatedDate:MM/dd/yyyy}\n" +
+                           $"Last Modified: {(selectedGuest.ModifiedDate.HasValue ? selectedGuest.ModifiedDate.Value.ToString("MM/dd/yyyy") : "Never")}";
+
+            MessageBox.Show(details, "Guest Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Delete (deactivate) selected guest
+        /// </summary>
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (dgvGuests.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a guest to delete.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            Guest selectedGuest = (Guest)dgvGuests.SelectedRows[0].DataBoundItem;
+
+            DialogResult result = MessageBox.Show(
+                $"Are you sure you want to delete guest: {selectedGuest.FullName}?\n\n" +
+                "This will deactivate the guest record (soft delete).",
+                "Confirm Delete",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    bool success = guestRepository.Delete(selectedGuest.GuestId);
+
+                    if (success)
+                    {
+                        MessageBox.Show("Guest deleted successfully!", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadGuests(); // Refresh list
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to delete guest.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deleting guest: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refresh guest list
+        /// </summary>
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            txtSearch.Clear();
+            LoadGuests();
+            UpdateGuestCount();
+        }
+
+        /// <summary>
+        /// Search guests by name or email
+        /// </summary>
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            string searchTerm = txtSearch.Text.Trim();
+
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                LoadGuests(); // Show all if search is empty
+                return;
+            }
+
+            try
+            {
+                List<Guest> searchResults = guestRepository.Search(searchTerm);
+
+                dgvGuests.DataSource = null;
+                dgvGuests.DataSource = searchResults;
+
+                lblTotalGuests.Text = $"Found: {searchResults.Count} guest(s)";
+
+                if (searchResults.Count == 0)
+                {
+                    MessageBox.Show("No guests found matching your search.", "No Results",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error searching guests: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Search when pressing Enter in search box
+        /// </summary>
+        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                btnSearch_Click(sender, e);
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Double-click to view guest details
+        /// </summary>
+        private void dgvGuests_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                btnView_Click(sender, e);
+            }
+        }
+    }
+}

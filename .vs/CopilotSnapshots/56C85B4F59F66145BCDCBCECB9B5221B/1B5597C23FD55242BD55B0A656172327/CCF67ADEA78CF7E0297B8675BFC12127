@@ -1,0 +1,990 @@
+﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.Testing
+{
+    /// <summary>
+    /// Week 1 Comprehensive Test Suite
+    /// Tests all components built in Days 1-6:
+    /// - Database connectivity (Singleton Pattern)
+    /// - Repository Pattern (4 repositories)
+    /// - Factory Pattern (Room creation)
+    /// - Authentication system
+    /// - Session management
+    /// - Password hashing
+    /// </summary>
+    public static class Week1ComprehensiveTests
+    {
+        private static StringBuilder testResults = new StringBuilder();
+        private static int passCount = 0;
+        private static int failCount = 0;
+        private static int totalTests = 0;
+
+        /// <summary>
+        /// Run all Week 1 tests and display results
+        /// </summary>
+        public static void RunAllTests()
+        {
+            testResults.Clear();
+            passCount = 0;
+            failCount = 0;
+            totalTests = 0;
+
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+            testResults.AppendLine("  WEEK 1 COMPREHENSIVE TEST SUITE");
+            testResults.AppendLine("  Testing Days 1-6 Components");
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+            testResults.AppendLine();
+
+            // Test Category 1: Database & Singleton Pattern
+            TestCategory("DATABASE & SINGLETON PATTERN");
+            TestDatabaseConnection();
+            TestSingletonInstance();
+            testResults.AppendLine();
+
+            // Test Category 2: Repository Pattern - GuestRepository
+            TestCategory("GUEST REPOSITORY (Repository Pattern)");
+            TestGuestCRUD();
+            TestGuestSearch();
+            testResults.AppendLine();
+
+            // Test Category 3: Repository Pattern - RoomRepository
+            TestCategory("ROOM REPOSITORY (Repository Pattern)");
+            TestRoomCRUD();
+            TestGetAvailableRooms();
+            TestUpdateRoomStatus();
+            testResults.AppendLine();
+
+            // Test Category 4: Repository Pattern - UserRepository
+            TestCategory("USER REPOSITORY (Repository Pattern)");
+            TestUserAuthentication();
+            TestUserCRUD();
+            testResults.AppendLine();
+
+            // Test Category 5: Repository Pattern - BookingRepository
+            TestCategory("BOOKING REPOSITORY (Repository Pattern)");
+            TestBookingCRUD();
+            TestCheckInCheckOut();
+            testResults.AppendLine();
+
+            // Test Category 6: Factory Pattern
+            TestCategory("FACTORY PATTERN (Room Creation)");
+            TestFactoryRoomCreation();
+            TestFactoryIntegrationWithRepository();
+            testResults.AppendLine();
+
+            // Test Category 7: Security & Helpers
+            TestCategory("SECURITY & HELPER CLASSES");
+            TestPasswordHashing();
+            TestSessionManager();
+            testResults.AppendLine();
+
+            // Display Summary
+            DisplayTestSummary();
+        }
+
+        private static void TestCategory(string categoryName)
+        {
+            testResults.AppendLine($"???????????????????????????????????????????????????????");
+            testResults.AppendLine($"  {categoryName}");
+            testResults.AppendLine($"???????????????????????????????????????????????????????");
+        }
+
+        #region Database & Singleton Tests
+
+        private static void TestDatabaseConnection()
+        {
+            totalTests++;
+            try
+            {
+                bool connected = DatabaseManager.Instance.TestConnection();
+                if (connected)
+                {
+                    LogPass("Database connection successful");
+                }
+                else
+                {
+                    LogFail("Database connection failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Database connection test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestSingletonInstance()
+        {
+            totalTests++;
+            try
+            {
+                var instance1 = DatabaseManager.Instance;
+                var instance2 = DatabaseManager.Instance;
+
+                if (ReferenceEquals(instance1, instance2))
+                {
+                    LogPass("Singleton pattern verified - same instance returned");
+                }
+                else
+                {
+                    LogFail("Singleton pattern failed - different instances");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Singleton test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Guest Repository Tests
+
+        private static void TestGuestCRUD()
+        {
+            totalTests++;
+            try
+            {
+                GuestRepository repo = new GuestRepository();
+
+                // CREATE
+                Guest testGuest = new Guest
+                {
+                    FirstName = "TestUser",
+                    LastName = "Week1Test",
+                    Email = $"test.week1.{DateTime.Now.Ticks}@test.com",
+                    Phone = "555-TEST-W1",
+                    IDNumber = $"TEST-W1-{DateTime.Now.Ticks}",
+                    Address = "123 Test Street",
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    Nationality = "Test Country"
+                };
+
+                int guestId = repo.Insert(testGuest);
+
+                if (guestId <= 0)
+                {
+                    LogFail("Guest INSERT failed - returned invalid ID");
+                    return;
+                }
+
+                // READ
+                Guest retrieved = repo.GetById(guestId);
+                if (retrieved == null)
+                {
+                    LogFail("Guest SELECT failed - guest not found");
+                    repo.Delete(guestId); // Cleanup
+                    return;
+                }
+
+                if (retrieved.FirstName != testGuest.FirstName || retrieved.Email != testGuest.Email)
+                {
+                    LogFail("Guest SELECT failed - data mismatch");
+                    repo.Delete(guestId);
+                    return;
+                }
+
+                // UPDATE
+                retrieved.Phone = "555-UPDATED";
+                bool updated = repo.Update(retrieved);
+                if (!updated)
+                {
+                    LogFail("Guest UPDATE failed");
+                    repo.Delete(guestId);
+                    return;
+                }
+
+                Guest afterUpdate = repo.GetById(guestId);
+                if (afterUpdate.Phone != "555-UPDATED")
+                {
+                    LogFail("Guest UPDATE failed - phone not updated");
+                    repo.Delete(guestId);
+                    return;
+                }
+
+                // DELETE (soft delete)
+                bool deleted = repo.Delete(guestId);
+                if (!deleted)
+                {
+                    LogFail("Guest DELETE failed");
+                    return;
+                }
+
+                Guest afterDelete = repo.GetById(guestId);
+                if (afterDelete != null)
+                {
+                    LogFail("Guest DELETE failed - guest still retrievable (soft delete not working)");
+                    return;
+                }
+
+                LogPass("Guest CRUD operations successful (Create, Read, Update, Delete)");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Guest CRUD test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestGuestSearch()
+        {
+            totalTests++;
+            try
+            {
+                GuestRepository repo = new GuestRepository();
+
+                // Create test guest for search
+                Guest testGuest = new Guest
+                {
+                    FirstName = "SearchTest",
+                    LastName = "UniqueLastName",
+                    Email = $"search.test.{DateTime.Now.Ticks}@test.com",
+                    Phone = "555-SEARCH"
+                };
+
+                int guestId = repo.Insert(testGuest);
+
+                // Search by unique last name
+                List<Guest> results = repo.Search("UniqueLastName");
+
+                // Cleanup
+                repo.Delete(guestId);
+
+                if (results != null && results.Count > 0)
+                {
+                    LogPass($"Guest search successful - found {results.Count} result(s)");
+                }
+                else
+                {
+                    LogFail("Guest search failed - no results found");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Guest search test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Room Repository Tests
+
+        private static void TestRoomCRUD()
+        {
+            totalTests++;
+            try
+            {
+                RoomRepository repo = new RoomRepository();
+
+                // CREATE - Use Factory Pattern
+                Room testRoom = RoomFactory.CreateRoom(
+                    roomType: "Single",
+                    roomNumber: $"TEST-{DateTime.Now.Ticks % 1000}",
+                    floorNumber: 99,
+                    basePrice: 50.00m,
+                    status: "Available"
+                );
+
+                int roomId = repo.Insert(testRoom);
+
+                if (roomId <= 0)
+                {
+                    LogFail("Room INSERT failed");
+                    return;
+                }
+
+                // READ
+                Room retrieved = repo.GetById(roomId);
+                if (retrieved == null)
+                {
+                    LogFail("Room SELECT failed");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                if (retrieved.RoomNumber != testRoom.RoomNumber || retrieved.RoomType != "Single")
+                {
+                    LogFail("Room SELECT failed - data mismatch");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                // UPDATE
+                retrieved.BasePrice = 60.00m;
+                bool updated = repo.Update(retrieved);
+                if (!updated)
+                {
+                    LogFail("Room UPDATE failed");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                Room afterUpdate = repo.GetById(roomId);
+                if (afterUpdate.BasePrice != 60.00m)
+                {
+                    LogFail("Room UPDATE failed - price not updated");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                // DELETE
+                bool deleted = repo.Delete(roomId);
+                if (!deleted)
+                {
+                    LogFail("Room DELETE failed");
+                    return;
+                }
+
+                LogPass("Room CRUD operations successful (Create, Read, Update, Delete)");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Room CRUD test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestGetAvailableRooms()
+        {
+            totalTests++;
+            try
+            {
+                RoomRepository repo = new RoomRepository();
+
+                DateTime checkIn = DateTime.Now.AddDays(7);
+                DateTime checkOut = DateTime.Now.AddDays(10);
+
+                List<Room> availableRooms = repo.GetAvailableRooms(checkIn, checkOut);
+
+                if (availableRooms != null)
+                {
+                    LogPass($"GetAvailableRooms successful - found {availableRooms.Count} available rooms");
+                }
+                else
+                {
+                    LogFail("GetAvailableRooms failed - returned null");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFail($"GetAvailableRooms test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestUpdateRoomStatus()
+        {
+            totalTests++;
+            try
+            {
+                RoomRepository repo = new RoomRepository();
+
+                // Create test room
+                Room testRoom = RoomFactory.CreateRoom("Single", $"STATUS-{DateTime.Now.Ticks % 1000}", 99, 50.00m);
+                int roomId = repo.Insert(testRoom);
+
+                // Test status update
+                bool updated = repo.UpdateRoomStatus(roomId, "Occupied");
+
+                if (!updated)
+                {
+                    LogFail("UpdateRoomStatus failed");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                // Verify status changed
+                Room retrieved = repo.GetById(roomId);
+                if (retrieved.Status != "Occupied")
+                {
+                    LogFail("UpdateRoomStatus failed - status not changed");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                // Cleanup
+                repo.Delete(roomId);
+
+                LogPass("UpdateRoomStatus successful - status changed to Occupied");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"UpdateRoomStatus test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region User Repository Tests
+
+        private static void TestUserAuthentication()
+        {
+            totalTests++;
+            try
+            {
+                UserRepository repo = new UserRepository();
+
+                // Test with default admin user
+                User user = repo.Authenticate("admin", "Admin@123");
+
+                if (user != null && user.Username == "admin")
+                {
+                    LogPass("User authentication successful - admin user verified");
+                }
+                else
+                {
+                    LogFail("User authentication failed - could not authenticate admin");
+                }
+
+                // Test with wrong password
+                User wrongPassword = repo.Authenticate("admin", "WrongPassword");
+                if (wrongPassword == null)
+                {
+                    LogPass("Authentication correctly rejects wrong password");
+                }
+                else
+                {
+                    LogFail("Authentication failed - accepted wrong password");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                LogFail($"User authentication test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestUserCRUD()
+        {
+            totalTests++;
+            try
+            {
+                UserRepository repo = new UserRepository();
+
+                // CREATE
+                string salt = PasswordHelper.GenerateSalt();
+                string hash = PasswordHelper.HashPassword("TestPass123", salt);
+
+                User testUser = new User
+                {
+                    Username = $"testuser_{DateTime.Now.Ticks}",
+                    PasswordHash = hash,
+                    Salt = salt,
+                    FirstName = "Test",
+                    LastName = "User",
+                    Email = $"testuser.{DateTime.Now.Ticks}@test.com",
+                    Role = "Receptionist"
+                };
+
+                int userId = repo.Insert(testUser);
+
+                if (userId <= 0)
+                {
+                    LogFail("User INSERT failed");
+                    return;
+                }
+
+                // READ
+                User retrieved = repo.GetById(userId);
+                if (retrieved == null || retrieved.Username != testUser.Username)
+                {
+                    LogFail("User SELECT failed");
+                    repo.Delete(userId);
+                    return;
+                }
+
+                // UPDATE
+                retrieved.Phone = "555-9999";
+                bool updated = repo.Update(retrieved);
+                if (!updated)
+                {
+                    LogFail("User UPDATE failed");
+                    repo.Delete(userId);
+                    return;
+                }
+
+                // DELETE
+                bool deleted = repo.Delete(userId);
+                if (!deleted)
+                {
+                    LogFail("User DELETE failed");
+                    return;
+                }
+
+                LogPass("User CRUD operations successful");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"User CRUD test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Booking Repository Tests
+
+        private static void TestBookingCRUD()
+        {
+            totalTests++;
+            try
+            {
+                BookingRepository bookingRepo = new BookingRepository();
+                GuestRepository guestRepo = new GuestRepository();
+                RoomRepository roomRepo = new RoomRepository();
+                UserRepository userRepo = new UserRepository();
+
+                // Create test guest
+                Guest testGuest = new Guest
+                {
+                    FirstName = "BookingTest",
+                    LastName = "User",
+                    Email = $"booking.{DateTime.Now.Ticks}@test.com",
+                    Phone = "555-BOOKING"
+                };
+                int guestId = guestRepo.Insert(testGuest);
+
+                // Create test room
+                Room testRoom = RoomFactory.CreateRoom("Single", $"BOOK-{DateTime.Now.Ticks % 1000}", 99, 50.00m);
+                int roomId = roomRepo.Insert(testRoom);
+
+                // Get admin user for CreatedBy
+                User admin = userRepo.Authenticate("admin", "Admin@123");
+                if (admin == null)
+                {
+                    // Fallback: use UserId 1
+                    admin = new User { UserId = 1 };
+                }
+
+                // CREATE booking
+                Booking testBooking = new Booking
+                {
+                    GuestId = guestId,
+                    RoomId = roomId,
+                    CreatedByUserId = admin.UserId,
+                    CheckInDate = DateTime.Now.AddDays(1),
+                    CheckOutDate = DateTime.Now.AddDays(3),
+                    NumberOfGuests = 1,
+                    Status = "Confirmed",
+                    RoomCharges = 100.00m,
+                    TotalAmount = 100.00m
+                };
+
+                int bookingId = bookingRepo.Insert(testBooking);
+
+                if (bookingId <= 0)
+                {
+                    LogFail("Booking INSERT failed");
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                // READ
+                Booking retrieved = bookingRepo.GetById(bookingId);
+                if (retrieved == null || retrieved.GuestId != guestId)
+                {
+                    LogFail("Booking SELECT failed");
+                    bookingRepo.Delete(bookingId);
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                // UPDATE
+                retrieved.NumberOfGuests = 2;
+                bool updated = bookingRepo.Update(retrieved);
+                if (!updated)
+                {
+                    LogFail("Booking UPDATE failed");
+                    bookingRepo.Delete(bookingId);
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                // Cleanup
+                bookingRepo.Delete(bookingId);
+                guestRepo.Delete(guestId);
+                roomRepo.Delete(roomId);
+
+                LogPass("Booking CRUD operations successful");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Booking CRUD test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestCheckInCheckOut()
+        {
+            totalTests++;
+            try
+            {
+                BookingRepository bookingRepo = new BookingRepository();
+                GuestRepository guestRepo = new GuestRepository();
+                RoomRepository roomRepo = new RoomRepository();
+                UserRepository userRepo = new UserRepository();
+
+                // Setup test data
+                Guest testGuest = new Guest
+                {
+                    FirstName = "CheckInTest",
+                    LastName = "User",
+                    Email = $"checkin.{DateTime.Now.Ticks}@test.com",
+                    Phone = "555-CHECKIN"
+                };
+                int guestId = guestRepo.Insert(testGuest);
+
+                Room testRoom = RoomFactory.CreateRoom("Single", $"CHKIN-{DateTime.Now.Ticks % 1000}", 99, 50.00m);
+                int roomId = roomRepo.Insert(testRoom);
+
+                User admin = userRepo.GetByUsername("admin");
+
+                Booking testBooking = new Booking
+                {
+                    GuestId = guestId,
+                    RoomId = roomId,
+                    CreatedByUserId = admin.UserId,
+                    CheckInDate = DateTime.Now.AddDays(1),
+                    CheckOutDate = DateTime.Now.AddDays(3),
+                    NumberOfGuests = 1,
+                    Status = "Confirmed",
+                    RoomCharges = 100.00m,
+                    TotalAmount = 100.00m
+                };
+
+                int bookingId = bookingRepo.Insert(testBooking);
+
+                // Test CHECK-IN
+                bool checkedIn = bookingRepo.CheckIn(bookingId);
+                if (!checkedIn)
+                {
+                    LogFail("CheckIn failed");
+                    bookingRepo.Delete(bookingId);
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                Booking afterCheckIn = bookingRepo.GetById(bookingId);
+                if (afterCheckIn.Status != "CheckedIn")
+                {
+                    LogFail("CheckIn failed - status not updated");
+                    bookingRepo.Delete(bookingId);
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                // Test CHECK-OUT
+                bool checkedOut = bookingRepo.CheckOut(bookingId);
+                if (!checkedOut)
+                {
+                    LogFail("CheckOut failed");
+                    bookingRepo.Delete(bookingId);
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                Booking afterCheckOut = bookingRepo.GetById(bookingId);
+                if (afterCheckOut.Status != "CheckedOut")
+                {
+                    LogFail("CheckOut failed - status not updated");
+                    bookingRepo.Delete(bookingId);
+                    guestRepo.Delete(guestId);
+                    roomRepo.Delete(roomId);
+                    return;
+                }
+
+                // Cleanup
+                bookingRepo.Delete(bookingId);
+                guestRepo.Delete(guestId);
+                roomRepo.Delete(roomId);
+
+                LogPass("Check-in and Check-out operations successful");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"CheckIn/CheckOut test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Factory Pattern Tests
+
+        private static void TestFactoryRoomCreation()
+        {
+            totalTests++;
+            try
+            {
+                // Test all room types
+                Room single = RoomFactory.CreateRoom("Single");
+                Room doubleRoom = RoomFactory.CreateRoom("Double");
+                Room suite = RoomFactory.CreateRoom("Suite");
+                Room deluxe = RoomFactory.CreateRoom("Deluxe");
+
+                if (single.GetType().Name != "SingleRoom" ||
+                    doubleRoom.GetType().Name != "DoubleRoom" ||
+                    suite.GetType().Name != "SuiteRoom" ||
+                    deluxe.GetType().Name != "DeluxeRoom")
+                {
+                    LogFail("Factory pattern failed - incorrect room types created");
+                    return;
+                }
+
+                // Test fully configured room
+                Room configured = RoomFactory.CreateRoom("Single", "101", 1, 50.00m, "Available");
+                if (configured.RoomNumber != "101" || configured.BasePrice != 50.00m)
+                {
+                    LogFail("Factory pattern failed - configuration not applied");
+                    return;
+                }
+
+                LogPass("Factory Pattern - All room types created successfully");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Factory pattern test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestFactoryIntegrationWithRepository()
+        {
+            totalTests++;
+            try
+            {
+                RoomRepository repo = new RoomRepository();
+
+                // Create room using Factory
+                Room factoryRoom = RoomFactory.CreateRoom(
+                    "Suite",
+                    $"FACT-{DateTime.Now.Ticks % 1000}",
+                    5,
+                    150.00m,
+                    "Available"
+                );
+
+                // Insert via Repository
+                int roomId = repo.Insert(factoryRoom);
+
+                if (roomId <= 0)
+                {
+                    LogFail("Factory-Repository integration failed - insert failed");
+                    return;
+                }
+
+                // Retrieve and verify
+                Room retrieved = repo.GetById(roomId);
+
+                if (retrieved == null)
+                {
+                    LogFail("Factory-Repository integration failed - room not retrieved");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                if (retrieved.GetType().Name != "SuiteRoom")
+                {
+                    LogFail("Factory-Repository integration failed - wrong room type retrieved");
+                    repo.Delete(roomId);
+                    return;
+                }
+
+                // Cleanup
+                repo.Delete(roomId);
+
+                LogPass("Factory-Repository integration successful - round trip verified");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Factory-Repository integration test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Security & Helper Tests
+
+        private static void TestPasswordHashing()
+        {
+            totalTests++;
+            try
+            {
+                string password = "TestPassword123";
+                string salt = PasswordHelper.GenerateSalt();
+                string hash = PasswordHelper.HashPassword(password, salt);
+
+                // Verify correct password
+                bool validPassword = PasswordHelper.VerifyPassword(password, salt, hash);
+                if (!validPassword)
+                {
+                    LogFail("Password hashing failed - valid password rejected");
+                    return;
+                }
+
+                // Verify wrong password
+                bool invalidPassword = PasswordHelper.VerifyPassword("WrongPassword", salt, hash);
+                if (invalidPassword)
+                {
+                    LogFail("Password hashing failed - invalid password accepted");
+                    return;
+                }
+
+                // Verify salt is unique
+                string salt2 = PasswordHelper.GenerateSalt();
+                if (salt == salt2)
+                {
+                    LogFail("Password hashing failed - salt not unique");
+                    return;
+                }
+
+                LogPass("Password hashing and verification successful");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"Password hashing test threw exception: {ex.Message}");
+            }
+        }
+
+        private static void TestSessionManager()
+        {
+            totalTests++;
+            try
+            {
+                // Save current session
+                User currentUser = SessionManager.CurrentUser;
+
+                // Test session setting
+                User testUser = new User
+                {
+                    UserId = 999,
+                    Username = "testuser",
+                    FirstName = "Test",
+                    LastName = "User",
+                    Role = "Receptionist"
+                };
+
+                SessionManager.CurrentUser = testUser;
+
+                if (!SessionManager.IsLoggedIn)
+                {
+                    LogFail("SessionManager failed - IsLoggedIn not working");
+                    SessionManager.CurrentUser = currentUser;
+                    return;
+                }
+
+                if (SessionManager.IsAdmin)
+                {
+                    LogFail("SessionManager failed - IsAdmin should be false");
+                    SessionManager.CurrentUser = currentUser;
+                    return;
+                }
+
+                if (!SessionManager.IsReceptionist)
+                {
+                    LogFail("SessionManager failed - IsReceptionist should be true");
+                    SessionManager.CurrentUser = currentUser;
+                    return;
+                }
+
+                // Test logout
+                SessionManager.Logout();
+                if (SessionManager.IsLoggedIn)
+                {
+                    LogFail("SessionManager failed - Logout not working");
+                    SessionManager.CurrentUser = currentUser;
+                    return;
+                }
+
+                // Restore session
+                SessionManager.CurrentUser = currentUser;
+
+                LogPass("SessionManager all operations successful");
+            }
+            catch (Exception ex)
+            {
+                LogFail($"SessionManager test threw exception: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private static void LogPass(string message)
+        {
+            passCount++;
+            testResults.AppendLine($"? PASS: {message}");
+        }
+
+        private static void LogFail(string message)
+        {
+            failCount++;
+            testResults.AppendLine($"? FAIL: {message}");
+        }
+
+        private static void DisplayTestSummary()
+        {
+            testResults.AppendLine();
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+            testResults.AppendLine("  TEST SUMMARY");
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+            testResults.AppendLine($"Total Tests:  {totalTests}");
+            testResults.AppendLine($"Passed:       {passCount} ?");
+            testResults.AppendLine($"Failed:       {failCount} ?");
+            testResults.AppendLine($"Success Rate: {(totalTests > 0 ? (passCount * 100.0 / totalTests).ToString("F1") : "0")}%");
+            testResults.AppendLine();
+
+            double successRate = totalTests > 0 ? (passCount * 100.0 / totalTests) : 0;
+            string verdict = "";
+
+            if (successRate == 100)
+            {
+                verdict = "EXCELLENT! All tests passed! Week 1 is rock solid! ??";
+            }
+            else if (successRate >= 90)
+            {
+                verdict = "GREAT! Minor issues detected, but Week 1 is strong! ??";
+            }
+            else if (successRate >= 80)
+            {
+                verdict = "GOOD! Some issues need attention. ??";
+            }
+            else if (successRate >= 70)
+            {
+                verdict = "FAIR. Several issues detected. Review needed. ??";
+            }
+            else
+            {
+                verdict = "NEEDS WORK. Major issues detected. ??";
+            }
+
+            testResults.AppendLine($"Verdict: {verdict}");
+            testResults.AppendLine();
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+            testResults.AppendLine("  WEEK 1 COMPONENTS TESTED");
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+            testResults.AppendLine("? Singleton Pattern (DatabaseManager)");
+            testResults.AppendLine("? Repository Pattern (Guest, Room, User, Booking)");
+            testResults.AppendLine("? Factory Pattern (Room creation)");
+            testResults.AppendLine("? Authentication System");
+            testResults.AppendLine("? Password Security");
+            testResults.AppendLine("? Session Management");
+            testResults.AppendLine("? CRUD Operations (All 4 repositories)");
+            testResults.AppendLine("? Custom Repository Methods");
+            testResults.AppendLine("???????????????????????????????????????????????????????");
+
+            // Display results
+            MessageBox.Show(testResults.ToString(), "Week 1 Comprehensive Test Results",
+                MessageBoxButtons.OK,
+                successRate == 100 ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+        }
+
+        #endregion
+    }
+}

@@ -1,0 +1,221 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HotelManagementSystem.Models
+{
+    /// <summary>
+    /// Abstract base class for all room types
+    /// Demonstrates inheritance and polymorphism in OOAD
+    /// </summary>
+    public abstract class Room
+    {
+        public int RoomId { get; set; }
+        public string RoomNumber { get; set; }
+        public string RoomType { get; set; }
+        public string Status { get; set; }  // Available, Occupied, Reserved, Maintenance, Cleaning
+        public decimal BasePrice { get; set; }
+        public int FloorNumber { get; set; }
+        public int MaxOccupancy { get; set; }
+        public string BedType { get; set; }
+        public decimal Area { get; set; }
+        public string ViewType { get; set; }
+        public bool HasBalcony { get; set; }
+        public bool HasSeaView { get; set; }
+        public bool HasJacuzzi { get; set; }
+        public bool HasPrivatePool { get; set; }
+        public string Amenities { get; set; }
+        public string Description { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+
+        // Abstract methods - must be implemented by concrete classes
+        public abstract decimal GetPrice();
+        public abstract string GetDescription();
+
+        /// <summary>
+        /// Gets formatted room information for display
+        /// </summary>
+        public virtual string GetDetailedInfo()
+        {
+            return $"{RoomType} Room #{RoomNumber}\n" +
+                   $"Floor: {FloorNumber}\n" +
+                   $"Price: ${BasePrice}/night\n" +
+                   $"Status: {Status}\n" +
+                   $"Max Occupancy: {MaxOccupancy} guest(s)\n" +
+                   $"Bed Type: {BedType}\n" +
+                   $"Area: {Area} sq.m\n" +
+                   $"View: {ViewType ?? "Standard"}";
+        }
+
+        /// <summary>
+        /// Checks if the room is available for booking
+        /// </summary>
+        public virtual bool IsAvailable()
+        {
+            return Status == "Available" || Status == "Cleaning";
+        }
+
+        /// <summary>
+        /// Checks if room can accommodate specified number of guests
+        /// </summary>
+        public virtual bool CanAccommodate(int numberOfGuests)
+        {
+            return numberOfGuests > 0 && numberOfGuests <= MaxOccupancy;
+        }
+
+        /// <summary>
+        /// Calculates total price for given number of nights
+        /// </summary>
+        public virtual decimal CalculateTotalPrice(int numberOfNights)
+        {
+            if (numberOfNights <= 0)
+                throw new ArgumentException("Number of nights must be positive", nameof(numberOfNights));
+            
+            return GetPrice() * numberOfNights;
+        }
+
+        /// <summary>
+        /// Validates room data
+        /// </summary>
+        public virtual bool IsValid(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(RoomNumber))
+            {
+                errorMessage = "Room number is required";
+                return false;
+            }
+
+            if (BasePrice <= 0)
+            {
+                errorMessage = "Base price must be greater than zero";
+                return false;
+            }
+
+            if (FloorNumber <= 0)
+            {
+                errorMessage = "Floor number must be positive";
+                return false;
+            }
+
+            if (MaxOccupancy <= 0)
+            {
+                errorMessage = "Max occupancy must be positive";
+                return false;
+            }
+
+            if (Area < 0)
+            {
+                errorMessage = "Area cannot be negative";
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gets a summary of special features
+        /// </summary>
+        public virtual string GetFeaturesSummary()
+        {
+            List<string> features = new List<string>();
+            
+            if (HasBalcony) features.Add("Balcony");
+            if (HasSeaView) features.Add("Sea View");
+            if (HasJacuzzi) features.Add("Jacuzzi");
+            if (HasPrivatePool) features.Add("Private Pool");
+            
+            return features.Count > 0 ? string.Join(", ", features) : "Standard Features";
+        }
+
+        public override string ToString()
+        {
+            return $"{RoomType} Room {RoomNumber} - {Status} - ${BasePrice}/night";
+        }
+    }
+
+    // Concrete room types
+    public class SingleRoom : Room
+    {
+        public SingleRoom()
+        {
+            RoomType = "Single";
+            MaxOccupancy = 1;
+            BedType = "Single";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Single Room - {RoomNumber} (Floor {FloorNumber})";
+        }
+    }
+
+    public class DoubleRoom : Room
+    {
+        public DoubleRoom()
+        {
+            RoomType = "Double";
+            MaxOccupancy = 2;
+            BedType = "Queen";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Double Room - {RoomNumber} (Floor {FloorNumber})";
+        }
+    }
+
+    public class SuiteRoom : Room
+    {
+        public SuiteRoom()
+        {
+            RoomType = "Suite";
+            MaxOccupancy = 4;
+            BedType = "King";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Suite Room - {RoomNumber} (Floor {FloorNumber}) - Luxury Suite";
+        }
+    }
+
+    public class DeluxeRoom : Room
+    {
+        public DeluxeRoom()
+        {
+            RoomType = "Deluxe";
+            MaxOccupancy = 4;
+            BedType = "King";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Deluxe Room - {RoomNumber} (Floor {FloorNumber}) - Premium Experience";
+        }
+    }
+}

@@ -1,0 +1,214 @@
+﻿using System;
+
+namespace HotelManagementSystem.Models
+{
+    /// <summary>
+    /// Factory Pattern: Creates different types of Room objects without exposing instantiation logic
+    /// This demonstrates the Factory design pattern for OOAD requirements
+    /// Design Pattern #3 of 5
+    /// </summary>
+    public class RoomFactory
+    {
+        /// <summary>
+        /// Creates a Room instance based on the specified room type
+        /// </summary>
+        public static Room CreateRoom(string roomType)
+        {
+            if (string.IsNullOrWhiteSpace(roomType))
+            {
+                throw new ArgumentException("Room type cannot be null or empty", nameof(roomType));
+            }
+
+            roomType = roomType.Trim();
+
+            switch (roomType)
+            {
+                case "Single":
+                    return new SingleRoom { RoomType = "Single", MaxOccupancy = 1 };
+                case "Double":
+                    return new DoubleRoom { RoomType = "Double", MaxOccupancy = 2 };
+                case "Suite":
+                    return new SuiteRoom { RoomType = "Suite", MaxOccupancy = 4 };
+                case "Deluxe":
+                    return new DeluxeRoom { RoomType = "Deluxe", MaxOccupancy = 4 };
+                default:
+                    throw new ArgumentException($"Invalid room type: '{roomType}'. Valid types are: Single, Double, Suite, Deluxe");
+            }
+        }
+
+        /// <summary>
+        /// Creates a fully configured Room instance
+        /// </summary>
+        public static Room CreateRoom(string roomType, string roomNumber, int floorNumber, decimal basePrice, string status = "Available")
+        {
+            Room room = CreateRoom(roomType);
+            room.RoomNumber = roomNumber;
+            room.FloorNumber = floorNumber;
+            room.BasePrice = basePrice;
+            room.Status = status;
+            room.CreatedDate = DateTime.Now;
+            room.ModifiedDate = DateTime.Now;
+            ConfigureRoomDefaults(room);
+            return room;
+        }
+
+        /// <summary>
+        /// Creates a Room from database values (used by RoomRepository)
+        /// </summary>
+        public static Room CreateRoomFromDatabase(
+            string roomType, int roomId, string roomNumber, int floorNumber, decimal basePrice, string status,
+            int maxOccupancy, string bedType = null, decimal? area = null, string viewType = null,
+            string description = null, string amenities = null, bool hasBalcony = false, bool hasSeaView = false,
+            bool hasJacuzzi = false, bool hasPrivatePool = false, DateTime? createdDate = null, DateTime? modifiedDate = null)
+        {
+            Room room = CreateRoom(roomType);
+            room.RoomId = roomId;
+            room.RoomNumber = roomNumber;
+            room.FloorNumber = floorNumber;
+            room.BasePrice = basePrice;
+            room.Status = status;
+            room.MaxOccupancy = maxOccupancy;
+            room.BedType = bedType;
+            room.Area = area.HasValue ? area.Value : 0m;
+            room.ViewType = viewType;
+            room.Description = description;
+            room.Amenities = amenities;
+            room.HasBalcony = hasBalcony;
+            room.HasSeaView = hasSeaView;
+            room.HasJacuzzi = hasJacuzzi;
+            room.HasPrivatePool = hasPrivatePool;
+            room.CreatedDate = createdDate ?? DateTime.Now;
+            room.ModifiedDate = modifiedDate ?? DateTime.Now;
+            return room;
+        }
+
+        private static void ConfigureRoomDefaults(Room room)
+        {
+            switch (room.RoomType)
+            {
+                case "Single":
+                    room.BedType = room.BedType ?? "Single";
+                    room.Area = room.Area ?? 20.0m;
+                    room.MaxOccupancy = 1;
+                    room.Description = room.Description ?? "Cozy single room perfect for solo travelers";
+                    break;
+                case "Double":
+                    room.BedType = room.BedType ?? "Queen";
+                    room.Area = room.Area ?? 30.0m;
+                    room.MaxOccupancy = 2;
+                    room.Description = room.Description ?? "Comfortable double room for couples or friends";
+                    break;
+                case "Suite":
+                    room.BedType = room.BedType ?? "King";
+                    room.Area = room.Area ?? 50.0m;
+                    room.MaxOccupancy = 4;
+                    room.HasBalcony = true;
+                    room.Description = room.Description ?? "Luxurious suite with separate living area";
+                    break;
+                case "Deluxe":
+                    room.BedType = room.BedType ?? "King";
+                    room.Area = room.Area ?? 70.0m;
+                    room.MaxOccupancy = 4;
+                    room.HasBalcony = true;
+                    room.HasJacuzzi = true;
+                    room.Description = room.Description ?? "Premium deluxe room with exclusive amenities";
+                    break;
+            }
+        }
+
+        public static decimal GetDefaultPrice(string roomType)
+        {
+            switch (roomType)
+            {
+                case "Single": return 50.00m;
+                case "Double": return 80.00m;
+                case "Suite": return 150.00m;
+                case "Deluxe": return 250.00m;
+                default: throw new ArgumentException($"Invalid room type: {roomType}");
+            }
+        }
+
+        public static string[] GetValidRoomTypes()
+        {
+            return new string[] { "Single", "Double", "Suite", "Deluxe" };
+        }
+
+        public static bool IsValidRoomType(string roomType)
+        {
+            if (string.IsNullOrWhiteSpace(roomType)) return false;
+            roomType = roomType.Trim();
+            return roomType == "Single" || roomType == "Double" || roomType == "Suite" || roomType == "Deluxe";
+        }
+
+        /// <summary>
+        /// Runs a demonstration of the Factory Pattern
+        /// </summary>
+        public static string RunDemonstration()
+        {
+            System.Text.StringBuilder output = new System.Text.StringBuilder();
+            
+            output.AppendLine("=".PadRight(80, '='));
+            output.AppendLine("FACTORY PATTERN DEMONSTRATION");
+            output.AppendLine("Design Pattern #3 of 5");
+            output.AppendLine("=".PadRight(80, '='));
+            output.AppendLine();
+
+            output.AppendLine("--- Demo 1: Basic Room Creation ---");
+            output.AppendLine();
+            
+            Room singleRoom = RoomFactory.CreateRoom("Single");
+            output.AppendLine($"✓ Created: {singleRoom.GetType().Name}");
+            output.AppendLine($"  Type: {singleRoom.RoomType}, Max Occupancy: {singleRoom.MaxOccupancy}");
+            output.AppendLine();
+
+            Room doubleRoom = RoomFactory.CreateRoom("Double");
+            output.AppendLine($"✓ Created: {doubleRoom.GetType().Name}");
+            output.AppendLine($"  Type: {doubleRoom.RoomType}, Max Occupancy: {doubleRoom.MaxOccupancy}");
+            output.AppendLine();
+
+            Room suiteRoom = RoomFactory.CreateRoom("Suite");
+            output.AppendLine($"✓ Created: {suiteRoom.GetType().Name}");
+            output.AppendLine($"  Type: {suiteRoom.RoomType}, Max Occupancy: {suiteRoom.MaxOccupancy}");
+            output.AppendLine();
+
+            Room deluxeRoom = RoomFactory.CreateRoom("Deluxe");
+            output.AppendLine($"✓ Created: {deluxeRoom.GetType().Name}");
+            output.AppendLine($"  Type: {deluxeRoom.RoomType}, Max Occupancy: {deluxeRoom.MaxOccupancy}");
+            output.AppendLine();
+
+            output.AppendLine("--- Demo 2: Fully Configured Room Creation ---");
+            output.AppendLine();
+
+            Room room101 = RoomFactory.CreateRoom("Single", "101", 1, 50.00m);
+            output.AppendLine($"✓ Created Room {room101.RoomNumber}:");
+            output.AppendLine($"  Type: {room101.RoomType}");
+            output.AppendLine($"  Floor: {room101.FloorNumber}");
+            output.AppendLine($"  Price: ${room101.BasePrice}/night");
+            output.AppendLine($"  Status: {room101.Status}");
+            output.AppendLine($"  Description: {room101.Description}");
+            output.AppendLine();
+
+            output.AppendLine("--- Demo 3: Valid Room Types ---");
+            output.AppendLine();
+            output.AppendLine("Valid Room Types:");
+            foreach (string roomType in RoomFactory.GetValidRoomTypes())
+            {
+                decimal price = RoomFactory.GetDefaultPrice(roomType);
+                output.AppendLine($"  • {roomType}: ${price}/night");
+            }
+            output.AppendLine();
+
+            output.AppendLine("=".PadRight(80, '='));
+            output.AppendLine("FACTORY PATTERN BENEFITS:");
+            output.AppendLine("=".PadRight(80, '='));
+            output.AppendLine("✓ Encapsulates object creation logic");
+            output.AppendLine("✓ Client code doesn't need to know concrete classes");
+            output.AppendLine("✓ Easy to add new room types without changing client code");
+            output.AppendLine("✓ Promotes loose coupling");
+            output.AppendLine("✓ Single Responsibility Principle - creation logic in one place");
+            output.AppendLine("=".PadRight(80, '='));
+
+            return output.ToString();
+        }
+    }
+}

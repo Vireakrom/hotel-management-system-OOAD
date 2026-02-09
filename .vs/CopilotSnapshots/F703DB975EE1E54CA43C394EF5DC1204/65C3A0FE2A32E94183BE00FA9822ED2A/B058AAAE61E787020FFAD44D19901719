@@ -1,0 +1,693 @@
+﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.UI.Bookings
+{
+    public partial class BookingListForm : Form
+    {
+        private BookingRepository bookingRepository;
+        private GuestRepository guestRepository;
+        private RoomRepository roomRepository;
+        private List<Booking> allBookings;
+        private List<BookingDisplayInfo> displayBookings;
+
+        public BookingListForm()
+        {
+            InitializeComponent();
+            bookingRepository = new BookingRepository();
+            guestRepository = new GuestRepository();
+            roomRepository = new RoomRepository();
+            this.Load += BookingListForm_Load;
+        }
+
+        private void BookingListForm_Load(object sender, EventArgs e)
+        {
+            SetupDataGridView();
+            LoadStatusFilter();
+            LoadBookings();
+            UpdateBookingCount();
+        }
+
+        /// <summary>
+        /// Load status filter dropdown
+        /// </summary>
+        private void LoadStatusFilter()
+        {
+            cmbStatusFilter.Items.Clear();
+            cmbStatusFilter.Items.Add("All Bookings");
+            cmbStatusFilter.Items.Add("Pending");
+            cmbStatusFilter.Items.Add("Confirmed");
+            cmbStatusFilter.Items.Add("CheckedIn");
+            cmbStatusFilter.Items.Add("CheckedOut");
+            cmbStatusFilter.Items.Add("Cancelled");
+            cmbStatusFilter.SelectedIndex = 0; // Default to "All Bookings"
+        }
+
+        /// <summary>
+        /// Load all bookings from database with guest and room information
+        /// </summary>
+        private void LoadBookings()
+        {
+            try
+            {
+                allBookings = bookingRepository.GetAll();
+                
+                // Create display list with guest and room names
+                displayBookings = new List<BookingDisplayInfo>();
+                
+                foreach (var booking in allBookings)
+                {
+                    var guest = guestRepository.GetById(booking.GuestId);
+                    var room = roomRepository.GetById(booking.RoomId);
+                    
+                    displayBookings.Add(new BookingDisplayInfo
+                    {
+                        BookingId = booking.BookingId,
+                        GuestName = guest != null ? guest.FullName : "Unknown",
+                        RoomNumber = room != null ? room.RoomNumber : "N/A",
+                        RoomType = room != null ? room.RoomType : "N/A",
+                        CheckInDate = booking.CheckInDate,
+                        CheckOutDate = booking.CheckOutDate,
+                        Status = booking.Status,
+                        NumberOfGuests = booking.NumberOfGuests,
+                        TotalAmount = booking.TotalAmount,
+                        BookingDate = booking.BookingDate,
+                        NumberOfNights = booking.NumberOfNights
+                    });
+                }
+
+                ApplyFilters();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading bookings: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Apply filters to booking list
+        /// </summary>
+        private void ApplyFilters()
+        {
+            // Check if data has been loaded yet
+            if (displayBookings == null)
+                return;
+
+            var filtered = displayBookings.AsEnumerable();
+
+            // Filter by status
+            if (cmbStatusFilter.SelectedIndex > 0)
+            {
+                string selectedStatus = cmbStatusFilter.SelectedItem.ToString();
+                filtered = filtered.Where(b => b.Status == selectedStatus);
+            }
+
+            // Filter by search text (guest name or room number)
+            if (!string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                string searchTerm = txtSearch.Text.Trim().ToLower();
+                filtered = filtered.Where(b =>
+                    b.GuestName.ToLower().Contains(searchTerm) ||
+                    b.RoomNumber.ToLower().Contains(searchTerm) ||
+                    b.BookingId.ToString().Contains(searchTerm)
+                );
+            }
+
+            // Bind to DataGridView
+            dgvBookings.DataSource = null;
+            dgvBookings.DataSource = filtered.OrderByDescending(b => b.BookingDate).ToList();
+
+            UpdateBookingCount();
+            ColorCodeRows();
+        }
+
+        /// <summary>
+        /// Setup DataGridView columns and formatting
+        /// </summary>
+        private void SetupDataGridView()
+        {
+            dgvBookings.AutoGenerateColumns = false;
+            dgvBookings.AllowUserToAddRows = false;
+            dgvBookings.AllowUserToDeleteRows = false;
+            dgvBookings.ReadOnly = true;
+            dgvBookings.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvBookings.MultiSelect = false;
+            dgvBookings.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvBookings.RowHeadersVisible = false;
+            dgvBookings.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
+            // Clear existing columns
+            dgvBookings.Columns.Clear();
+
+            // Add columns
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "BookingId",
+                HeaderText = "Booking ID",
+                DataPropertyName = "BookingId",
+                Width = 80
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "GuestName",
+                HeaderText = "Guest Name",
+                DataPropertyName = "GuestName",
+                Width = 150
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "RoomNumber",
+                HeaderText = "Room",
+                DataPropertyName = "RoomNumber",
+                Width = 70
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "RoomType",
+                HeaderText = "Room Type",
+                DataPropertyName = "RoomType",
+                Width = 100
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CheckInDate",
+                HeaderText = "Check-In",
+                DataPropertyName = "CheckInDate",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MM/dd/yyyy" }
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CheckOutDate",
+                HeaderText = "Check-Out",
+                DataPropertyName = "CheckOutDate",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MM/dd/yyyy" }
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "NumberOfNights",
+                HeaderText = "Nights",
+                DataPropertyName = "NumberOfNights",
+                Width = 60
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Status",
+                HeaderText = "Status",
+                DataPropertyName = "Status",
+                Width = 100
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TotalAmount",
+                HeaderText = "Total Amount",
+                DataPropertyName = "TotalAmount",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" }
+            });
+
+            dgvBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "BookingDate",
+                HeaderText = "Booked On",
+                DataPropertyName = "BookingDate",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MM/dd/yyyy" }
+            });
+
+            // Double-click to view details
+            dgvBookings.DoubleClick += btnViewDetails_Click;
+        }
+
+        /// <summary>
+        /// Color-code rows based on booking status
+        /// </summary>
+        private void ColorCodeRows()
+        {
+            foreach (DataGridViewRow row in dgvBookings.Rows)
+            {
+                if (row.Cells["Status"].Value != null)
+                {
+                    string status = row.Cells["Status"].Value.ToString();
+                    switch (status)
+                    {
+                        case "Pending":
+                            row.DefaultCellStyle.BackColor = Color.LightYellow;
+                            break;
+                        case "Confirmed":
+                            row.DefaultCellStyle.BackColor = Color.LightGreen;
+                            break;
+                        case "CheckedIn":
+                            row.DefaultCellStyle.BackColor = Color.LightBlue;
+                            break;
+                        case "CheckedOut":
+                            row.DefaultCellStyle.BackColor = Color.LightGray;
+                            break;
+                        case "Cancelled":
+                            row.DefaultCellStyle.BackColor = Color.LightCoral;
+                            row.DefaultCellStyle.ForeColor = Color.DarkRed;
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update booking count label
+        /// </summary>
+        private void UpdateBookingCount()
+        {
+            if (allBookings == null)
+            {
+                lblTotalBookings.Text = "Total Bookings: 0";
+                return;
+            }
+
+            int displayedCount = dgvBookings.Rows.Count;
+            int totalCount = allBookings.Count;
+            
+            if (displayedCount == totalCount)
+            {
+                lblTotalBookings.Text = $"Total Bookings: {totalCount}";
+            }
+            else
+            {
+                lblTotalBookings.Text = $"Showing {displayedCount} of {totalCount} bookings";
+            }
+        }
+
+        /// <summary>
+        /// Search button click
+        /// </summary>
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        /// <summary>
+        /// Status filter changed
+        /// </summary>
+        private void cmbStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        /// <summary>
+        /// Search text changed (Enter key support)
+        /// </summary>
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                btnSearch_Click(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Refresh bookings
+        /// </summary>
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            txtSearch.Clear();
+            cmbStatusFilter.SelectedIndex = 0;
+            LoadBookings();
+        }
+
+        /// <summary>
+        /// View booking details
+        /// </summary>
+        private void btnViewDetails_Click(object sender, EventArgs e)
+        {
+            if (dgvBookings.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a booking to view details.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
+            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+            
+            if (booking != null)
+            {
+                ShowBookingDetails(booking);
+            }
+        }
+
+        /// <summary>
+        /// Show booking details dialog
+        /// </summary>
+        private void ShowBookingDetails(Booking booking)
+        {
+            var guest = guestRepository.GetById(booking.GuestId);
+            var room = roomRepository.GetById(booking.RoomId);
+
+            string details = $"Booking Details:\n\n" +
+                $"Booking ID: {booking.BookingId}\n" +
+                $"Status: {booking.Status}\n\n" +
+                $"Guest Information:\n" +
+                $"  Name: {(guest != null ? guest.FullName : "Unknown")}\n" +
+                $"  Email: {(guest != null ? guest.Email : "N/A")}\n" +
+                $"  Phone: {(guest != null ? guest.Phone : "N/A")}\n\n" +
+                $"Room Information:\n" +
+                $"  Room Number: {(room != null ? room.RoomNumber : "N/A")}\n" +
+                $"  Room Type: {(room != null ? room.RoomType : "N/A")}\n" +
+                $"  Floor: {(room != null ? room.FloorNumber.ToString() : "N/A")}\n\n" +
+                $"Booking Dates:\n" +
+                $"  Check-In: {booking.CheckInDate:MM/dd/yyyy}\n" +
+                $"  Check-Out: {booking.CheckOutDate:MM/dd/yyyy}\n" +
+                $"  Number of Nights: {booking.NumberOfNights}\n";
+
+            if (booking.ActualCheckInDate.HasValue)
+            {
+                details += $"  Actual Check-In: {booking.ActualCheckInDate:MM/dd/yyyy HH:mm}\n";
+            }
+            if (booking.ActualCheckOutDate.HasValue)
+            {
+                details += $"  Actual Check-Out: {booking.ActualCheckOutDate:MM/dd/yyyy HH:mm}\n";
+            }
+
+            details += $"\nGuests: {booking.NumberOfGuests}\n\n" +
+                $"Financial Details:\n" +
+                $"  Room Charges: ${booking.RoomCharges:F2}\n" +
+                $"  Service Charges: ${booking.ServiceCharges:F2}\n" +
+                $"  Total Amount: ${booking.TotalAmount:F2}\n\n" +
+                $"Booking Date: {booking.BookingDate:MM/dd/yyyy HH:mm}\n";
+
+            if (!string.IsNullOrWhiteSpace(booking.SpecialRequests))
+            {
+                details += $"\nSpecial Requests:\n{booking.SpecialRequests}\n";
+            }
+
+            if (!string.IsNullOrWhiteSpace(booking.Notes))
+            {
+                details += $"\nNotes:\n{booking.Notes}\n";
+            }
+
+            if (booking.Status == "Cancelled" && !string.IsNullOrWhiteSpace(booking.CancellationReason))
+            {
+                details += $"\nCancellation Date: {booking.CancelledDate:MM/dd/yyyy HH:mm}\n" +
+                    $"Cancellation Reason:\n{booking.CancellationReason}";
+            }
+
+            MessageBox.Show(details, "Booking Details",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Check-In button click
+        /// </summary>
+        private void btnCheckIn_Click(object sender, EventArgs e)
+        {
+            if (dgvBookings.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a booking to check-in.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
+            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+
+            if (booking == null) return;
+
+            // Validate booking status
+            if (booking.Status == "CheckedIn")
+            {
+                MessageBox.Show("Guest is already checked in.", "Already Checked In",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (booking.Status == "CheckedOut")
+            {
+                MessageBox.Show("This booking has already been checked out.", "Already Checked Out",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (booking.Status == "Cancelled")
+            {
+                MessageBox.Show("Cannot check-in a cancelled booking.", "Cancelled Booking",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirm check-in
+            var result = MessageBox.Show(
+                $"Check-in guest?\n\n" +
+                $"Guest: {dgvBookings.SelectedRows[0].Cells["GuestName"].Value}\n" +
+                $"Room: {dgvBookings.SelectedRows[0].Cells["RoomNumber"].Value}\n" +
+                $"Check-In Date: {booking.CheckInDate:MM/dd/yyyy}",
+                "Confirm Check-In",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    bool success = bookingRepository.CheckIn(bookingId);
+                    
+                    if (success)
+                    {
+                        // Update room status to Occupied
+                        roomRepository.UpdateRoomStatus(booking.RoomId, "Occupied");
+                        
+                        MessageBox.Show("Guest checked in successfully!", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
+                        LoadBookings(); // Refresh list
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to check-in guest. Please try again.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error during check-in: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check-Out button click
+        /// </summary>
+        private void btnCheckOut_Click(object sender, EventArgs e)
+        {
+            if (dgvBookings.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a booking to check-out.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
+            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+
+            if (booking == null) return;
+
+            // Validate booking status
+            if (booking.Status != "CheckedIn")
+            {
+                MessageBox.Show("Guest must be checked in before checking out.", "Not Checked In",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirm check-out
+            var result = MessageBox.Show(
+                $"Check-out guest?\n\n" +
+                $"Guest: {dgvBookings.SelectedRows[0].Cells["GuestName"].Value}\n" +
+                $"Room: {dgvBookings.SelectedRows[0].Cells["RoomNumber"].Value}\n" +
+                $"Total Amount: ${booking.TotalAmount:F2}",
+                "Confirm Check-Out",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    bool success = bookingRepository.CheckOut(bookingId);
+                    
+                    if (success)
+                    {
+                        // Update room status to Cleaning
+                        roomRepository.UpdateRoomStatus(booking.RoomId, "Cleaning");
+                        
+                        MessageBox.Show("Guest checked out successfully!\nRoom status updated to Cleaning.", 
+                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
+                        LoadBookings(); // Refresh list
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to check-out guest. Please try again.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error during check-out: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cancel booking button click
+        /// </summary>
+        private void btnCancelBooking_Click(object sender, EventArgs e)
+        {
+            if (dgvBookings.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a booking to cancel.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
+            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+
+            if (booking == null) return;
+
+            // Validate booking status
+            if (booking.Status == "Cancelled")
+            {
+                MessageBox.Show("This booking is already cancelled.", "Already Cancelled",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (booking.Status == "CheckedOut")
+            {
+                MessageBox.Show("Cannot cancel a completed booking.", "Booking Completed",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Prompt for cancellation reason
+            using (Form prompt = new Form())
+            {
+                prompt.Width = 400;
+                prompt.Height = 200;
+                prompt.FormBorderStyle = FormBorderStyle.FixedDialog;
+                prompt.Text = "Cancel Booking";
+                prompt.StartPosition = FormStartPosition.CenterParent;
+                prompt.MaximizeBox = false;
+                prompt.MinimizeBox = false;
+
+                Label textLabel = new Label() { Left = 20, Top = 20, Width = 350, Text = "Please enter the cancellation reason:" };
+                TextBox textBox = new TextBox() { Left = 20, Top = 50, Width = 350, Height = 60, Multiline = true };
+                Button confirmation = new Button() { Text = "OK", Left = 220, Width = 80, Top = 120, DialogResult = DialogResult.OK };
+                Button cancel = new Button() { Text = "Cancel", Left = 310, Width = 80, Top = 120, DialogResult = DialogResult.Cancel };
+
+                confirmation.Click += (s, ev) => { prompt.Close(); };
+                cancel.Click += (s, ev) => { prompt.Close(); };
+
+                prompt.Controls.Add(textLabel);
+                prompt.Controls.Add(textBox);
+                prompt.Controls.Add(confirmation);
+                prompt.Controls.Add(cancel);
+                prompt.AcceptButton = confirmation;
+                prompt.CancelButton = cancel;
+
+                string reason = string.Empty;
+                if (prompt.ShowDialog() == DialogResult.OK)
+                {
+                    reason = textBox.Text.Trim();
+                }
+                else
+                {
+                    return; // User cancelled
+                }
+
+                if (string.IsNullOrWhiteSpace(reason))
+                {
+                    return; // User didn't provide reason
+                }
+
+                // Confirm cancellation
+                var result = MessageBox.Show(
+                    $"Cancel booking?\n\n" +
+                    $"Guest: {dgvBookings.SelectedRows[0].Cells["GuestName"].Value}\n" +
+                    $"Room: {dgvBookings.SelectedRows[0].Cells["RoomNumber"].Value}\n" +
+                    $"Reason: {reason}",
+                    "Confirm Cancellation",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        bool success = bookingRepository.CancelBooking(bookingId, reason);
+                        
+                        if (success)
+                        {
+                            // Update room status to Available if not checked in
+                            if (booking.Status != "CheckedIn")
+                            {
+                                roomRepository.UpdateRoomStatus(booking.RoomId, "Available");
+                            }
+                            
+                            MessageBox.Show("Booking cancelled successfully!", "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            
+                            LoadBookings(); // Refresh list
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to cancel booking. Please try again.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error cancelling booking: {ex.Message}", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Helper class for displaying booking information in DataGridView
+    /// </summary>
+    public class BookingDisplayInfo
+    {
+        public int BookingId { get; set; }
+        public string GuestName { get; set; }
+        public string RoomNumber { get; set; }
+        public string RoomType { get; set; }
+        public DateTime CheckInDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
+        public string Status { get; set; }
+        public int NumberOfGuests { get; set; }
+        public decimal TotalAmount { get; set; }
+        public DateTime BookingDate { get; set; }
+        public int NumberOfNights { get; set; }
+    }
+}

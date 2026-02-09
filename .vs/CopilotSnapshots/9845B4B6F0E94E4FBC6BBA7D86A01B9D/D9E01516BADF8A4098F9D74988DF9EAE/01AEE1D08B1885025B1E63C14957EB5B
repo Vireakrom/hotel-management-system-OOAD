@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HotelManagementSystem.Models
+{
+    // Abstract base class for all room types
+    public abstract class Room
+    {
+        public int RoomId { get; set; }
+        public string RoomNumber { get; set; }
+        public string RoomType { get; set; }
+        public string Status { get; set; }  // Available, Occupied, Reserved, Maintenance, Cleaning
+        public decimal BasePrice { get; set; }
+        public int FloorNumber { get; set; }
+        public int MaxOccupancy { get; set; }
+        public string BedType { get; set; }
+        public decimal Area { get; set; }
+        public string ViewType { get; set; }
+        public bool HasBalcony { get; set; }
+        public bool HasSeaView { get; set; }
+        public bool HasJacuzzi { get; set; }
+        public bool HasPrivatePool { get; set; }
+        public string Amenities { get; set; }
+        public string Description { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+
+        // Abstract methods - must be implemented by concrete classes
+        public abstract decimal GetPrice();
+        public abstract string GetDescription();
+    }
+
+    // Concrete room types
+    public class SingleRoom : Room
+    {
+        public SingleRoom()
+        {
+            RoomType = "Single";
+            MaxOccupancy = 1;
+            BedType = "Single";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Single Room - {RoomNumber} (Floor {FloorNumber})";
+        }
+    }
+
+    public class DoubleRoom : Room
+    {
+        public DoubleRoom()
+        {
+            RoomType = "Double";
+            MaxOccupancy = 2;
+            BedType = "Queen";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Double Room - {RoomNumber} (Floor {FloorNumber})";
+        }
+    }
+
+    public class SuiteRoom : Room
+    {
+        public SuiteRoom()
+        {
+            RoomType = "Suite";
+            MaxOccupancy = 4;
+            BedType = "King";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Suite Room - {RoomNumber} (Floor {FloorNumber}) - Luxury Suite";
+        }
+    }
+
+    public class DeluxeRoom : Room
+    {
+        public DeluxeRoom()
+        {
+            RoomType = "Deluxe";
+            MaxOccupancy = 4;
+            BedType = "King";
+        }
+
+        public override decimal GetPrice()
+        {
+            return BasePrice;
+        }
+
+        public override string GetDescription()
+        {
+            return $"Deluxe Room - {RoomNumber} (Floor {FloorNumber}) - Premium Experience";
+        }
+    }
+}

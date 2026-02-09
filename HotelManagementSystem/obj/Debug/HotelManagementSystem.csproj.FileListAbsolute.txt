@@ -6,6 +6,8 @@ C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\bin\Deb
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.csproj.AssemblyReference.cache
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.Form1.resources
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.Properties.Resources.resources
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.UI.MainForm.resources
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.UI.Rooms.RoomManagementForm.resources
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.csproj.GenerateResource.cache
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.csproj.CoreCompileInputs.cache
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelMan.F5E31FD0.Up2Date

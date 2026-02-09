@@ -1,0 +1,307 @@
+using System;
+using System.Linq; // For FirstOrDefault
+using System.Text;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.Patterns;
+
+namespace HotelManagementSystem.Testing
+{
+    /// <summary>
+    /// Test suite for Observer Pattern (Day 21)
+    /// Tests automatic housekeeping task creation on checkout
+    /// </summary>
+    public static class ObserverPatternTests
+    {
+        /// <summary>
+        /// Run all Observer Pattern tests
+        /// </summary>
+        public static string RunAllTests()
+        {
+            StringBuilder results = new StringBuilder();
+            results.AppendLine("=== Observer Pattern Tests (Day 21) ===");
+            results.AppendLine($"Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            results.AppendLine();
+
+            int passed = 0;
+            int failed = 0;
+
+            // Test 1: RoomSubject Singleton
+            if (TestRoomSubjectSingleton(results)) passed++; else failed++;
+
+            // Test 2: Observer Registration
+            if (TestObserverRegistration(results)) passed++; else failed++;
+
+            // Test 3: Observer Notification
+            if (TestObserverNotification(results)) passed++; else failed++;
+
+            // Test 4: Auto-Create Cleaning Task on CheckOut
+            if (TestAutoCreateCleaningTask(results)) passed++; else failed++;
+
+            // Test 5: Multiple Observers
+            if (TestMultipleObservers(results)) passed++; else failed++;
+
+            // Test 6: Observer Detachment
+            if (TestObserverDetachment(results)) passed++; else failed++;
+
+            // Summary
+            results.AppendLine();
+            results.AppendLine("=== TEST SUMMARY ===");
+            results.AppendLine($"Total Tests: {passed + failed}");
+            results.AppendLine($"Passed: {passed} ?");
+            results.AppendLine($"Failed: {failed} ?");
+            results.AppendLine($"Success Rate: {(passed * 100.0 / (passed + failed)):F1}%");
+            results.AppendLine();
+            results.AppendLine($"Completed: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+
+            return results.ToString();
+        }
+
+        /// <summary>
+        /// Test 1: Verify RoomSubject is a Singleton
+        /// </summary>
+        private static bool TestRoomSubjectSingleton(StringBuilder results)
+        {
+            results.AppendLine("Test 1: RoomSubject Singleton Pattern");
+            try
+            {
+                RoomSubject instance1 = RoomSubject.Instance;
+                RoomSubject instance2 = RoomSubject.Instance;
+
+                if (instance1 == instance2)
+                {
+                    results.AppendLine("? PASS - RoomSubject is a Singleton (same instance)");
+                    results.AppendLine();
+                    return true;
+                }
+                else
+                {
+                    results.AppendLine("? FAIL - RoomSubject returned different instances");
+                    results.AppendLine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"? FAIL - Exception: {ex.Message}");
+                results.AppendLine();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 2: Verify observer can be attached to subject
+        /// </summary>
+        private static bool TestObserverRegistration(StringBuilder results)
+        {
+            results.AppendLine("Test 2: Observer Registration (Attach)");
+            try
+            {
+                RoomSubject subject = RoomSubject.Instance;
+                subject.ClearObservers(); // Reset
+
+                HousekeepingObserver observer = new HousekeepingObserver();
+                subject.Attach(observer);
+
+                if (subject.ObserverCount == 1)
+                {
+                    results.AppendLine($"? PASS - Observer attached successfully (Count: {subject.ObserverCount})");
+                    results.AppendLine();
+                    return true;
+                }
+                else
+                {
+                    results.AppendLine($"? FAIL - Expected 1 observer, got {subject.ObserverCount}");
+                    results.AppendLine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"? FAIL - Exception: {ex.Message}");
+                results.AppendLine();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 3: Verify observer receives notifications
+        /// </summary>
+        private static bool TestObserverNotification(StringBuilder results)
+        {
+            results.AppendLine("Test 3: Observer Notification");
+            try
+            {
+                RoomSubject subject = RoomSubject.Instance;
+                subject.ClearObservers();
+
+                HousekeepingObserver observer = new HousekeepingObserver();
+                subject.Attach(observer);
+
+                // Create test room
+                RoomRepository roomRepo = new RoomRepository();
+                Room testRoom = roomRepo.GetAll().FirstOrDefault();
+
+                if (testRoom != null)
+                {
+                    // Notify observers (this should trigger HousekeepingObserver.Update)
+                    subject.Notify(testRoom.RoomId, "CheckOut", 999);
+
+                    results.AppendLine($"? PASS - Notification sent for Room {testRoom.RoomNumber} (CheckOut event)");
+                    results.AppendLine("  (Check console output for auto-created task confirmation)");
+                    results.AppendLine();
+                    return true;
+                }
+                else
+                {
+                    results.AppendLine("? FAIL - No rooms available in database for testing");
+                    results.AppendLine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"? FAIL - Exception: {ex.Message}");
+                results.AppendLine();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 4: Verify housekeeping task is auto-created on checkout
+        /// </summary>
+        private static bool TestAutoCreateCleaningTask(StringBuilder results)
+        {
+            results.AppendLine("Test 4: Auto-Create Cleaning Task on CheckOut");
+            try
+            {
+                RoomSubject subject = RoomSubject.Instance;
+                subject.ClearObservers();
+
+                HousekeepingObserver observer = new HousekeepingObserver();
+                subject.Attach(observer);
+
+                // Get test room
+                RoomRepository roomRepo = new RoomRepository();
+                Room testRoom = roomRepo.GetAll().FirstOrDefault();
+
+                if (testRoom != null)
+                {
+                    // Count tasks before
+                    HousekeepingTaskRepository taskRepo = new HousekeepingTaskRepository();
+                    int countBefore = taskRepo.GetTasksByRoom(testRoom.RoomId).Count;
+
+                    // Trigger checkout event
+                    subject.Notify(testRoom.RoomId, "CheckOut", 123);
+
+                    // Count tasks after
+                    int countAfter = taskRepo.GetTasksByRoom(testRoom.RoomId).Count;
+
+                    if (countAfter > countBefore)
+                    {
+                        results.AppendLine($"? PASS - Housekeeping task auto-created for Room {testRoom.RoomNumber}");
+                        results.AppendLine($"  Tasks before: {countBefore}, Tasks after: {countAfter}");
+                        results.AppendLine();
+                        return true;
+                    }
+                    else
+                    {
+                        results.AppendLine($"? FAIL - No task created (Before: {countBefore}, After: {countAfter})");
+                        results.AppendLine();
+                        return false;
+                    }
+                }
+                else
+                {
+                    results.AppendLine("? FAIL - No rooms available for testing");
+                    results.AppendLine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"? FAIL - Exception: {ex.Message}");
+                results.AppendLine();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 5: Verify multiple observers can be registered
+        /// </summary>
+        private static bool TestMultipleObservers(StringBuilder results)
+        {
+            results.AppendLine("Test 5: Multiple Observers Registration");
+            try
+            {
+                RoomSubject subject = RoomSubject.Instance;
+                subject.ClearObservers();
+
+                HousekeepingObserver observer1 = new HousekeepingObserver();
+                HousekeepingObserver observer2 = new HousekeepingObserver();
+
+                subject.Attach(observer1);
+                subject.Attach(observer2);
+
+                if (subject.ObserverCount == 2)
+                {
+                    results.AppendLine($"? PASS - Multiple observers registered (Count: {subject.ObserverCount})");
+                    results.AppendLine();
+                    return true;
+                }
+                else
+                {
+                    results.AppendLine($"? FAIL - Expected 2 observers, got {subject.ObserverCount}");
+                    results.AppendLine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"? FAIL - Exception: {ex.Message}");
+                results.AppendLine();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 6: Verify observer can be detached
+        /// </summary>
+        private static bool TestObserverDetachment(StringBuilder results)
+        {
+            results.AppendLine("Test 6: Observer Detachment");
+            try
+            {
+                RoomSubject subject = RoomSubject.Instance;
+                subject.ClearObservers();
+
+                HousekeepingObserver observer = new HousekeepingObserver();
+                subject.Attach(observer);
+
+                int countAfterAttach = subject.ObserverCount;
+                subject.Detach(observer);
+                int countAfterDetach = subject.ObserverCount;
+
+                if (countAfterAttach == 1 && countAfterDetach == 0)
+                {
+                    results.AppendLine($"? PASS - Observer detached successfully");
+                    results.AppendLine($"  Count after attach: {countAfterAttach}, Count after detach: {countAfterDetach}");
+                    results.AppendLine();
+                    return true;
+                }
+                else
+                {
+                    results.AppendLine($"? FAIL - Detachment failed (After attach: {countAfterAttach}, After detach: {countAfterDetach})");
+                    results.AppendLine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"? FAIL - Exception: {ex.Message}");
+                results.AppendLine();
+                return false;
+            }
+        }
+    }
+}

@@ -1,4 +1,6 @@
 ﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.Testing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,6 +15,7 @@ namespace HotelManagementSystem
 {
     public partial class Form1 : Form
     {
+
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +32,9 @@ namespace HotelManagementSystem
             {
                 MessageBox.Show("Database connection failed!");
             }
+
+
         }
+       
     }
 }
