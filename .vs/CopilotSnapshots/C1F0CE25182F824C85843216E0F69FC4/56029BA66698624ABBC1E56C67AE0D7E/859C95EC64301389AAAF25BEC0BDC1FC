@@ -1,0 +1,278 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using HotelManagementSystem.Models;
+
+namespace HotelManagementSystem.DAL
+{
+    /// <summary>
+    /// Repository for HousekeepingTask data access
+    /// Implements Repository Pattern
+    /// </summary>
+    public class HousekeepingTaskRepository
+    {
+        /// <summary>
+        /// Insert a new housekeeping task
+        /// </summary>
+        public int Insert(HousekeepingTask task)
+        {
+            string query = @"INSERT INTO HousekeepingTasks 
+                            (RoomId, TaskType, Status, Description, AssignedToUserId, 
+                             Priority, Notes, CreatedDate, ModifiedDate)
+                            VALUES 
+                            (@RoomId, @TaskType, @Status, @Description, @AssignedToUserId, 
+                             @Priority, @Notes, GETDATE(), GETDATE());
+                            SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomId", task.RoomId);
+                    cmd.Parameters.AddWithValue("@TaskType", task.TaskType ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Status", task.Status ?? "Pending");
+                    cmd.Parameters.AddWithValue("@Description", task.Description ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@AssignedToUserId", task.AssignedToUserId ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Priority", task.Priority ?? "Medium");
+                    cmd.Parameters.AddWithValue("@Notes", task.Notes ?? (object)DBNull.Value);
+
+                    conn.Open();
+                    int taskId = (int)cmd.ExecuteScalar();
+                    return taskId;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get housekeeping task by ID
+        /// </summary>
+        public HousekeepingTask GetById(int taskId)
+        {
+            string query = @"SELECT t.*, r.RoomNumber, (u.FirstName + ' ' + u.LastName) as AssignedToName
+                            FROM HousekeepingTasks t
+                            LEFT JOIN Rooms r ON t.RoomId = r.RoomId
+                            LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
+                            WHERE t.TaskId = @TaskId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TaskId", taskId);
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapReaderToTask(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get all housekeeping tasks
+        /// </summary>
+        public List<HousekeepingTask> GetAll()
+        {
+            List<HousekeepingTask> tasks = new List<HousekeepingTask>();
+
+            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+                            FROM HousekeepingTasks t
+                            LEFT JOIN Rooms r ON t.RoomId = r.RoomId
+                            LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
+                            ORDER BY t.CreatedDate DESC";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tasks.Add(MapReaderToTask(reader));
+                        }
+                    }
+                }
+            }
+            return tasks;
+        }
+
+        /// <summary>
+        /// Get tasks by status
+        /// </summary>
+        public List<HousekeepingTask> GetTasksByStatus(string status)
+        {
+            List<HousekeepingTask> tasks = new List<HousekeepingTask>();
+
+            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+                            FROM HousekeepingTasks t
+                            LEFT JOIN Rooms r ON t.RoomId = r.RoomId
+                            LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
+                            WHERE t.Status = @Status
+                            ORDER BY t.CreatedDate DESC";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Status", status);
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tasks.Add(MapReaderToTask(reader));
+                        }
+                    }
+                }
+            }
+            return tasks;
+        }
+
+        /// <summary>
+        /// Get tasks by room ID
+        /// </summary>
+        public List<HousekeepingTask> GetTasksByRoom(int roomId)
+        {
+            List<HousekeepingTask> tasks = new List<HousekeepingTask>();
+
+            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+                            FROM HousekeepingTasks t
+                            LEFT JOIN Rooms r ON t.RoomId = r.RoomId
+                            LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
+                            WHERE t.RoomId = @RoomId
+                            ORDER BY t.CreatedDate DESC";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@RoomId", roomId);
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tasks.Add(MapReaderToTask(reader));
+                        }
+                    }
+                }
+            }
+            return tasks;
+        }
+
+        /// <summary>
+        /// Update housekeeping task
+        /// </summary>
+        public bool Update(HousekeepingTask task)
+        {
+            string query = @"UPDATE HousekeepingTasks 
+                            SET TaskType = @TaskType, 
+                                Status = @Status, 
+                                Description = @Description, 
+                                AssignedToUserId = @AssignedToUserId,
+                                AssignedDate = @AssignedDate,
+                                CompletedDate = @CompletedDate,
+                                Priority = @Priority,
+                                Notes = @Notes,
+                                ModifiedDate = GETDATE()
+                            WHERE TaskId = @TaskId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TaskId", task.TaskId);
+                    cmd.Parameters.AddWithValue("@TaskType", task.TaskType ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Status", task.Status ?? "Pending");
+                    cmd.Parameters.AddWithValue("@Description", task.Description ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@AssignedToUserId", task.AssignedToUserId ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@AssignedDate", task.AssignedDate ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CompletedDate", task.CompletedDate ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Priority", task.Priority ?? "Medium");
+                    cmd.Parameters.AddWithValue("@Notes", task.Notes ?? (object)DBNull.Value);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update task status
+        /// </summary>
+        public bool UpdateStatus(int taskId, string status)
+        {
+            string query = @"UPDATE HousekeepingTasks 
+                            SET Status = @Status, 
+                                ModifiedDate = GETDATE()
+                            WHERE TaskId = @TaskId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TaskId", taskId);
+                    cmd.Parameters.AddWithValue("@Status", status);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete housekeeping task
+        /// </summary>
+        public bool Delete(int taskId)
+        {
+            string query = "DELETE FROM HousekeepingTasks WHERE TaskId = @TaskId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TaskId", taskId);
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Map SqlDataReader to HousekeepingTask object
+        /// </summary>
+        private HousekeepingTask MapReaderToTask(SqlDataReader reader)
+        {
+            return new HousekeepingTask
+            {
+                TaskId = (int)reader["TaskId"],
+                RoomId = (int)reader["RoomId"],
+                TaskType = reader["TaskType"] != DBNull.Value ? (string)reader["TaskType"] : null,
+                Status = reader["Status"] != DBNull.Value ? (string)reader["Status"] : "Pending",
+                Description = reader["Description"] != DBNull.Value ? (string)reader["Description"] : null,
+                AssignedToUserId = reader["AssignedToUserId"] != DBNull.Value ? (int?)reader["AssignedToUserId"] : null,
+                AssignedDate = reader["AssignedDate"] != DBNull.Value ? (DateTime?)reader["AssignedDate"] : null,
+                CompletedDate = reader["CompletedDate"] != DBNull.Value ? (DateTime?)reader["CompletedDate"] : null,
+                Priority = reader["Priority"] != DBNull.Value ? (string)reader["Priority"] : "Medium",
+                Notes = reader["Notes"] != DBNull.Value ? (string)reader["Notes"] : null,
+                CreatedDate = (DateTime)reader["CreatedDate"],
+                ModifiedDate = (DateTime)reader["ModifiedDate"],
+                // Navigation properties
+                RoomNumber = reader["RoomNumber"] != DBNull.Value ? (string)reader["RoomNumber"] : null,
+                AssignedToName = reader["AssignedToName"] != DBNull.Value ? (string)reader["AssignedToName"] : null
+            };
+        }
+    }
+}

@@ -1,0 +1,145 @@
+﻿using System;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.Helpers;
+
+namespace HotelManagementSystem.Patterns
+{
+    /// <summary>
+    /// Observer Pattern - Concrete Observer
+    /// HousekeepingObserver automatically creates cleaning tasks when notified of room events
+    /// Design Pattern #5: Observer Pattern
+    /// </summary>
+    public class HousekeepingObserver : IObserver
+    {
+        private HousekeepingTaskRepository _taskRepository;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public HousekeepingObserver()
+        {
+            _taskRepository = new HousekeepingTaskRepository();
+        }
+
+        /// <summary>
+        /// Update method called by RoomSubject when a room event occurs
+        /// Automatically creates cleaning tasks based on event type
+        /// </summary>
+        /// <param name="roomId">ID of the room</param>
+        /// <param name="eventType">Type of event (e.g., "CheckOut")</param>
+        /// <param name="additionalData">Additional event data</param>
+        public void Update(int roomId, string eventType, object additionalData = null)
+        {
+            try
+            {
+                // Handle different event types
+                switch (eventType)
+                {
+                    case "CheckOut":
+                        CreateCheckOutCleaningTask(roomId, additionalData);
+                        break;
+
+                    case "CheckIn":
+                        // Future: Could create maintenance check task before check-in
+                        break;
+
+                    case "Maintenance":
+                        CreateMaintenanceTask(roomId, additionalData);
+                        break;
+
+                    default:
+                        // Unknown event type - no action
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error (in production, use proper logging)
+                Console.WriteLine($"HousekeepingObserver Error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Create a cleaning task after guest checkout
+        /// </summary>
+        private void CreateCheckOutCleaningTask(int roomId, object additionalData)
+        {
+            // Ensure user is logged in
+            if (!SessionManager.IsLoggedIn)
+            {
+                Console.WriteLine("Cannot create task: No user logged in");
+                return;
+            }
+
+            // Extract booking ID if provided
+            int? bookingId = additionalData as int?;
+
+            // Create new housekeeping task
+            HousekeepingTask task = new HousekeepingTask
+            {
+                RoomId = roomId,
+                TaskType = "Cleaning",
+                Status = "Pending",
+                Priority = "High", // High priority for checkout cleaning
+                ScheduledDate = DateTime.Now, // Schedule immediately
+                Notes = bookingId.HasValue 
+                    ? $"Room cleaning required after checkout (Booking #{bookingId.Value}). Auto-created by system." 
+                    : "Room cleaning required after checkout. Auto-created by system.",
+                CreatedByUserId = SessionManager.CurrentUser.UserId,
+                CreatedDate = DateTime.Now
+            };
+
+            // Save to database
+            int taskId = _taskRepository.Insert(task);
+
+            // Log success (optional)
+            if (taskId > 0)
+            {
+                Console.WriteLine($"✓ Housekeeping task #{taskId} auto-created for Room ID {roomId} (CheckOut)");
+            }
+        }
+
+        /// <summary>
+        /// Create a maintenance task for a room
+        /// </summary>
+        private void CreateMaintenanceTask(int roomId, object additionalData)
+        {
+            // Ensure user is logged in
+            if (!SessionManager.IsLoggedIn)
+            {
+                Console.WriteLine("Cannot create task: No user logged in");
+                return;
+            }
+
+            string description = additionalData as string ?? "Maintenance required";
+
+            HousekeepingTask task = new HousekeepingTask
+            {
+                RoomId = roomId,
+                TaskType = "Maintenance",
+                Status = "Pending",
+                Priority = "Medium",
+                ScheduledDate = DateTime.Now,
+                Notes = $"{description}. Auto-created by system.",
+                CreatedByUserId = SessionManager.CurrentUser.UserId,
+                CreatedDate = DateTime.Now
+            };
+
+            int taskId = _taskRepository.Insert(task);
+
+            if (taskId > 0)
+            {
+                Console.WriteLine($"✓ Housekeeping task #{taskId} auto-created for Room ID {roomId} (Maintenance)");
+            }
+        }
+
+        /// <summary>
+        /// Get task repository (for testing)
+        /// </summary>
+        public HousekeepingTaskRepository TaskRepository
+        {
+            get { return _taskRepository; }
+        }
+    }
+}

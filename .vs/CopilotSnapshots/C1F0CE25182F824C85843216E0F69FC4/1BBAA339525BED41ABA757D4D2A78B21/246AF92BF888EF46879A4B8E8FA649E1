@@ -1,0 +1,284 @@
+﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.UI.Housekeeping
+{
+    /// <summary>
+    /// Form to view housekeeping tasks
+    /// Day 21 - Simple task list display
+    /// </summary>
+    public partial class HousekeepingTasksForm : Form
+    {
+        private HousekeepingTaskRepository taskRepository;
+        private List<HousekeepingTask> allTasks;
+
+        public HousekeepingTasksForm()
+        {
+            InitializeComponent();
+            taskRepository = new HousekeepingTaskRepository();
+            this.Load += HousekeepingTasksForm_Load;
+        }
+
+        private void HousekeepingTasksForm_Load(object sender, EventArgs e)
+        {
+            SetupDataGridView();
+            LoadTasks(); // Load tasks BEFORE setting up filter to avoid null reference
+            LoadStatusFilter();
+            UpdateTaskCount();
+        }
+
+        /// <summary>
+        /// Setup DataGridView columns
+        /// </summary>
+        private void SetupDataGridView()
+        {
+            dgvTasks.AutoGenerateColumns = false;
+            dgvTasks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvTasks.MultiSelect = false;
+            dgvTasks.AllowUserToAddRows = false;
+            dgvTasks.ReadOnly = true;
+            dgvTasks.RowHeadersVisible = false;
+            dgvTasks.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
+            // Define columns
+            dgvTasks.Columns.Clear();
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TaskId",
+                HeaderText = "Task ID",
+                DataPropertyName = "TaskId",
+                Width = 80
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "RoomNumber",
+                HeaderText = "Room #",
+                DataPropertyName = "RoomNumber",
+                Width = 80
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TaskType",
+                HeaderText = "Task Type",
+                DataPropertyName = "TaskType",
+                Width = 100
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Status",
+                HeaderText = "Status",
+                DataPropertyName = "Status",
+                Width = 100
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Priority",
+                HeaderText = "Priority",
+                DataPropertyName = "Priority",
+                Width = 80
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Description",
+                HeaderText = "Description",
+                DataPropertyName = "Description",
+                Width = 300
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "AssignedToName",
+                HeaderText = "Assigned To",
+                DataPropertyName = "AssignedToName",
+                Width = 120
+            });
+
+            dgvTasks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CreatedDate",
+                HeaderText = "Created Date",
+                DataPropertyName = "CreatedDate",
+                Width = 140,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MM/dd/yyyy HH:mm" }
+            });
+        }
+
+        /// <summary>
+        /// Load status filter dropdown
+        /// </summary>
+        private void LoadStatusFilter()
+        {
+            cmbStatusFilter.Items.Clear();
+            cmbStatusFilter.Items.Add("All Tasks");
+            cmbStatusFilter.Items.Add("Pending");
+            cmbStatusFilter.Items.Add("InProgress");
+            cmbStatusFilter.Items.Add("Completed");
+            cmbStatusFilter.Items.Add("Cancelled");
+            cmbStatusFilter.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// Load tasks from database
+        /// </summary>
+        private void LoadTasks()
+        {
+            try
+            {
+                allTasks = taskRepository.GetAll();
+                ApplyFilters();
+                ColorCodeRows();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading tasks: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Apply filters to task list
+        /// </summary>
+        private void ApplyFilters()
+        {
+            IEnumerable<HousekeepingTask> filtered = allTasks;
+
+            // Filter by status
+            if (cmbStatusFilter.SelectedIndex > 0)
+            {
+                string selectedStatus = cmbStatusFilter.SelectedItem.ToString();
+                filtered = filtered.Where(t => t.Status == selectedStatus);
+            }
+
+            // Filter by search text (room number or description)
+            if (!string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                string searchTerm = txtSearch.Text.Trim().ToLower();
+                filtered = filtered.Where(t =>
+                    (t.RoomNumber != null && t.RoomNumber.ToLower().Contains(searchTerm)) ||
+                    (t.Description != null && t.Description.ToLower().Contains(searchTerm)) ||
+                    t.TaskId.ToString().Contains(searchTerm)
+                );
+            }
+
+            // Bind to grid
+            dgvTasks.DataSource = filtered.ToList();
+            UpdateTaskCount();
+        }
+
+        /// <summary>
+        /// Color-code rows based on status
+        /// </summary>
+        private void ColorCodeRows()
+        {
+            foreach (DataGridViewRow row in dgvTasks.Rows)
+            {
+                if (row.Cells["Status"].Value != null)
+                {
+                    string status = row.Cells["Status"].Value.ToString();
+
+                    switch (status)
+                    {
+                        case "Pending":
+                            row.DefaultCellStyle.BackColor = Color.LightYellow;
+                            break;
+                        case "InProgress":
+                            row.DefaultCellStyle.BackColor = Color.LightBlue;
+                            break;
+                        case "Completed":
+                            row.DefaultCellStyle.BackColor = Color.LightGreen;
+                            break;
+                        case "Cancelled":
+                            row.DefaultCellStyle.BackColor = Color.LightCoral;
+                            row.DefaultCellStyle.ForeColor = Color.DarkRed;
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update task count label
+        /// </summary>
+        private void UpdateTaskCount()
+        {
+            lblTaskCount.Text = $"{dgvTasks.Rows.Count} tasks";
+        }
+
+        // Event Handlers
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            LoadTasks();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            ApplyFilters();
+            ColorCodeRows();
+        }
+
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnSearch_Click(sender, e);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void cmbStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+            ColorCodeRows();
+        }
+
+        private void btnViewDetails_Click(object sender, EventArgs e)
+        {
+            if (dgvTasks.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a task to view details.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int taskId = (int)dgvTasks.SelectedRows[0].Cells["TaskId"].Value;
+            HousekeepingTask task = allTasks.FirstOrDefault(t => t.TaskId == taskId);
+
+            if (task != null)
+            {
+                string details = $"Task Details\n" +
+                               $"???????????????????????\n\n" +
+                               $"Task ID: {task.TaskId}\n" +
+                               $"Room: {task.RoomNumber ?? "N/A"}\n" +
+                               $"Task Type: {task.TaskType ?? "N/A"}\n" +
+                               $"Status: {task.Status}\n" +
+                               $"Priority: {task.Priority}\n\n" +
+                               $"Description:\n{task.Description ?? "No description"}\n\n" +
+                               $"Assigned To: {task.AssignedToName ?? "Unassigned"}\n" +
+                               $"Assigned Date: {(task.AssignedDate.HasValue ? task.AssignedDate.Value.ToString("MM/dd/yyyy HH:mm") : "Not assigned")}\n\n" +
+                               $"Completed Date: {(task.CompletedDate.HasValue ? task.CompletedDate.Value.ToString("MM/dd/yyyy HH:mm") : "Not completed")}\n\n" +
+                               $"Notes: {task.Notes ?? "No notes"}\n\n" +
+                               $"Created: {task.CreatedDate:MM/dd/yyyy HH:mm}\n" +
+                               $"Modified: {task.ModifiedDate:MM/dd/yyyy HH:mm}";
+
+                MessageBox.Show(details, "Task Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void dgvTasks_DoubleClick(object sender, EventArgs e)
+        {
+            btnViewDetails_Click(sender, e);
+        }
+    }
+}

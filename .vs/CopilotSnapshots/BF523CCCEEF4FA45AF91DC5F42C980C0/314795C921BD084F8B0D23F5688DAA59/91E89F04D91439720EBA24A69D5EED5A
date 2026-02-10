@@ -1,0 +1,567 @@
+﻿using System;
+using System.Collections.Generic;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Patterns;
+
+namespace HotelManagementSystem.Testing
+{
+    /// <summary>
+    /// Day 22 - Strategy Pattern Tests
+    /// Tests for payment processing with different payment strategies
+    /// </summary>
+    public class StrategyPatternTests
+    {
+        /// <summary>
+        /// Run all strategy pattern tests
+        /// </summary>
+        /// <returns>Test results summary</returns>
+        public static string RunAllTests()
+        {
+            List<string> results = new List<string>();
+            int passed = 0;
+            int failed = 0;
+
+            results.Add("=== DAY 22: STRATEGY PATTERN TESTS ===\n");
+
+            // Test 1: Cash Payment Strategy
+            if (TestCashPaymentStrategy())
+            {
+                results.Add("? Test 1: Cash Payment Strategy - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 1: Cash Payment Strategy - FAILED");
+                failed++;
+            }
+
+            // Test 2: Credit Card Payment Strategy
+            if (TestCreditCardPaymentStrategy())
+            {
+                results.Add("? Test 2: Credit Card Payment Strategy - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 2: Credit Card Payment Strategy - FAILED");
+                failed++;
+            }
+
+            // Test 3: Payment Context - Strategy Switching
+            if (TestPaymentContextStrategySwitching())
+            {
+                results.Add("? Test 3: Payment Context Strategy Switching - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 3: Payment Context Strategy Switching - FAILED");
+                failed++;
+            }
+
+            // Test 4: Partial Payment
+            if (TestPartialPayment())
+            {
+                results.Add("? Test 4: Partial Payment - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 4: Partial Payment - FAILED");
+                failed++;
+            }
+
+            // Test 5: Credit Card Validation
+            if (TestCreditCardValidation())
+            {
+                results.Add("? Test 5: Credit Card Validation - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 5: Credit Card Validation - FAILED");
+                failed++;
+            }
+
+            // Test 6: Cash Change Calculation
+            if (TestCashChangeCalculation())
+            {
+                results.Add("? Test 6: Cash Change Calculation - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 6: Cash Change Calculation - FAILED");
+                failed++;
+            }
+
+            // Test 7: Full Payment Workflow
+            if (TestFullPaymentWorkflow())
+            {
+                results.Add("? Test 7: Full Payment Workflow - PASSED");
+                passed++;
+            }
+            else
+            {
+                results.Add("? Test 7: Full Payment Workflow - FAILED");
+                failed++;
+            }
+
+            // Summary
+            results.Add($"\n=== SUMMARY ===");
+            results.Add($"Total Tests: {passed + failed}");
+            results.Add($"Passed: {passed} ?");
+            results.Add($"Failed: {failed} ?");
+            results.Add($"Success Rate: {(double)passed / (passed + failed) * 100:F1}%");
+
+            if (failed == 0)
+            {
+                results.Add("\n? ALL STRATEGY PATTERN TESTS PASSED! ?");
+                results.Add("Day 22 Complete: Strategy Pattern Implemented Successfully!");
+            }
+            else
+            {
+                results.Add($"\n? {failed} test(s) failed. Please review the implementation.");
+            }
+
+            return string.Join(Environment.NewLine, results);
+        }
+
+        /// <summary>
+        /// Test 1: Cash Payment Strategy
+        /// </summary>
+        private static bool TestCashPaymentStrategy()
+        {
+            try
+            {
+                // Create test invoice
+                Invoice testInvoice = CreateTestInvoice();
+                
+                // Create cash payment strategy
+                CashPaymentStrategy cashStrategy = new CashPaymentStrategy();
+                
+                // Verify payment method name
+                if (cashStrategy.GetPaymentMethodName() != "Cash")
+                    return false;
+                
+                // Validate payment amount
+                if (!cashStrategy.ValidatePayment(100.00m))
+                    return false;
+                
+                if (cashStrategy.ValidatePayment(-50.00m)) // Negative should fail
+                    return false;
+                
+                if (cashStrategy.ValidatePayment(200000.00m)) // Over limit should fail
+                    return false;
+                
+                // Process payment
+                Payment payment = cashStrategy.ProcessPayment(testInvoice, 100.00m, 1);
+                
+                if (payment == null)
+                    return false;
+                
+                if (payment.PaymentMethod != "Cash")
+                    return false;
+                
+                if (payment.Amount != 100.00m)
+                    return false;
+                
+                if (payment.Status != "Completed")
+                    return false;
+                
+                if (string.IsNullOrEmpty(payment.TransactionId))
+                    return false;
+                
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 2: Credit Card Payment Strategy
+        /// </summary>
+        private static bool TestCreditCardPaymentStrategy()
+        {
+            try
+            {
+                // Create test invoice
+                Invoice testInvoice = CreateTestInvoice();
+                
+                // Create credit card payment strategy
+                CreditCardPaymentStrategy ccStrategy = new CreditCardPaymentStrategy();
+                
+                // Verify payment method name
+                if (ccStrategy.GetPaymentMethodName() != "Credit Card")
+                    return false;
+                
+                // Validate payment amount
+                if (!ccStrategy.ValidatePayment(200.00m))
+                    return false;
+                
+                if (ccStrategy.ValidatePayment(-50.00m)) // Negative should fail
+                    return false;
+                
+                // Process payment
+                Payment payment = ccStrategy.ProcessPayment(testInvoice, 150.00m, 1);
+                
+                if (payment == null)
+                    return false;
+                
+                if (payment.PaymentMethod != "CreditCard")
+                    return false;
+                
+                if (payment.Amount != 150.00m)
+                    return false;
+                
+                if (payment.Status != "Completed")
+                    return false;
+                
+                if (string.IsNullOrEmpty(payment.TransactionId))
+                    return false;
+                
+                if (payment.PaymentGateway != "SimulatedGateway")
+                    return false;
+                
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 3: Payment Context - Strategy Switching
+        /// </summary>
+        private static bool TestPaymentContextStrategySwitching()
+        {
+            try
+            {
+                PaymentContext context = new PaymentContext();
+                
+                // Default should be cash
+                if (context.GetPaymentMethodName() != "Cash")
+                    return false;
+                
+                // Switch to credit card
+                context.SetPaymentStrategy("CreditCard");
+                if (context.GetPaymentMethodName() != "Credit Card")
+                    return false;
+                
+                // Switch back to cash
+                context.SetPaymentStrategy("Cash");
+                if (context.GetPaymentMethodName() != "Cash")
+                    return false;
+                
+                // Test with strategy object
+                context.SetPaymentStrategy(new CreditCardPaymentStrategy());
+                if (context.GetPaymentMethodName() != "Credit Card")
+                    return false;
+                
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 4: Partial Payment
+        /// </summary>
+        private static bool TestPartialPayment()
+        {
+            try
+            {
+                // Create test invoice with $300 balance
+                Invoice testInvoice = CreateTestInvoice();
+                testInvoice.TotalAmount = 300.00m;
+                testInvoice.PaidAmount = 0.00m;
+                testInvoice.BalanceAmount = 300.00m;
+                
+                PaymentContext context = new PaymentContext(new CashPaymentStrategy());
+                
+                // Pay $100 (partial)
+                Payment payment1 = context.ExecutePayment(testInvoice, 100.00m, 1);
+                if (payment1 == null || payment1.Amount != 100.00m)
+                    return false;
+                
+                // Invoice should show partial payment
+                Invoice updatedInvoice = new InvoiceRepository().GetById(testInvoice.InvoiceId);
+                if (updatedInvoice.Status != "PartiallyPaid")
+                    return false;
+                
+                if (updatedInvoice.BalanceAmount != 200.00m)
+                    return false;
+                
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 5: Credit Card Validation
+        /// </summary>
+        private static bool TestCreditCardValidation()
+        {
+            try
+            {
+                // Valid card numbers (using Luhn algorithm)
+                if (!CreditCardPaymentStrategy.ValidateCardNumber("4532015112830366")) // Visa
+                    return false;
+                
+                if (!CreditCardPaymentStrategy.ValidateCardNumber("5425233430109903")) // Mastercard
+                    return false;
+                
+                // Invalid card numbers
+                if (CreditCardPaymentStrategy.ValidateCardNumber("1234567890123456"))
+                    return false;
+                
+                if (CreditCardPaymentStrategy.ValidateCardNumber(""))
+                    return false;
+                
+                if (CreditCardPaymentStrategy.ValidateCardNumber("123")) // Too short
+                    return false;
+                
+                // CVV validation
+                if (!CreditCardPaymentStrategy.ValidateCVV("123"))
+                    return false;
+                
+                if (!CreditCardPaymentStrategy.ValidateCVV("1234"))
+                    return false;
+                
+                if (CreditCardPaymentStrategy.ValidateCVV("12")) // Too short
+                    return false;
+                
+                if (CreditCardPaymentStrategy.ValidateCVV("12345")) // Too long
+                    return false;
+                
+                // Card masking
+                string masked = CreditCardPaymentStrategy.MaskCardNumber("4532015112830366");
+                if (masked != "**** **** **** 0366")
+                    return false;
+                
+                // Get last 4 digits
+                string last4 = CreditCardPaymentStrategy.GetLast4Digits("4532015112830366");
+                if (last4 != "0366")
+                    return false;
+                
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 6: Cash Change Calculation
+        /// </summary>
+        private static bool TestCashChangeCalculation()
+        {
+            try
+            {
+                // Test change calculation
+                decimal change1 = CashPaymentStrategy.CalculateChange(50.00m, 100.00m);
+                if (change1 != 50.00m)
+                    return false;
+                
+                decimal change2 = CashPaymentStrategy.CalculateChange(75.50m, 80.00m);
+                if (change2 != 4.50m)
+                    return false;
+                
+                decimal change3 = CashPaymentStrategy.CalculateChange(100.00m, 100.00m);
+                if (change3 != 0.00m)
+                    return false;
+                
+                // Exact amount
+                decimal change4 = CashPaymentStrategy.CalculateChange(25.99m, 25.99m);
+                if (change4 != 0.00m)
+                    return false;
+                
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Test 7: Full Payment Workflow (End-to-End)
+        /// </summary>
+        private static bool TestFullPaymentWorkflow()
+        {
+            try
+            {
+                // Step 1: Create a booking (simulate checkout)
+                BookingRepository bookingRepo = new BookingRepository();
+                GuestRepository guestRepo = new GuestRepository();
+                RoomRepository roomRepo = new RoomRepository();
+                InvoiceRepository invoiceRepo = new InvoiceRepository();
+                
+                // Get or create test guest
+                Guest testGuest = guestRepo.GetAll().Find(g => g.Email == "test@payment.com");
+                if (testGuest == null)
+                {
+                    testGuest = new Guest
+                    {
+                        FirstName = "Payment",
+                        LastName = "Test",
+                        Email = "test@payment.com",
+                        Phone = "555-9999"
+                    };
+                    guestRepo.Insert(testGuest);
+                }
+                
+                // Get available room
+                Room testRoom = roomRepo.GetAll().Find(r => r.Status == "Available");
+                if (testRoom == null)
+                    return false;
+                
+                // Create booking
+                Booking testBooking = new Booking
+                {
+                    GuestId = testGuest.GuestId,
+                    RoomId = testRoom.RoomId,
+                    CheckInDate = DateTime.Now,
+                    CheckOutDate = DateTime.Now.AddDays(2),
+                    Status = "CheckedOut", // Simulate checkout
+                    NumberOfGuests = 1,
+                    TotalAmount = 200.00m,
+                    RoomCharges = 200.00m,
+                    CreatedByUserId = 1
+                };
+                bookingRepo.Insert(testBooking);
+                
+                // Step 2: Generate invoice
+                Invoice invoice = new Invoice
+                {
+                    BookingId = testBooking.BookingId,
+                    InvoiceNumber = "TEST-" + DateTime.Now.Ticks,
+                    SubTotal = 200.00m,
+                    TaxRate = 10.0m,
+                    TaxAmount = 20.00m,
+                    TotalAmount = 220.00m,
+                    PaidAmount = 0.00m,
+                    BalanceAmount = 220.00m,
+                    Status = "Pending",
+                    IssueDate = DateTime.Now,
+                    DueDate = DateTime.Now.AddDays(7)
+                };
+                invoiceRepo.Insert(invoice);
+                
+                // Step 3: Process payment using Strategy Pattern
+                PaymentContext paymentContext = new PaymentContext();
+                
+                // Pay with cash
+                decimal change;
+                Payment cashPayment = paymentContext.ProcessCashPayment(invoice, 250.00m, 1, out change);
+                
+                if (cashPayment == null)
+                    return false;
+                
+                if (change != 30.00m) // 250 - 220 = 30
+                    return false;
+                
+                // Step 4: Verify invoice is paid
+                Invoice updatedInvoice = invoiceRepo.GetById(invoice.InvoiceId);
+                
+                if (updatedInvoice.Status != "Paid")
+                    return false;
+                
+                if (updatedInvoice.BalanceAmount != 0.00m)
+                    return false;
+                
+                if (updatedInvoice.PaidAmount != 220.00m)
+                    return false;
+                
+                // Cleanup: Cancel the test booking
+                bookingRepo.CancelBooking(testBooking.BookingId, "Test cleanup");
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Test 7 Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Helper method to create a test invoice
+        /// </summary>
+        private static Invoice CreateTestInvoice()
+        {
+            try
+            {
+                InvoiceRepository invoiceRepo = new InvoiceRepository();
+                BookingRepository bookingRepo = new BookingRepository();
+                GuestRepository guestRepo = new GuestRepository();
+                RoomRepository roomRepo = new RoomRepository();
+                
+                // Get first available guest and room from database
+                var guests = guestRepo.GetAll();
+                var rooms = roomRepo.GetAll();
+                
+                if (guests == null || guests.Count == 0 || rooms == null || rooms.Count == 0)
+                {
+                    throw new Exception("No guests or rooms found in database for testing");
+                }
+                
+                int guestId = guests[0].GuestId;
+                int roomId = rooms[0].RoomId;
+                
+                // Create a temporary booking for this test invoice
+                Booking tempBooking = new Booking
+                {
+                    GuestId = guestId,
+                    RoomId = roomId,
+                    CheckInDate = DateTime.Now.AddDays(-2),
+                    CheckOutDate = DateTime.Now.AddDays(-1),
+                    Status = "CheckedOut",
+                    NumberOfGuests = 1,
+                    TotalAmount = 100.00m,
+                    RoomCharges = 100.00m,
+                    CreatedByUserId = 1
+                };
+                
+                int bookingId = bookingRepo.Insert(tempBooking);
+                tempBooking.BookingId = bookingId;
+                
+                // Create test invoice
+                Invoice testInvoice = new Invoice
+                {
+                    BookingId = tempBooking.BookingId,
+                    InvoiceNumber = "TEST-INV-" + DateTime.Now.Ticks,
+                    SubTotal = 100.00m,
+                    TaxRate = 10.0m,
+                    TaxAmount = 10.00m,
+                    TotalAmount = 110.00m,
+                    PaidAmount = 0.00m,
+                    BalanceAmount = 110.00m,
+                    Status = "Pending",
+                    IssueDate = DateTime.Now,
+                    DueDate = DateTime.Now.AddDays(7)
+                };
+                
+                int invoiceId = invoiceRepo.Insert(testInvoice);
+                testInvoice.InvoiceId = invoiceId;
+                
+                return testInvoice;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating test invoice: {ex.Message}");
+                return null;
+            }
+        }
+    }
+}

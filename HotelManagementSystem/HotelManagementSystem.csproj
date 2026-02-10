@@ -76,18 +76,26 @@
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\RoomFactory.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Patterns\CashPaymentStrategy.cs" />
+    <Compile Include="Patterns\CreditCardPaymentStrategy.cs" />
     <Compile Include="Patterns\HousekeepingObserver.cs" />
     <Compile Include="Patterns\IObserver.cs" />
+    <Compile Include="Patterns\IPaymentStrategy.cs" />
+    <Compile Include="Patterns\PaymentContext.cs" />
     <Compile Include="Patterns\RoomSubject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Testing\BookingFacadeTests.cs" />
     <Compile Include="Testing\BookingRepositoryTests.cs" />
     <Compile Include="Testing\Day17IntegrationTests.cs" />
+    <Compile Include="Testing\InvoiceFormTests.cs" />
+    <Compile Include="Testing\InvoiceManagementTests.cs" />
     <Compile Include="Testing\ObserverPatternTests.cs" />
     <Compile Include="Testing\RoomFactoryTests.cs" />
+    <Compile Include="Testing\StrategyPatternTests.cs" />
     <Compile Include="Testing\TestingCode.cs" />
     <Compile Include="Testing\Week1ComprehensiveTests.cs" />
+    <Compile Include="TestRunner.cs" />
     <Compile Include="UI\Auth\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,11 +132,35 @@
     <Compile Include="UI\Housekeeping\HousekeepingTasksForm.Designer.cs">
       <DependentUpon>HousekeepingTasksForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Invoices\InvoiceDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Invoices\InvoiceDetailsDialog.Designer.cs">
+      <DependentUpon>InvoiceDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Invoices\InvoiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Invoices\InvoiceForm.Designer.cs">
+      <DependentUpon>InvoiceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Invoices\InvoiceListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Invoices\InvoiceListForm.Designer.cs">
+      <DependentUpon>InvoiceListForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Payments\PaymentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Payments\PaymentForm.Designer.cs">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Rooms\AddEditRoomDialog.cs">
       <SubType>Form</SubType>
@@ -160,6 +192,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\Invoices\InvoiceForm.resx">
+      <DependentUpon>InvoiceForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -173,10 +208,19 @@
     <None Include="Context\day15_complete.md" />
     <None Include="Context\DAY17_SUMMARY.md" />
     <None Include="Context\day20_summary.md" />
+    <None Include="Context\DAY21_BUGFIX_SUMMARY.md" />
+    <None Include="Context\DAY21_SUMMARY.md" />
+    <None Include="Context\Day22_Complete.md" />
+    <None Include="Context\Day23_Summary.md" />
+    <None Include="Context\DAY24_COMPLETE.md" />
+    <None Include="Context\day24_quickref.md" />
+    <None Include="Context\day24_summary.md" />
+    <None Include="Context\day24_test_fix.md" />
     <None Include="Context\Day9_QuickStart.md" />
     <None Include="Context\DAY_12_SUMMARY.md" />
     <None Include="Context\done_day.md" />
     <None Include="Context\RoomStatusDashboard_UserGuide.md" />
+    <None Include="Context\WEEK3_COMPLETE.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -13,3 +13,4 @@ C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Deb
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelMan.F5E31FD0.Up2Date
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.exe
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.pdb
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.UI.Invoices.InvoiceForm.resources

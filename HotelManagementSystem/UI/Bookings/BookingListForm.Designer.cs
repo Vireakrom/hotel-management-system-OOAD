@@ -40,6 +40,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnCancelBooking = new System.Windows.Forms.Button();
             this.btnCheckOut = new System.Windows.Forms.Button();
+            this.btnProcessPayment = new System.Windows.Forms.Button();
             this.btnCheckIn = new System.Windows.Forms.Button();
             this.btnViewDetails = new System.Windows.Forms.Button();
             this.lblTotalBookings = new System.Windows.Forms.Label();
@@ -162,13 +163,14 @@ namespace HotelManagementSystem.UI.Bookings
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.btnProcessPayment);
             this.groupBox2.Controls.Add(this.btnCancelBooking);
             this.groupBox2.Controls.Add(this.btnCheckOut);
             this.groupBox2.Controls.Add(this.btnCheckIn);
             this.groupBox2.Controls.Add(this.btnViewDetails);
             this.groupBox2.Location = new System.Drawing.Point(878, 45);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(294, 80);
+            this.groupBox2.Size = new System.Drawing.Size(294, 110);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Actions";
@@ -179,13 +181,27 @@ namespace HotelManagementSystem.UI.Bookings
             this.btnCancelBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelBooking.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCancelBooking.ForeColor = System.Drawing.Color.White;
-            this.btnCancelBooking.Location = new System.Drawing.Point(150, 47);
+            this.btnCancelBooking.Location = new System.Drawing.Point(150, 75);
             this.btnCancelBooking.Name = "btnCancelBooking";
             this.btnCancelBooking.Size = new System.Drawing.Size(130, 27);
-            this.btnCancelBooking.TabIndex = 3;
+            this.btnCancelBooking.TabIndex = 4;
             this.btnCancelBooking.Text = "Cancel Booking";
             this.btnCancelBooking.UseVisualStyleBackColor = false;
             this.btnCancelBooking.Click += new System.EventHandler(this.btnCancelBooking_Click);
+            // 
+            // btnProcessPayment
+            // 
+            this.btnProcessPayment.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(150)))), ((int)(((byte)(243)))));
+            this.btnProcessPayment.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProcessPayment.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnProcessPayment.ForeColor = System.Drawing.Color.White;
+            this.btnProcessPayment.Location = new System.Drawing.Point(15, 75);
+            this.btnProcessPayment.Name = "btnProcessPayment";
+            this.btnProcessPayment.Size = new System.Drawing.Size(130, 27);
+            this.btnProcessPayment.TabIndex = 3;
+            this.btnProcessPayment.Text = "Process Payment";
+            this.btnProcessPayment.UseVisualStyleBackColor = false;
+            this.btnProcessPayment.Click += new System.EventHandler(this.btnProcessPayment_Click);
             // 
             // btnCheckOut
             // 
@@ -278,6 +294,7 @@ namespace HotelManagementSystem.UI.Bookings
         private System.Windows.Forms.Button btnCheckIn;
         private System.Windows.Forms.Button btnCheckOut;
         private System.Windows.Forms.Button btnCancelBooking;
+        private System.Windows.Forms.Button btnProcessPayment;
         private System.Windows.Forms.Label lblTotalBookings;
     }
 }

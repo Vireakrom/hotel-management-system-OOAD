@@ -17,11 +17,13 @@ namespace HotelManagementSystem.DAL
         public int Insert(HousekeepingTask task)
         {
             string query = @"INSERT INTO HousekeepingTasks 
-                            (RoomId, TaskType, Status, Description, AssignedToUserId, 
-                             Priority, Notes, CreatedDate, ModifiedDate)
+                            (RoomId, TaskType, Status, Priority, ScheduledDate, 
+                             AssignedToUserId, StartTime, EndTime, Notes, CompletionNotes, 
+                             CreatedByUserId)
                             VALUES 
-                            (@RoomId, @TaskType, @Status, @Description, @AssignedToUserId, 
-                             @Priority, @Notes, GETDATE(), GETDATE());
+                            (@RoomId, @TaskType, @Status, @Priority, @ScheduledDate, 
+                             @AssignedToUserId, @StartTime, @EndTime, @Notes, @CompletionNotes, 
+                             @CreatedByUserId);
                             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
@@ -31,10 +33,14 @@ namespace HotelManagementSystem.DAL
                     cmd.Parameters.AddWithValue("@RoomId", task.RoomId);
                     cmd.Parameters.AddWithValue("@TaskType", task.TaskType ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Status", task.Status ?? "Pending");
-                    cmd.Parameters.AddWithValue("@Description", task.Description ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@AssignedToUserId", task.AssignedToUserId ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Priority", task.Priority ?? "Medium");
+                    cmd.Parameters.AddWithValue("@ScheduledDate", task.ScheduledDate);
+                    cmd.Parameters.AddWithValue("@AssignedToUserId", task.AssignedToUserId ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@StartTime", task.StartTime ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@EndTime", task.EndTime ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Notes", task.Notes ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CompletionNotes", task.CompletionNotes ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CreatedByUserId", task.CreatedByUserId);
 
                     conn.Open();
                     int taskId = (int)cmd.ExecuteScalar();
@@ -48,7 +54,7 @@ namespace HotelManagementSystem.DAL
         /// </summary>
         public HousekeepingTask GetById(int taskId)
         {
-            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+            string query = @"SELECT t.*, r.RoomNumber, (u.FirstName + ' ' + u.LastName) as AssignedToName
                             FROM HousekeepingTasks t
                             LEFT JOIN Rooms r ON t.RoomId = r.RoomId
                             LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
@@ -80,7 +86,7 @@ namespace HotelManagementSystem.DAL
         {
             List<HousekeepingTask> tasks = new List<HousekeepingTask>();
 
-            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+            string query = @"SELECT t.*, r.RoomNumber, (u.FirstName + ' ' + u.LastName) as AssignedToName
                             FROM HousekeepingTasks t
                             LEFT JOIN Rooms r ON t.RoomId = r.RoomId
                             LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
@@ -110,7 +116,7 @@ namespace HotelManagementSystem.DAL
         {
             List<HousekeepingTask> tasks = new List<HousekeepingTask>();
 
-            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+            string query = @"SELECT t.*, r.RoomNumber, (u.FirstName + ' ' + u.LastName) as AssignedToName
                             FROM HousekeepingTasks t
                             LEFT JOIN Rooms r ON t.RoomId = r.RoomId
                             LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
@@ -143,7 +149,7 @@ namespace HotelManagementSystem.DAL
         {
             List<HousekeepingTask> tasks = new List<HousekeepingTask>();
 
-            string query = @"SELECT t.*, r.RoomNumber, u.FullName as AssignedToName
+            string query = @"SELECT t.*, r.RoomNumber, (u.FirstName + ' ' + u.LastName) as AssignedToName
                             FROM HousekeepingTasks t
                             LEFT JOIN Rooms r ON t.RoomId = r.RoomId
                             LEFT JOIN Users u ON t.AssignedToUserId = u.UserId
@@ -177,13 +183,13 @@ namespace HotelManagementSystem.DAL
             string query = @"UPDATE HousekeepingTasks 
                             SET TaskType = @TaskType, 
                                 Status = @Status, 
-                                Description = @Description, 
-                                AssignedToUserId = @AssignedToUserId,
-                                AssignedDate = @AssignedDate,
-                                CompletedDate = @CompletedDate,
                                 Priority = @Priority,
+                                ScheduledDate = @ScheduledDate,
+                                AssignedToUserId = @AssignedToUserId,
+                                StartTime = @StartTime,
+                                EndTime = @EndTime,
                                 Notes = @Notes,
-                                ModifiedDate = GETDATE()
+                                CompletionNotes = @CompletionNotes
                             WHERE TaskId = @TaskId";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
@@ -193,12 +199,13 @@ namespace HotelManagementSystem.DAL
                     cmd.Parameters.AddWithValue("@TaskId", task.TaskId);
                     cmd.Parameters.AddWithValue("@TaskType", task.TaskType ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Status", task.Status ?? "Pending");
-                    cmd.Parameters.AddWithValue("@Description", task.Description ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@AssignedToUserId", task.AssignedToUserId ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@AssignedDate", task.AssignedDate ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@CompletedDate", task.CompletedDate ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Priority", task.Priority ?? "Medium");
+                    cmd.Parameters.AddWithValue("@ScheduledDate", task.ScheduledDate);
+                    cmd.Parameters.AddWithValue("@AssignedToUserId", task.AssignedToUserId ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@StartTime", task.StartTime ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@EndTime", task.EndTime ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Notes", task.Notes ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CompletionNotes", task.CompletionNotes ?? (object)DBNull.Value);
 
                     conn.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -213,8 +220,7 @@ namespace HotelManagementSystem.DAL
         public bool UpdateStatus(int taskId, string status)
         {
             string query = @"UPDATE HousekeepingTasks 
-                            SET Status = @Status, 
-                                ModifiedDate = GETDATE()
+                            SET Status = @Status
                             WHERE TaskId = @TaskId";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
@@ -261,14 +267,15 @@ namespace HotelManagementSystem.DAL
                 RoomId = (int)reader["RoomId"],
                 TaskType = reader["TaskType"] != DBNull.Value ? (string)reader["TaskType"] : null,
                 Status = reader["Status"] != DBNull.Value ? (string)reader["Status"] : "Pending",
-                Description = reader["Description"] != DBNull.Value ? (string)reader["Description"] : null,
-                AssignedToUserId = reader["AssignedToUserId"] != DBNull.Value ? (int?)reader["AssignedToUserId"] : null,
-                AssignedDate = reader["AssignedDate"] != DBNull.Value ? (DateTime?)reader["AssignedDate"] : null,
-                CompletedDate = reader["CompletedDate"] != DBNull.Value ? (DateTime?)reader["CompletedDate"] : null,
                 Priority = reader["Priority"] != DBNull.Value ? (string)reader["Priority"] : "Medium",
+                ScheduledDate = (DateTime)reader["ScheduledDate"],
+                StartTime = reader["StartTime"] != DBNull.Value ? (DateTime?)reader["StartTime"] : null,
+                EndTime = reader["EndTime"] != DBNull.Value ? (DateTime?)reader["EndTime"] : null,
                 Notes = reader["Notes"] != DBNull.Value ? (string)reader["Notes"] : null,
+                CompletionNotes = reader["CompletionNotes"] != DBNull.Value ? (string)reader["CompletionNotes"] : null,
                 CreatedDate = (DateTime)reader["CreatedDate"],
-                ModifiedDate = (DateTime)reader["ModifiedDate"],
+                CreatedByUserId = (int)reader["CreatedByUserId"],
+                AssignedToUserId = reader["AssignedToUserId"] != DBNull.Value ? (int?)reader["AssignedToUserId"] : null,
                 // Navigation properties
                 RoomNumber = reader["RoomNumber"] != DBNull.Value ? (string)reader["RoomNumber"] : null,
                 AssignedToName = reader["AssignedToName"] != DBNull.Value ? (string)reader["AssignedToName"] : null

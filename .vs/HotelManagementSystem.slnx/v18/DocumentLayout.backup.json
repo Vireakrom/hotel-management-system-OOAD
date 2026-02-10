@@ -3,44 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\housekeeping\\housekeepingtasksform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\housekeeping\\housekeepingtasksform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\testing\\invoiceformtests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\testing\\invoiceformtests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\housekeeping\\housekeepingtasksform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\housekeeping\\housekeepingtasksform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\context\\day24_test_fix.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\day24_test_fix.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\testing\\observerpatterntests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\testing\\observerpatterntests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\invoices\\invoiceform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\invoices\\invoiceform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\patterns\\roomsubject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\patterns\\roomsubject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\context\\day24_complete.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\day24_complete.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\patterns\\housekeepingobserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\patterns\\housekeepingobserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\context\\day24_summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\day24_summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\dal\\housekeepingtaskrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\dal\\housekeepingtaskrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\context\\day24_quickref.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\day24_quickref.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\patterns\\iobserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\patterns\\iobserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\models\\housekeepingtask.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\models\\housekeepingtask.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\context\\plan.html||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\plan.html||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\bookings\\bookinglistform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\bookings\\bookinglistform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\context\\done_day.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\done_day.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -51,8 +39,20 @@
       "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\housekeeping\\housekeepingtasksform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\housekeeping\\housekeepingtasksform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\invoices\\invoiceform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\invoices\\invoiceform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\invoices\\invoiceform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\invoices\\invoiceform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\ui\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\hotelmanagementsystem\\context\\plan.html||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\plan.html||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -62,7 +62,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -70,168 +70,167 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "HousekeepingTasksForm.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs [Design]",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:29:41.959Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "HousekeepingTasksForm.Designer.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.Designer.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.Designer.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.Designer.cs",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.Designer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAALkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:28:53.875Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "HousekeepingTasksForm.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\Housekeeping\\HousekeepingTasksForm.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:27:59.185Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "MainForm.Designer.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.Designer.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\MainForm.Designer.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.Designer.cs",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\MainForm.Designer.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:25:19.394Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\MainForm.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.cs",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\MainForm.cs",
-              "ViewState": "AgIAALMCAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:23:27.159Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ObserverPatternTests.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Testing\\ObserverPatternTests.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Testing\\ObserverPatternTests.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Testing\\ObserverPatternTests.cs",
-              "RelativeToolTip": "HotelManagementSystem\\Testing\\ObserverPatternTests.cs",
-              "ViewState": "AgIAAKYAAAAAAAAAAAAEwLkAAAAyAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:20:20.706Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "BookingListForm.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Bookings\\BookingListForm.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Bookings\\BookingListForm.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Bookings\\BookingListForm.cs",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\Bookings\\BookingListForm.cs",
-              "ViewState": "AgIAACsCAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:18:39.585Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "HousekeepingObserver.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Patterns\\HousekeepingObserver.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Patterns\\HousekeepingObserver.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Patterns\\HousekeepingObserver.cs",
-              "RelativeToolTip": "HotelManagementSystem\\Patterns\\HousekeepingObserver.cs",
-              "ViewState": "AgIAAGYAAAAAAAAAAAAAAIIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:18:26.042Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "HousekeepingTaskRepository.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\DAL\\HousekeepingTaskRepository.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\DAL\\HousekeepingTaskRepository.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\DAL\\HousekeepingTaskRepository.cs",
-              "RelativeToolTip": "HotelManagementSystem\\DAL\\HousekeepingTaskRepository.cs",
-              "ViewState": "AgIAAN4AAAAAAAAAAAAAABYBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:18:11.763Z",
+              "Title": "day24_test_fix.md",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\day24_test_fix.md",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\day24_test_fix.md",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\day24_test_fix.md",
+              "RelativeToolTip": "HotelManagementSystem\\Context\\day24_test_fix.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-02-10T02:05:46.313Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "RoomSubject.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Patterns\\RoomSubject.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Patterns\\RoomSubject.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Patterns\\RoomSubject.cs",
-              "RelativeToolTip": "HotelManagementSystem\\Patterns\\RoomSubject.cs",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAAAGUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:17:47.728Z",
+              "Title": "DAY24_COMPLETE.md",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\DAY24_COMPLETE.md",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\DAY24_COMPLETE.md",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\DAY24_COMPLETE.md",
+              "RelativeToolTip": "HotelManagementSystem\\Context\\DAY24_COMPLETE.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-02-10T01:55:50.147Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "day24_quickref.md",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\day24_quickref.md",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\day24_quickref.md",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\day24_quickref.md",
+              "RelativeToolTip": "HotelManagementSystem\\Context\\day24_quickref.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-02-10T01:55:19.546Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "day24_summary.md",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\day24_summary.md",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\day24_summary.md",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\day24_summary.md",
+              "RelativeToolTip": "HotelManagementSystem\\Context\\day24_summary.md",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAAADQBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-02-10T01:54:55.309Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "IObserver.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Patterns\\IObserver.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Patterns\\IObserver.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Patterns\\IObserver.cs",
-              "RelativeToolTip": "HotelManagementSystem\\Patterns\\IObserver.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:17:37.829Z",
+              "Title": "done_day.md",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\done_day.md",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\done_day.md",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\done_day.md",
+              "RelativeToolTip": "HotelManagementSystem\\Context\\done_day.md",
+              "ViewState": "AgIAAGcBAAAAAAAAAAAQwAAAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-02-10T01:49:37.077Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "HousekeepingTask.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Models\\HousekeepingTask.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Models\\HousekeepingTask.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Models\\HousekeepingTask.cs",
-              "RelativeToolTip": "HotelManagementSystem\\Models\\HousekeepingTask.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAFQAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 11,
+              "Title": "MainForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\MainForm.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.cs [Design]",
+              "RelativeToolTip": "HotelManagementSystem\\UI\\MainForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T08:17:32.169Z",
+              "WhenOpened": "2026-02-10T01:48:45.309Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\MainForm.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.cs",
+              "RelativeToolTip": "HotelManagementSystem\\UI\\MainForm.cs",
+              "ViewState": "AgIAAKcDAAAAAAAAAAAUwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T01:48:35.473Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 8,
+              "Title": "MainForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.Designer.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\MainForm.Designer.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\MainForm.Designer.cs",
+              "RelativeToolTip": "HotelManagementSystem\\UI\\MainForm.Designer.cs",
+              "ViewState": "AgIAAJkBAAAAAAAAAAAmwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T01:46:54.862Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "InvoiceFormTests.cs",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Testing\\InvoiceFormTests.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\Testing\\InvoiceFormTests.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Testing\\InvoiceFormTests.cs",
+              "RelativeToolTip": "HotelManagementSystem\\Testing\\InvoiceFormTests.cs",
+              "ViewState": "AgIAANcAAAAAAAAAAAAMwKMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T01:45:43.01Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InvoiceForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs [Design]",
+              "RelativeToolTip": "HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T01:44:00.887Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "InvoiceForm.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceForm.Designer.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Invoices\\InvoiceForm.Designer.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceForm.Designer.cs",
+              "RelativeToolTip": "HotelManagementSystem\\UI\\Invoices\\InvoiceForm.Designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGUDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T01:43:28.495Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "InvoiceForm.cs",
+              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs",
+              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs",
+              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs",
+              "RelativeToolTip": "HotelManagementSystem\\UI\\Invoices\\InvoiceForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T01:41:04.445Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
               "Title": "plan.html",
               "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\plan.html",
               "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\plan.html",
               "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\plan.html",
               "RelativeToolTip": "HotelManagementSystem\\Context\\plan.html",
-              "ViewState": "AgIAAJICAAAAAAAAAAAwwKUCAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAALMCAAAAAAAAAAAwwMgCAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2026-02-09T02:14:50.47Z",
               "EditorCaption": ""

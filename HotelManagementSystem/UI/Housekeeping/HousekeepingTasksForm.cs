@@ -27,8 +27,8 @@ namespace HotelManagementSystem.UI.Housekeeping
         private void HousekeepingTasksForm_Load(object sender, EventArgs e)
         {
             SetupDataGridView();
+            LoadTasks(); // Load tasks BEFORE setting up filter to avoid null reference
             LoadStatusFilter();
-            LoadTasks();
             UpdateTaskCount();
         }
 
@@ -150,6 +150,12 @@ namespace HotelManagementSystem.UI.Housekeeping
         /// </summary>
         private void ApplyFilters()
         {
+            // Safety check: ensure allTasks is loaded
+            if (allTasks == null)
+            {
+                allTasks = new List<HousekeepingTask>();
+            }
+
             IEnumerable<HousekeepingTask> filtered = allTasks;
 
             // Filter by status
@@ -159,13 +165,13 @@ namespace HotelManagementSystem.UI.Housekeeping
                 filtered = filtered.Where(t => t.Status == selectedStatus);
             }
 
-            // Filter by search text (room number or description)
+            // Filter by search text (room number or notes)
             if (!string.IsNullOrWhiteSpace(txtSearch.Text))
             {
                 string searchTerm = txtSearch.Text.Trim().ToLower();
                 filtered = filtered.Where(t =>
                     (t.RoomNumber != null && t.RoomNumber.ToLower().Contains(searchTerm)) ||
-                    (t.Description != null && t.Description.ToLower().Contains(searchTerm)) ||
+                    (t.Notes != null && t.Notes.ToLower().Contains(searchTerm)) ||
                     t.TaskId.ToString().Contains(searchTerm)
                 );
             }
@@ -264,13 +270,13 @@ namespace HotelManagementSystem.UI.Housekeeping
                                $"Task Type: {task.TaskType ?? "N/A"}\n" +
                                $"Status: {task.Status}\n" +
                                $"Priority: {task.Priority}\n\n" +
-                               $"Description:\n{task.Description ?? "No description"}\n\n" +
-                               $"Assigned To: {task.AssignedToName ?? "Unassigned"}\n" +
-                               $"Assigned Date: {(task.AssignedDate.HasValue ? task.AssignedDate.Value.ToString("MM/dd/yyyy HH:mm") : "Not assigned")}\n\n" +
-                               $"Completed Date: {(task.CompletedDate.HasValue ? task.CompletedDate.Value.ToString("MM/dd/yyyy HH:mm") : "Not completed")}\n\n" +
-                               $"Notes: {task.Notes ?? "No notes"}\n\n" +
-                               $"Created: {task.CreatedDate:MM/dd/yyyy HH:mm}\n" +
-                               $"Modified: {task.ModifiedDate:MM/dd/yyyy HH:mm}";
+                               $"Scheduled Date: {task.ScheduledDate:MM/dd/yyyy HH:mm}\n" +
+                               $"Start Time: {(task.StartTime.HasValue ? task.StartTime.Value.ToString("MM/dd/yyyy HH:mm") : "Not started")}\n" +
+                               $"End Time: {(task.EndTime.HasValue ? task.EndTime.Value.ToString("MM/dd/yyyy HH:mm") : "Not completed")}\n\n" +
+                               $"Assigned To: {task.AssignedToName ?? "Unassigned"}\n\n" +
+                               $"Notes:\n{task.Notes ?? "No notes"}\n\n" +
+                               $"Completion Notes:\n{task.CompletionNotes ?? "No completion notes"}\n\n" +
+                               $"Created: {task.CreatedDate:MM/dd/yyyy HH:mm}";
 
                 MessageBox.Show(details, "Task Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

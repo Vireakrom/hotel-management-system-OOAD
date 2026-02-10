@@ -10,20 +10,22 @@ namespace HotelManagementSystem.Models
     {
         public int TaskId { get; set; }
         public int RoomId { get; set; }
-        public string TaskType { get; set; } // Cleaning, Maintenance, DeepCleaning
+        public string TaskType { get; set; } // Cleaning, Maintenance, Inspection
         public string Status { get; set; } // Pending, InProgress, Completed, Cancelled
-        public string Description { get; set; }
-        public int? AssignedToUserId { get; set; }
-        public DateTime? AssignedDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        public string Priority { get; set; } // Low, Medium, High
+        public string Priority { get; set; } // Low, Medium, High, Urgent
+        public DateTime ScheduledDate { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
         public string Notes { get; set; }
+        public string CompletionNotes { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public int CreatedByUserId { get; set; }
+        public int? AssignedToUserId { get; set; }
 
         // Navigation properties (optional - for display purposes)
         public string RoomNumber { get; set; } // Not in DB, populated from join
         public string AssignedToName { get; set; } // Not in DB, populated from join
+        public string CreatedByName { get; set; } // Not in DB, populated from join
 
         /// <summary>
         /// Constructor with default values
@@ -33,7 +35,7 @@ namespace HotelManagementSystem.Models
             Status = "Pending";
             Priority = "Medium";
             CreatedDate = DateTime.Now;
-            ModifiedDate = DateTime.Now;
+            ScheduledDate = DateTime.Now;
         }
 
         /// <summary>
@@ -66,8 +68,7 @@ namespace HotelManagementSystem.Models
         public void MarkAsCompleted()
         {
             Status = "Completed";
-            CompletedDate = DateTime.Now;
-            ModifiedDate = DateTime.Now;
+            EndTime = DateTime.Now;
         }
 
         /// <summary>
@@ -76,9 +77,8 @@ namespace HotelManagementSystem.Models
         public void AssignTo(int userId)
         {
             AssignedToUserId = userId;
-            AssignedDate = DateTime.Now;
             Status = "InProgress";
-            ModifiedDate = DateTime.Now;
+            StartTime = DateTime.Now;
         }
     }
 }

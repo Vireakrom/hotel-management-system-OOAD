@@ -656,6 +656,74 @@ namespace HotelManagementSystem.UI.Bookings
         }
 
         /// <summary>
+        /// Process Payment button click (Day 22 - Strategy Pattern)
+        /// </summary>
+        private void btnProcessPayment_Click(object sender, EventArgs e)
+        {
+            if (dgvBookings.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a booking to process payment.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
+            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+
+            if (booking == null) return;
+
+            // Check if booking is checked out
+            if (booking.Status != "CheckedOut")
+            {
+                MessageBox.Show("Payment can only be processed for checked-out bookings.", "Invalid Status",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get the invoice for this booking
+            Invoice invoice = invoiceRepository.GetByBookingId(bookingId);
+
+            if (invoice == null)
+            {
+                MessageBox.Show("No invoice found for this booking.", "Invoice Not Found",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if invoice is already paid
+            if (invoice.Status == "Paid")
+            {
+                MessageBox.Show($"This invoice has already been paid in full.\n\n" +
+                    $"Invoice: {invoice.InvoiceNumber}\n" +
+                    $"Total: {invoice.TotalAmount:C}\n" +
+                    $"Paid: {invoice.PaidAmount:C}",
+                    "Already Paid",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Open payment form (Strategy Pattern - Day 22!)
+            UI.Payments.PaymentForm paymentForm = new UI.Payments.PaymentForm(invoice);
+            
+            if (paymentForm.ShowDialog() == DialogResult.OK)
+            {
+                // Refresh invoice data
+                invoice = invoiceRepository.GetByBookingId(bookingId);
+                
+                MessageBox.Show($"Payment processed successfully!\n\n" +
+                    $"Invoice: {invoice.InvoiceNumber}\n" +
+                    $"Total: {invoice.TotalAmount:C}\n" +
+                    $"Paid: {invoice.PaidAmount:C}\n" +
+                    $"Balance: {invoice.BalanceAmount:C}\n" +
+                    $"Status: {invoice.Status}",
+                    "Payment Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                LoadBookings(); // Refresh list
+            }
+        }
+
+        /// <summary>
         /// Cancel booking button click
         /// </summary>
         private void btnCancelBooking_Click(object sender, EventArgs e)

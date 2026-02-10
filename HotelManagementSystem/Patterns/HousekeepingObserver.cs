@@ -1,6 +1,7 @@
 using System;
 using HotelManagementSystem.DAL;
 using HotelManagementSystem.Models;
+using HotelManagementSystem.Helpers;
 
 namespace HotelManagementSystem.Patterns
 {
@@ -64,6 +65,13 @@ namespace HotelManagementSystem.Patterns
         /// </summary>
         private void CreateCheckOutCleaningTask(int roomId, object additionalData)
         {
+            // Ensure user is logged in
+            if (!SessionManager.IsLoggedIn)
+            {
+                Console.WriteLine("Cannot create task: No user logged in");
+                return;
+            }
+
             // Extract booking ID if provided
             int? bookingId = additionalData as int?;
 
@@ -73,13 +81,13 @@ namespace HotelManagementSystem.Patterns
                 RoomId = roomId,
                 TaskType = "Cleaning",
                 Status = "Pending",
-                Description = bookingId.HasValue 
-                    ? $"Room cleaning required after checkout (Booking #{bookingId.Value})" 
-                    : "Room cleaning required after checkout",
                 Priority = "High", // High priority for checkout cleaning
-                Notes = "Auto-created by system on guest checkout",
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
+                ScheduledDate = DateTime.Now, // Schedule immediately
+                Notes = bookingId.HasValue 
+                    ? $"Room cleaning required after checkout (Booking #{bookingId.Value}). Auto-created by system." 
+                    : "Room cleaning required after checkout. Auto-created by system.",
+                CreatedByUserId = SessionManager.CurrentUser.UserId,
+                CreatedDate = DateTime.Now
             };
 
             // Save to database
@@ -97,6 +105,13 @@ namespace HotelManagementSystem.Patterns
         /// </summary>
         private void CreateMaintenanceTask(int roomId, object additionalData)
         {
+            // Ensure user is logged in
+            if (!SessionManager.IsLoggedIn)
+            {
+                Console.WriteLine("Cannot create task: No user logged in");
+                return;
+            }
+
             string description = additionalData as string ?? "Maintenance required";
 
             HousekeepingTask task = new HousekeepingTask
@@ -104,11 +119,11 @@ namespace HotelManagementSystem.Patterns
                 RoomId = roomId,
                 TaskType = "Maintenance",
                 Status = "Pending",
-                Description = description,
                 Priority = "Medium",
-                Notes = "Auto-created by system",
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
+                ScheduledDate = DateTime.Now,
+                Notes = $"{description}. Auto-created by system.",
+                CreatedByUserId = SessionManager.CurrentUser.UserId,
+                CreatedDate = DateTime.Now
             };
 
             int taskId = _taskRepository.Insert(task);
