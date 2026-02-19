@@ -1,0 +1,27 @@
+﻿using System;
+using HotelManagementSystem.Testing;
+
+namespace HotelManagementSystem
+{
+    /// <summary>
+    /// Quick test runner for Strategy Pattern tests
+    /// Run this to see detailed test output
+    /// </summary>
+    class TestRunner
+    {
+        //static void Main(string[] args)
+        //{
+        //    Console.WriteLine("========================================");
+        //    Console.WriteLine("STRATEGY PATTERN TEST RUNNER");
+        //    Console.WriteLine("========================================\n");
+            
+        //    string results = StrategyPatternTests.RunAllTests();
+            
+        //    Console.WriteLine(results);
+            
+        //    Console.WriteLine("\n========================================");
+        //    Console.WriteLine("Press any key to exit...");
+        //    Console.ReadKey();
+        //}
+    }
+}

@@ -1,0 +1,53 @@
+﻿using System;
+using HotelManagementSystem.Testing;
+
+namespace HotelManagementSystem
+{
+    /// <summary>
+    /// Test runner for all test suites
+    /// Uncomment Main method to run tests
+    /// </summary>
+    class TestRunner
+    {
+        // Uncomment to run tests:
+        // static void Main(string[] args)
+        // {
+        //     RunDay30ValidationTests();
+        // }
+
+        /// <summary>
+        /// Runs Day 30 Validation Tests - Comprehensive Input Validation
+        /// </summary>
+        public static void RunDay30ValidationTests()
+        {
+            Console.WriteLine("============================================");
+            Console.WriteLine("DAY 30: COMPREHENSIVE INPUT VALIDATION");
+            Console.WriteLine("============================================\n");
+            
+            Day30ValidationTests.RunAllTests();
+            Day30ValidationTests.TestValidationSummary();
+            
+            Console.WriteLine("\n============================================");
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Runs Day 29 Bug Fixing Tests - Comprehensive CRUD Testing
+        /// </summary>
+        public static void RunDay29BugFixingTests()
+        {
+            Console.WriteLine("========================================");
+            Console.WriteLine("DAY 29: BUG FIXING - COMPREHENSIVE CRUD");
+            Console.WriteLine("========================================\n");
+            
+            string results = Day29BugFixingTests.RunAllCRUDTests();
+            
+            Console.WriteLine(results);
+            
+            Console.WriteLine("\n========================================");
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+        }
+    }
+}

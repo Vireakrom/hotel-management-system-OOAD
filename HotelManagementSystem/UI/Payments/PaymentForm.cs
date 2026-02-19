@@ -12,6 +12,7 @@ namespace HotelManagementSystem.UI.Payments
         private Invoice _invoice;
         private PaymentContext _paymentContext;
         private InvoiceRepository _invoiceRepository;
+        private int _lastPaymentId = 0;
 
         public PaymentForm(Invoice invoice)
         {
@@ -104,19 +105,27 @@ namespace HotelManagementSystem.UI.Payments
         {
             try
             {
-                // Validate payment amount
-                if (!decimal.TryParse(txtAmount.Text, out decimal amount) || amount <= 0)
+                string errorMessage;
+
+                // Validate payment amount - Enhanced Day 30
+                if (!ValidationHelper.ValidateDecimal(txtAmount, "Payment amount", out decimal amount, out errorMessage))
                 {
-                    MessageBox.Show("Please enter a valid payment amount.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ValidationHelper.ShowValidationError(errorMessage);
+                    return;
+                }
+
+                if (!ValidationHelper.ValidatePositive(amount, "Payment amount", out errorMessage))
+                {
+                    ValidationHelper.ShowValidationError(errorMessage);
                     return;
                 }
 
                 // Validate amount doesn't exceed balance
                 if (amount > _invoice.BalanceAmount)
                 {
-                    MessageBox.Show("Payment amount cannot exceed the balance amount.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ValidationHelper.ShowValidationError(
+                        $"Payment amount (${amount:F2}) cannot exceed the balance amount (${_invoice.BalanceAmount:F2}).");
+                    txtAmount.Focus();
                     return;
                 }
 
@@ -124,18 +133,25 @@ namespace HotelManagementSystem.UI.Payments
 
                 if (rbCash.Checked)
                 {
-                    // Process cash payment
-                    if (!decimal.TryParse(txtAmountReceived.Text, out decimal amountReceived))
+                    // Process cash payment with enhanced validation
+                    if (!ValidationHelper.ValidateDecimal(txtAmountReceived, "Amount received", out decimal amountReceived, out errorMessage))
                     {
-                        MessageBox.Show("Please enter the amount received.", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(errorMessage);
+                        return;
+                    }
+
+                    if (!ValidationHelper.ValidatePositive(amountReceived, "Amount received", out errorMessage))
+                    {
+                        ValidationHelper.ShowValidationError(errorMessage);
                         return;
                     }
 
                     if (amountReceived < amount)
                     {
-                        MessageBox.Show("Amount received is less than the payment amount.", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(
+                            $"Amount received (${amountReceived:F2}) is less than the payment amount (${amount:F2}).\n" +
+                            $"Insufficient amount: ${amount - amountReceived:F2} short.");
+                        txtAmountReceived.Focus();
                         return;
                     }
 
@@ -145,47 +161,62 @@ namespace HotelManagementSystem.UI.Payments
 
                     if (payment != null)
                     {
-                        MessageBox.Show($"Payment processed successfully!\n\nChange: {change:C}", 
-                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _lastPaymentId = payment.PaymentId;
+                        DialogResult result = MessageBox.Show(
+                            $"Payment processed successfully!\n\n" +
+                            $"Amount Paid: ${amount:F2}\n" +
+                            $"Amount Received: ${amountReceived:F2}\n" +
+                            $"Change: ${change:F2}\n\n" +
+                            $"Would you like to view the receipt?", 
+                            "Payment Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            ShowReceipt(_lastPaymentId);
+                        }
                     }
                 }
                 else if (rbCreditCard.Checked)
                 {
-                    // Validate credit card details
-                    if (string.IsNullOrWhiteSpace(txtCardNumber.Text))
+                    // Validate credit card details - Enhanced Day 30
+                    if (!ValidationHelper.ValidateRequired(txtCardNumber, "Card number", out errorMessage))
                     {
-                        MessageBox.Show("Please enter the card number.", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(errorMessage);
                         return;
                     }
 
-                    if (string.IsNullOrWhiteSpace(txtCardHolderName.Text))
+                    if (!ValidationHelper.ValidateRequired(txtCardHolderName, "Card holder name", out errorMessage))
                     {
-                        MessageBox.Show("Please enter the card holder name.", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(errorMessage);
                         return;
                     }
 
-                    if (string.IsNullOrWhiteSpace(txtCVV.Text))
+                    if (!ValidationHelper.ValidateRequired(txtCVV, "CVV", out errorMessage))
                     {
-                        MessageBox.Show("Please enter the CVV.", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(errorMessage);
                         return;
                     }
 
-                    // Validate card number
-                    if (!CreditCardPaymentStrategy.ValidateCardNumber(txtCardNumber.Text))
+                    // Validate card number format
+                    if (!ValidationHelper.ValidateCreditCardNumber(txtCardNumber.Text, out errorMessage))
                     {
-                        MessageBox.Show("Invalid credit card number.", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(errorMessage);
+                        txtCardNumber.Focus();
                         return;
                     }
 
-                    // Validate CVV
-                    if (!CreditCardPaymentStrategy.ValidateCVV(txtCVV.Text))
+                    // Validate CVV format
+                    if (!ValidationHelper.ValidateCVV(txtCVV.Text, out errorMessage))
                     {
-                        MessageBox.Show("Invalid CVV (must be 3 or 4 digits).", "Validation Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        ValidationHelper.ShowValidationError(errorMessage);
+                        txtCVV.Focus();
+                        return;
+                    }
+
+                    // Validate card holder name
+                    if (!ValidationHelper.ValidateMinLength(txtCardHolderName, "Card holder name", 3, out errorMessage))
+                    {
+                        ValidationHelper.ShowValidationError(errorMessage);
                         return;
                     }
 
@@ -193,8 +224,11 @@ namespace HotelManagementSystem.UI.Payments
                     if (!CreditCardPaymentStrategy.SimulateGatewayAuthorization(
                         txtCardNumber.Text, txtCVV.Text, txtExpiryDate.Text, amount))
                     {
-                        MessageBox.Show("Payment authorization failed. Please check your card details and try again.",
-                            "Payment Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ValidationHelper.ShowValidationError(
+                            "Payment authorization failed.\n\n" +
+                            "Please check your card details and try again.\n" +
+                            "If the problem persists, please contact your card issuer.",
+                            "Payment Authorization Failed");
                         return;
                     }
 
@@ -207,12 +241,22 @@ namespace HotelManagementSystem.UI.Payments
                         // Update payment with card details (store only last 4 digits)
                         payment.CardNumber = CreditCardPaymentStrategy.GetLast4Digits(txtCardNumber.Text);
                         payment.CardHolderName = txtCardHolderName.Text;
-                        
+
                         PaymentRepository paymentRepo = new PaymentRepository();
                         paymentRepo.Update(payment);
 
-                        MessageBox.Show("Payment processed successfully!", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _lastPaymentId = payment.PaymentId;
+                        DialogResult result = MessageBox.Show(
+                            $"Payment processed successfully!\n\n" +
+                            $"Amount Paid: ${amount:F2}\n" +
+                            $"Card: **** **** **** {payment.CardNumber}\n\n" +
+                            $"Would you like to view the receipt?", 
+                            "Payment Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            ShowReceipt(_lastPaymentId);
+                        }
                     }
                 }
 
@@ -223,14 +267,15 @@ namespace HotelManagementSystem.UI.Payments
                 }
                 else
                 {
-                    MessageBox.Show("Payment processing failed. Please try again.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ValidationHelper.ShowValidationError(
+                        "Payment processing failed.\n\nPlease verify all information and try again.",
+                        "Payment Failed");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error processing payment: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error processing payment:\n\n{ex.Message}\n\nPlease try again or contact support.", 
+                    "Payment Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -238,6 +283,20 @@ namespace HotelManagementSystem.UI.Payments
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void ShowReceipt(int paymentId)
+        {
+            try
+            {
+                ReceiptForm receiptForm = new ReceiptForm(paymentId);
+                receiptForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error displaying receipt: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

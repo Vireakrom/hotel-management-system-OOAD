@@ -43,6 +43,7 @@ namespace HotelManagementSystem.UI.Invoices
             this.panelButtons = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnViewDetails = new System.Windows.Forms.Button();
+            this.btnPaymentHistory = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panelTop.SuspendLayout();
@@ -202,6 +203,7 @@ namespace HotelManagementSystem.UI.Invoices
             // 
             this.panelButtons.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panelButtons.Controls.Add(this.btnClose);
+            this.panelButtons.Controls.Add(this.btnPaymentHistory);
             this.panelButtons.Controls.Add(this.btnViewDetails);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelButtons.Location = new System.Drawing.Point(0, 520);
@@ -238,6 +240,20 @@ namespace HotelManagementSystem.UI.Invoices
             this.btnViewDetails.Text = "View Details";
             this.btnViewDetails.UseVisualStyleBackColor = false;
             this.btnViewDetails.Click += new System.EventHandler(this.btnViewDetails_Click);
+            // 
+            // btnPaymentHistory
+            // 
+            this.btnPaymentHistory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnPaymentHistory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPaymentHistory.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnPaymentHistory.ForeColor = System.Drawing.Color.White;
+            this.btnPaymentHistory.Location = new System.Drawing.Point(180, 13);
+            this.btnPaymentHistory.Name = "btnPaymentHistory";
+            this.btnPaymentHistory.Size = new System.Drawing.Size(180, 35);
+            this.btnPaymentHistory.TabIndex = 2;
+            this.btnPaymentHistory.Text = "💳 Payment History";
+            this.btnPaymentHistory.UseVisualStyleBackColor = false;
+            this.btnPaymentHistory.Click += new System.EventHandler(this.btnPaymentHistory_Click);
             // 
             // statusStrip1
             // 
@@ -296,6 +312,7 @@ namespace HotelManagementSystem.UI.Invoices
         private System.Windows.Forms.DataGridView dgvInvoices;
         private System.Windows.Forms.Panel panelButtons;
         private System.Windows.Forms.Button btnViewDetails;
+        private System.Windows.Forms.Button btnPaymentHistory;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Label lblTotalPaid;
         private System.Windows.Forms.Label lblTotalBalance;

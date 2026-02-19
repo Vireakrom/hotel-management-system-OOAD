@@ -572,9 +572,9 @@ GO
 -- =============================================
 
 -- Insert default admin user
--- Password: Admin@123 (This is a sample hash - you should use proper password hashing in your application)
+-- Password: Admin123!
 INSERT INTO Users (Username, PasswordHash, Salt, FirstName, LastName, Email, Role, LastPasswordChange)
-VALUES ('admin', 'A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3', 
+VALUES ('admin', '550e02bae436a76bfe5702391a3276e826bb78d99358e6f16ecc6f336fb2122b', 
         'SampleSaltValue123', 'System', 'Administrator', 'admin@hotel.com', 'Admin', GETDATE());
 
 -- Insert sample staff users
@@ -648,7 +648,8 @@ VALUES
     ('Michael', 'Johnson', 'michael.j@email.com', '+1-555-0101', 'ID001234', '456 Oak Street, Cityville', '1985-06-15', 'USA'),
     ('Sarah', 'Williams', 'sarah.w@email.com', '+1-555-0102', 'ID001235', '789 Pine Avenue, Townsville', '1990-03-22', 'USA'),
     ('David', 'Brown', 'david.b@email.com', '+1-555-0103', 'ID001236', '321 Maple Drive, Villageton', '1978-11-08', 'Canada'),
-    ('Emma', 'Davis', 'emma.d@email.com', '+1-555-0104', 'ID001237', '654 Cedar Lane, Hamletville', '1995-01-30', 'UK');
+    ('Emma', 'Davis', 'emma.d@email.com', '+1-555-0104', 'ID001237', '654 Cedar Lane, Hamletville', '1995-01-30', 'UK'),
+    ('Lucas', 'Martinez', 'lucas.m@email.com', '+1-555-0105', 'ID001238', '987 Birch Road, Lakeview', '1988-09-12', 'Spain');
 
 -- Insert sample bookings (for testing)
 DECLARE @AdminUserId INT;
@@ -657,7 +658,8 @@ SELECT @AdminUserId = UserId FROM Users WHERE Username = 'admin';
 INSERT INTO Bookings (GuestId, RoomId, CreatedByUserId, CheckInDate, CheckOutDate, NumberOfGuests, Status, RoomCharges, TotalAmount)
 VALUES 
     (1, 1, @AdminUserId, DATEADD(DAY, 1, GETDATE()), DATEADD(DAY, 3, GETDATE()), 1, 'Confirmed', 100.00, 100.00),
-    (2, 4, @AdminUserId, DATEADD(DAY, 2, GETDATE()), DATEADD(DAY, 5, GETDATE()), 2, 'Confirmed', 240.00, 240.00);
+    (2, 4, @AdminUserId, DATEADD(DAY, 2, GETDATE()), DATEADD(DAY, 5, GETDATE()), 2, 'Confirmed', 240.00, 240.00),
+    (3, 7, @AdminUserId, DATEADD(DAY, -1, GETDATE()), DATEADD(DAY, 1, GETDATE()), 2, 'CheckedIn', 180.00, 180.00);
 
 GO
 
@@ -685,7 +687,7 @@ SELECT 'SystemSettings', COUNT(*) FROM SystemSettings;
 PRINT '';
 PRINT 'Default Admin Credentials:';
 PRINT 'Username: admin';
-PRINT 'Password: Admin@123 (CHANGE THIS IMMEDIATELY!)';
+PRINT 'Password: Admin123!';
 PRINT '';
 PRINT '========================================';
 

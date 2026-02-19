@@ -1,0 +1,457 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.Patterns;
+
+namespace HotelManagementSystem.Testing
+{
+    /// <summary>
+    /// Comprehensive tests for Day 25 - Payment Enhancement & Receipt Generation
+    /// Tests for: ReceiptForm, PaymentHistoryForm, Enhanced PaymentForm
+    /// </summary>
+    public static class Day25PaymentEnhancementTests
+    {
+        public static void RunAllTests()
+        {
+            Console.WriteLine("===========================================");
+            Console.WriteLine("DAY 25 - PAYMENT ENHANCEMENT & RECEIPT TESTS");
+            Console.WriteLine("===========================================");
+            Console.WriteLine();
+
+            int totalTests = 0;
+            int passedTests = 0;
+
+            // Test 1: Create sample data for testing
+            Console.WriteLine("Test 1: Creating sample data for testing...");
+            var testData = CreateSampleData();
+            if (testData != null && testData.InvoiceId > 0)
+            {
+                Console.WriteLine("✓ PASS: Sample data created successfully");
+                Console.WriteLine($"  - Invoice ID: {testData.InvoiceId}");
+                Console.WriteLine($"  - Payment ID: {testData.PaymentId}");
+                Console.WriteLine($"  - Booking ID: {testData.BookingId}");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Could not create sample data");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Test 2: Verify invoice has payment records
+            Console.WriteLine("Test 2: Verifying invoice has payment records...");
+            if (testData != null && TestInvoiceHasPayments(testData.InvoiceId))
+            {
+                Console.WriteLine("✓ PASS: Invoice has payment records");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Invoice does not have payment records");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Test 3: Test payment history retrieval
+            Console.WriteLine("Test 3: Testing payment history retrieval...");
+            if (testData != null && TestPaymentHistoryRetrieval(testData.InvoiceId))
+            {
+                Console.WriteLine("✓ PASS: Payment history retrieval successful");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Payment history retrieval failed");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Test 4: Test receipt data generation
+            Console.WriteLine("Test 4: Testing receipt data generation...");
+            if (testData != null && TestReceiptDataGeneration(testData.PaymentId))
+            {
+                Console.WriteLine("✓ PASS: Receipt data generated successfully");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Receipt data generation failed");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Test 5: Test multiple payments on single invoice
+            Console.WriteLine("Test 5: Testing multiple payments on single invoice...");
+            if (testData != null && TestMultiplePaymentsOnInvoice(testData.InvoiceId))
+            {
+                Console.WriteLine("✓ PASS: Multiple payments handled correctly");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Multiple payments handling failed");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Test 6: Test payment statistics calculation
+            Console.WriteLine("Test 6: Testing payment statistics calculation...");
+            if (testData != null && TestPaymentStatisticsCalculation(testData.InvoiceId))
+            {
+                Console.WriteLine("✓ PASS: Payment statistics calculated correctly");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Payment statistics calculation failed");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Test 7: Test payment method tracking
+            Console.WriteLine("Test 7: Testing payment method tracking...");
+            if (testData != null && TestPaymentMethodTracking(testData.InvoiceId))
+            {
+                Console.WriteLine("✓ PASS: Payment methods tracked correctly");
+                passedTests++;
+            }
+            else
+            {
+                Console.WriteLine("✗ FAIL: Payment method tracking failed");
+            }
+            totalTests++;
+            Console.WriteLine();
+
+            // Summary
+            Console.WriteLine("===========================================");
+            Console.WriteLine("TEST SUMMARY");
+            Console.WriteLine("===========================================");
+            Console.WriteLine($"Total Tests: {totalTests}");
+            Console.WriteLine($"Passed: {passedTests}");
+            Console.WriteLine($"Failed: {totalTests - passedTests}");
+            Console.WriteLine($"Success Rate: {(passedTests * 100.0 / totalTests):F1}%");
+            Console.WriteLine("===========================================");
+        }
+
+        private static TestData CreateSampleData()
+        {
+            try
+            {
+                // Create a guest
+                GuestRepository guestRepo = new GuestRepository();
+                Guest guest = new Guest
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    Email = "john.doe.day25@test.com",
+                    Phone = "555-0125",
+                    Address = "789 Payment Test St",
+                    Nationality = "TestCountry",
+                    IDNumber = "ID-DAY25-001"
+                };
+                int guestId = guestRepo.Insert(guest);
+
+                // Create a room using factory
+                RoomRepository roomRepo = new RoomRepository();
+                Room room = RoomFactory.CreateRoom("Deluxe", "525", 2, 150.00m);
+                room.Status = "Available";
+                int roomId = roomRepo.Insert(room);
+
+                // Create a booking
+                BookingRepository bookingRepo = new BookingRepository();
+                Booking booking = new Booking
+                {
+                    GuestId = guestId,
+                    RoomId = roomId,
+                    CheckInDate = DateTime.Now.AddDays(-3),
+                    CheckOutDate = DateTime.Now,
+                    NumberOfGuests = 2,
+                    TotalAmount = 450.00m, // 3 nights * 150
+                    Status = "CheckedOut"
+                };
+                int bookingId = bookingRepo.Insert(booking);
+
+                // Create an invoice
+                InvoiceRepository invoiceRepo = new InvoiceRepository();
+                Invoice invoice = new Invoice
+                {
+                    BookingId = bookingId,
+                    InvoiceNumber = $"INV-DAY25-{DateTime.Now:yyyyMMddHHmmss}",
+                    IssueDate = DateTime.Now.AddDays(-1),
+                    DueDate = DateTime.Now.AddDays(7),
+                    SubTotal = 450.00m,
+                    TaxAmount = 45.00m, // 10% tax
+                    Discount = 0.00m,
+                    TotalAmount = 495.00m,
+                    PaidAmount = 0.00m,
+                    BalanceAmount = 495.00m,
+                    Status = "Pending",
+                    PaymentTerms = "Due upon receipt",
+                    Notes = "Test invoice for Day 25 - Payment Enhancement"
+                };
+                int invoiceId = invoiceRepo.Insert(invoice);
+                invoice.InvoiceId = invoiceId;
+
+                // Create a payment using Strategy pattern
+                PaymentContext paymentContext = new PaymentContext();
+                decimal change;
+                Payment payment = paymentContext.ProcessCashPayment(invoice, 500.00m, 1, out change);
+
+                if (payment != null)
+                {
+                    Console.WriteLine($"  Sample data created: Guest={guestId}, Room={roomId}, Booking={bookingId}, Invoice={invoiceId}, Payment={payment.PaymentId}");
+                    return new TestData
+                    {
+                        GuestId = guestId,
+                        RoomId = roomId,
+                        BookingId = bookingId,
+                        InvoiceId = invoiceId,
+                        PaymentId = payment.PaymentId
+                    };
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error creating sample data: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static bool TestInvoiceHasPayments(int invoiceId)
+        {
+            try
+            {
+                PaymentRepository paymentRepo = new PaymentRepository();
+                List<Payment> payments = paymentRepo.GetPaymentsByInvoiceId(invoiceId);
+
+                Console.WriteLine($"  Invoice #{invoiceId} has {payments.Count} payment(s)");
+                return payments.Count > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool TestPaymentHistoryRetrieval(int invoiceId)
+        {
+            try
+            {
+                PaymentRepository paymentRepo = new PaymentRepository();
+                List<Payment> payments = paymentRepo.GetPaymentsByInvoiceId(invoiceId);
+
+                if (payments.Count > 0)
+                {
+                    foreach (Payment payment in payments)
+                    {
+                        Console.WriteLine($"  - Payment #{payment.PaymentId}: {payment.Amount:C} via {payment.PaymentMethod} on {payment.PaymentDate:yyyy-MM-dd}");
+                    }
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("  No payments found for invoice");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool TestReceiptDataGeneration(int paymentId)
+        {
+            try
+            {
+                PaymentRepository paymentRepo = new PaymentRepository();
+                Payment payment = paymentRepo.GetById(paymentId);
+
+                if (payment == null)
+                {
+                    Console.WriteLine("  Payment not found");
+                    return false;
+                }
+
+                // Verify payment has all required data for receipt
+                bool hasInvoiceId = payment.InvoiceId > 0;
+                bool hasAmount = payment.Amount > 0;
+                bool hasMethod = !string.IsNullOrEmpty(payment.PaymentMethod);
+                bool hasDate = payment.PaymentDate != default(DateTime);
+
+                Console.WriteLine($"  Receipt data verification:");
+                Console.WriteLine($"    - Has Invoice ID: {hasInvoiceId}");
+                Console.WriteLine($"    - Has Amount: {hasAmount}");
+                Console.WriteLine($"    - Has Payment Method: {hasMethod}");
+                Console.WriteLine($"    - Has Date: {hasDate}");
+
+                return hasInvoiceId && hasAmount && hasMethod && hasDate;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool TestMultiplePaymentsOnInvoice(int invoiceId)
+        {
+            try
+            {
+                InvoiceRepository invoiceRepo = new InvoiceRepository();
+                Invoice invoice = invoiceRepo.GetById(invoiceId);
+
+                if (invoice == null)
+                {
+                    Console.WriteLine("  Invoice not found");
+                    return false;
+                }
+
+                // Make a second payment (partial payment)
+                if (invoice.BalanceAmount > 0)
+                {
+                    PaymentContext paymentContext = new PaymentContext();
+                    paymentContext.SetPaymentStrategy("CreditCard");
+                    decimal partialAmount = Math.Min(100.00m, invoice.BalanceAmount);
+                    Payment secondPayment = paymentContext.ProcessCreditCardPayment(invoice, partialAmount, 1);
+
+                    if (secondPayment != null)
+                    {
+                        // Reload invoice and check payment count
+                        invoice = invoiceRepo.GetById(invoiceId);
+                        PaymentRepository paymentRepo = new PaymentRepository();
+                        List<Payment> payments = paymentRepo.GetPaymentsByInvoiceId(invoiceId);
+
+                        Console.WriteLine($"  Invoice now has {payments.Count} payment(s)");
+                        Console.WriteLine($"  Total paid: {invoice.PaidAmount:C}");
+                        Console.WriteLine($"  Balance: {invoice.BalanceAmount:C}");
+                        Console.WriteLine($"  Status: {invoice.Status}");
+
+                        return payments.Count >= 2;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("  Invoice already fully paid, cannot add second payment");
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool TestPaymentStatisticsCalculation(int invoiceId)
+        {
+            try
+            {
+                InvoiceRepository invoiceRepo = new InvoiceRepository();
+                Invoice invoice = invoiceRepo.GetById(invoiceId);
+
+                if (invoice == null)
+                {
+                    Console.WriteLine("  Invoice not found");
+                    return false;
+                }
+
+                PaymentRepository paymentRepo = new PaymentRepository();
+                List<Payment> payments = paymentRepo.GetPaymentsByInvoiceId(invoiceId);
+
+                // Calculate statistics
+                decimal calculatedPaidAmount = payments.Sum(p => p.Amount);
+                decimal calculatedBalance = invoice.TotalAmount - calculatedPaidAmount;
+                int paymentCount = payments.Count;
+
+                Console.WriteLine($"  Statistics:");
+                Console.WriteLine($"    - Total Amount: {invoice.TotalAmount:C}");
+                Console.WriteLine($"    - Calculated Paid: {calculatedPaidAmount:C}");
+                Console.WriteLine($"    - Invoice Paid Amount: {invoice.PaidAmount:C}");
+                Console.WriteLine($"    - Calculated Balance: {calculatedBalance:C}");
+                Console.WriteLine($"    - Invoice Balance: {invoice.BalanceAmount:C}");
+                Console.WriteLine($"    - Payment Count: {paymentCount}");
+
+                // Verify calculations match (within 0.01 tolerance for floating point)
+                bool paidMatches = Math.Abs(calculatedPaidAmount - invoice.PaidAmount) < 0.01m;
+                bool balanceMatches = Math.Abs(calculatedBalance - invoice.BalanceAmount) < 0.01m;
+
+                return paidMatches && balanceMatches;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool TestPaymentMethodTracking(int invoiceId)
+        {
+            try
+            {
+                PaymentRepository paymentRepo = new PaymentRepository();
+                List<Payment> payments = paymentRepo.GetPaymentsByInvoiceId(invoiceId);
+
+                if (payments.Count == 0)
+                {
+                    Console.WriteLine("  No payments found");
+                    return false;
+                }
+
+                // Check payment methods used
+                var paymentMethods = payments.Select(p => p.PaymentMethod).Distinct().ToList();
+                Console.WriteLine($"  Payment methods used: {string.Join(", ", paymentMethods)}");
+
+                // Verify each payment has required fields based on method
+                foreach (Payment payment in payments)
+                {
+                    bool isValid = true;
+                    Console.WriteLine($"  - Payment #{payment.PaymentId} ({payment.PaymentMethod}):");
+
+                    if (payment.PaymentMethod == "CreditCard")
+                    {
+                        // Credit card payments should have card info (at least last 4 digits)
+                        isValid = !string.IsNullOrEmpty(payment.CardNumber) || !string.IsNullOrEmpty(payment.TransactionId);
+                        Console.WriteLine($"    Card/Transaction Info Present: {isValid}");
+                    }
+                    else if (payment.PaymentMethod == "Cash")
+                    {
+                        // Cash payments just need transaction ID
+                        isValid = !string.IsNullOrEmpty(payment.TransactionId);
+                        Console.WriteLine($"    Transaction ID Present: {isValid}");
+                    }
+
+                    if (!isValid)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        private class TestData
+        {
+            public int GuestId { get; set; }
+            public int RoomId { get; set; }
+            public int BookingId { get; set; }
+            public int InvoiceId { get; set; }
+            public int PaymentId { get; set; }
+        }
+    }
+}

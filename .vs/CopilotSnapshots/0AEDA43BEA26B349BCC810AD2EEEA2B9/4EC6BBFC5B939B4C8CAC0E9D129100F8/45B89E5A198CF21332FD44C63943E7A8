@@ -1,0 +1,243 @@
+﻿using System;
+using System.Windows.Forms;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Patterns;
+using HotelManagementSystem.Helpers;
+
+namespace HotelManagementSystem.UI.Payments
+{
+    public partial class PaymentForm : Form
+    {
+        private Invoice _invoice;
+        private PaymentContext _paymentContext;
+        private InvoiceRepository _invoiceRepository;
+
+        public PaymentForm(Invoice invoice)
+        {
+            InitializeComponent();
+            _invoice = invoice;
+            _paymentContext = new PaymentContext();
+            _invoiceRepository = new InvoiceRepository();
+            LoadInvoiceDetails();
+        }
+
+        private void LoadInvoiceDetails()
+        {
+            // Display invoice information
+            lblInvoiceNumber.Text = _invoice.InvoiceNumber;
+            lblSubTotal.Text = _invoice.SubTotal.ToString("C");
+            lblTax.Text = _invoice.TaxAmount.ToString("C");
+            lblTotal.Text = _invoice.TotalAmount.ToString("C");
+            lblPaidAmount.Text = _invoice.PaidAmount.ToString("C");
+            lblBalanceAmount.Text = _invoice.BalanceAmount.ToString("C");
+            lblStatus.Text = _invoice.Status;
+
+            // Set default payment amount to balance
+            txtAmount.Text = _invoice.BalanceAmount.ToString("F2");
+
+            // Set default payment method to Cash
+            rbCash.Checked = true;
+        }
+
+        private void rbCash_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbCash.Checked)
+            {
+                // Show cash-specific controls
+                lblAmountReceived.Visible = true;
+                txtAmountReceived.Visible = true;
+                lblChange.Visible = true;
+                txtChange.Visible = true;
+
+                // Hide credit card controls
+                grpCreditCard.Visible = false;
+
+                // Set payment strategy
+                _paymentContext.SetPaymentStrategy("Cash");
+            }
+        }
+
+        private void rbCreditCard_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbCreditCard.Checked)
+            {
+                // Hide cash-specific controls
+                lblAmountReceived.Visible = false;
+                txtAmountReceived.Visible = false;
+                lblChange.Visible = false;
+                txtChange.Visible = false;
+
+                // Show credit card controls
+                grpCreditCard.Visible = true;
+
+                // Set payment strategy
+                _paymentContext.SetPaymentStrategy("CreditCard");
+            }
+        }
+
+        private void txtAmountReceived_TextChanged(object sender, EventArgs e)
+        {
+            // Calculate change for cash payments
+            if (rbCash.Checked)
+            {
+                if (decimal.TryParse(txtAmount.Text, out decimal amountDue) &&
+                    decimal.TryParse(txtAmountReceived.Text, out decimal amountReceived))
+                {
+                    decimal change = CashPaymentStrategy.CalculateChange(amountDue, amountReceived);
+                    txtChange.Text = change.ToString("F2");
+
+                    // Validate sufficient amount
+                    if (change < 0)
+                    {
+                        txtChange.ForeColor = System.Drawing.Color.Red;
+                    }
+                    else
+                    {
+                        txtChange.ForeColor = System.Drawing.Color.Green;
+                    }
+                }
+            }
+        }
+
+        private void btnProcessPayment_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Validate payment amount
+                if (!decimal.TryParse(txtAmount.Text, out decimal amount) || amount <= 0)
+                {
+                    MessageBox.Show("Please enter a valid payment amount.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Validate amount doesn't exceed balance
+                if (amount > _invoice.BalanceAmount)
+                {
+                    MessageBox.Show("Payment amount cannot exceed the balance amount.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                Payment payment = null;
+
+                if (rbCash.Checked)
+                {
+                    // Process cash payment
+                    if (!decimal.TryParse(txtAmountReceived.Text, out decimal amountReceived))
+                    {
+                        MessageBox.Show("Please enter the amount received.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (amountReceived < amount)
+                    {
+                        MessageBox.Show("Amount received is less than the payment amount.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    decimal change;
+                    payment = _paymentContext.ProcessCashPayment(_invoice, amountReceived, 
+                        SessionManager.CurrentUser.UserId, out change);
+
+                    if (payment != null)
+                    {
+                        MessageBox.Show($"Payment processed successfully!\n\nChange: {change:C}", 
+                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else if (rbCreditCard.Checked)
+                {
+                    // Validate credit card details
+                    if (string.IsNullOrWhiteSpace(txtCardNumber.Text))
+                    {
+                        MessageBox.Show("Please enter the card number.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(txtCardHolderName.Text))
+                    {
+                        MessageBox.Show("Please enter the card holder name.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(txtCVV.Text))
+                    {
+                        MessageBox.Show("Please enter the CVV.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Validate card number
+                    if (!CreditCardPaymentStrategy.ValidateCardNumber(txtCardNumber.Text))
+                    {
+                        MessageBox.Show("Invalid credit card number.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Validate CVV
+                    if (!CreditCardPaymentStrategy.ValidateCVV(txtCVV.Text))
+                    {
+                        MessageBox.Show("Invalid CVV (must be 3 or 4 digits).", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Simulate gateway authorization
+                    if (!CreditCardPaymentStrategy.SimulateGatewayAuthorization(
+                        txtCardNumber.Text, txtCVV.Text, txtExpiryDate.Text, amount))
+                    {
+                        MessageBox.Show("Payment authorization failed. Please check your card details and try again.",
+                            "Payment Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Process credit card payment
+                    payment = _paymentContext.ProcessCreditCardPayment(_invoice, amount, 
+                        SessionManager.CurrentUser.UserId);
+
+                    if (payment != null)
+                    {
+                        // Update payment with card details (store only last 4 digits)
+                        payment.CardNumber = CreditCardPaymentStrategy.GetLast4Digits(txtCardNumber.Text);
+                        payment.CardHolderName = txtCardHolderName.Text;
+                        
+                        PaymentRepository paymentRepo = new PaymentRepository();
+                        paymentRepo.Update(payment);
+
+                        MessageBox.Show("Payment processed successfully!", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+
+                if (payment != null)
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Payment processing failed. Please try again.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error processing payment: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+    }
+}

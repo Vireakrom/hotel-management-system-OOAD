@@ -1,0 +1,345 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+
+namespace HotelManagementSystem.UI.Invoices
+{
+    /// <summary>
+    /// Form for displaying and managing invoices
+    /// Day 23 - Invoice Management & Enhancement
+    /// </summary>
+    public partial class InvoiceListForm : Form
+    {
+        private InvoiceRepository invoiceRepository;
+        private PaymentRepository paymentRepository;
+        private BookingRepository bookingRepository;
+        private GuestRepository guestRepository;
+
+        public InvoiceListForm()
+        {
+            InitializeComponent();
+
+            // Initialize repositories
+            invoiceRepository = new InvoiceRepository();
+            paymentRepository = new PaymentRepository();
+            bookingRepository = new BookingRepository();
+            guestRepository = new GuestRepository();
+
+            // Set up DataGridView
+            SetupDataGridView();
+
+            // Set default filter
+            cmbFilterStatus.SelectedIndex = 0; // "All"
+
+            // Load invoices
+            LoadInvoices();
+        }
+
+        /// <summary>
+        /// Set up DataGridView columns and properties
+        /// </summary>
+        private void SetupDataGridView()
+        {
+            dgvInvoices.AutoGenerateColumns = false;
+            dgvInvoices.AllowUserToAddRows = false;
+            dgvInvoices.AllowUserToDeleteRows = false;
+            dgvInvoices.ReadOnly = true;
+            dgvInvoices.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvInvoices.MultiSelect = false;
+
+            // Define columns
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "InvoiceId",
+                HeaderText = "ID",
+                DataPropertyName = "InvoiceId",
+                Width = 50,
+                Visible = false
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "InvoiceNumber",
+                HeaderText = "Invoice #",
+                DataPropertyName = "InvoiceNumber",
+                Width = 150
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "BookingId",
+                HeaderText = "Booking ID",
+                DataPropertyName = "BookingId",
+                Width = 80
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "IssueDate",
+                HeaderText = "Issue Date",
+                DataPropertyName = "IssueDate",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MMM dd, yyyy" }
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TotalAmount",
+                HeaderText = "Total Amount",
+                DataPropertyName = "TotalAmount",
+                Width = 120,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" }
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PaidAmount",
+                HeaderText = "Paid Amount",
+                DataPropertyName = "PaidAmount",
+                Width = 120,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" }
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "BalanceAmount",
+                HeaderText = "Balance",
+                DataPropertyName = "BalanceAmount",
+                Width = 120,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" }
+            });
+
+            dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Status",
+                HeaderText = "Status",
+                DataPropertyName = "Status",
+                Width = 120
+            });
+
+            // Enable row color coding
+            dgvInvoices.CellFormatting += DgvInvoices_CellFormatting;
+        }
+
+        /// <summary>
+        /// Color code rows based on invoice status
+        /// </summary>
+        private void DgvInvoices_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= dgvInvoices.Rows.Count)
+                return;
+
+            DataGridViewRow row = dgvInvoices.Rows[e.RowIndex];
+            string status = row.Cells["Status"].Value?.ToString();
+
+            if (string.IsNullOrEmpty(status))
+                return;
+
+            switch (status)
+            {
+                case "Paid":
+                    row.DefaultCellStyle.BackColor = Color.LightGreen;
+                    break;
+                case "Pending":
+                    row.DefaultCellStyle.BackColor = Color.LightYellow;
+                    break;
+                case "PartiallyPaid":
+                    row.DefaultCellStyle.BackColor = Color.LightBlue;
+                    break;
+                case "Cancelled":
+                    row.DefaultCellStyle.BackColor = Color.LightGray;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Load invoices based on selected filter
+        /// </summary>
+        private void LoadInvoices(string statusFilter = "All")
+        {
+            try
+            {
+                List<Invoice> invoices;
+
+                if (statusFilter == "All")
+                {
+                    invoices = invoiceRepository.GetAll();
+                }
+                else if (statusFilter == "Unpaid")
+                {
+                    invoices = invoiceRepository.GetUnpaidInvoices();
+                }
+                else
+                {
+                    invoices = invoiceRepository.GetInvoicesByStatus(statusFilter);
+                }
+
+                dgvInvoices.DataSource = invoices;
+
+                // Update statistics
+                UpdateStatistics(invoices);
+
+                // Update status label
+                lblStatus.Text = $"Loaded {invoices.Count} invoice(s)";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading invoices: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Update statistics labels
+        /// </summary>
+        private void UpdateStatistics(List<Invoice> invoices)
+        {
+            decimal totalRevenue = invoices.Where(i => i.Status != "Cancelled").Sum(i => i.TotalAmount);
+            decimal totalPaid = invoices.Sum(i => i.PaidAmount);
+            decimal totalBalance = invoices.Where(i => i.Status != "Cancelled" && i.Status != "Paid").Sum(i => i.BalanceAmount);
+            int pendingCount = invoices.Count(i => i.Status == "Pending");
+
+            lblTotalRevenue.Text = $"Total Revenue: {totalRevenue:C2}";
+            lblTotalPaid.Text = $"Total Paid: {totalPaid:C2}";
+            lblTotalBalance.Text = $"Total Balance: {totalBalance:C2}";
+            lblPendingCount.Text = $"Pending Invoices: {pendingCount}";
+        }
+
+        /// <summary>
+        /// Filter invoices by status
+        /// </summary>
+        private void cmbFilterStatus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedStatus = cmbFilterStatus.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selectedStatus))
+            {
+                LoadInvoices(selectedStatus);
+            }
+        }
+
+        /// <summary>
+        /// View invoice details
+        /// </summary>
+        private void btnViewDetails_Click(object sender, EventArgs e)
+        {
+            if (dgvInvoices.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an invoice to view.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int invoiceId = Convert.ToInt32(dgvInvoices.SelectedRows[0].Cells["InvoiceId"].Value);
+            ShowInvoiceDetails(invoiceId);
+        }
+
+        /// <summary>
+        /// View payment history for selected invoice
+        /// </summary>
+        private void btnPaymentHistory_Click(object sender, EventArgs e)
+        {
+            if (dgvInvoices.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an invoice to view payment history.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int invoiceId = Convert.ToInt32(dgvInvoices.SelectedRows[0].Cells["InvoiceId"].Value);
+            ShowPaymentHistory(invoiceId);
+        }
+
+        /// <summary>
+        /// Show payment history form for invoice
+        /// </summary>
+        private void ShowPaymentHistory(int invoiceId)
+        {
+            try
+            {
+                Payments.PaymentHistoryForm paymentHistoryForm = new Payments.PaymentHistoryForm(invoiceId);
+                paymentHistoryForm.ShowDialog();
+
+                // Refresh invoices after viewing payment history
+                LoadInvoices();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error displaying payment history: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Show detailed invoice information with payment history
+        /// </summary>
+        private void ShowInvoiceDetails(int invoiceId)
+        {
+            try
+            {
+                // Get invoice
+                Invoice invoice = invoiceRepository.GetById(invoiceId);
+                if (invoice == null)
+                {
+                    MessageBox.Show("Invoice not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Get booking
+                Booking booking = bookingRepository.GetById(invoice.BookingId);
+                if (booking == null)
+                {
+                    MessageBox.Show("Booking not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Get guest
+                Guest guest = guestRepository.GetById(booking.GuestId);
+
+                // Get payments
+                List<Payment> payments = paymentRepository.GetPaymentsByInvoiceId(invoiceId);
+
+                // Open details form
+                InvoiceDetailsDialog detailsDialog = new InvoiceDetailsDialog(invoice, booking, guest, payments);
+                detailsDialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading invoice details: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Double-click to view details
+        /// </summary>
+        private void dgvInvoices_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                btnViewDetails_Click(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Refresh invoice list
+        /// </summary>
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            string selectedStatus = cmbFilterStatus.SelectedItem?.ToString() ?? "All";
+            LoadInvoices(selectedStatus);
+        }
+
+        /// <summary>
+        /// Close form
+        /// </summary>
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

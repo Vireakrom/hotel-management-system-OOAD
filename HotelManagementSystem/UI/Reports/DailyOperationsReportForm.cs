@@ -1,0 +1,644 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+
+namespace HotelManagementSystem.UI.Reports
+{
+    /// <summary>
+    /// Daily Operations Report - comprehensive dashboard showing
+    /// today's check-ins, check-outs, occupancy rate, revenue,
+    /// room status breakdown, and recent bookings.
+    /// Day 26 - Enhanced Reporting
+    /// </summary>
+    public partial class DailyOperationsReportForm : Form
+    {
+        private RoomRepository roomRepository;
+        private BookingRepository bookingRepository;
+        private InvoiceRepository invoiceRepository;
+        private PaymentRepository paymentRepository;
+        private GuestRepository guestRepository;
+
+        public DailyOperationsReportForm()
+        {
+            InitializeComponent();
+
+            // Initialize repositories
+            roomRepository = new RoomRepository();
+            bookingRepository = new BookingRepository();
+            invoiceRepository = new InvoiceRepository();
+            paymentRepository = new PaymentRepository();
+            guestRepository = new GuestRepository();
+
+            // Set up grids
+            SetupRoomStatusGrid();
+            SetupRevenueBreakdownGrid();
+            SetupRecentBookingsGrid();
+
+            // Set default date to today
+            dtpReportDate.Value = DateTime.Today;
+
+            // Load report
+            LoadReport();
+        }
+
+        #region Grid Setup
+
+        private void SetupRoomStatusGrid()
+        {
+            dgvRoomStatus.AutoGenerateColumns = false;
+            dgvRoomStatus.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvRoomStatus.MultiSelect = false;
+            dgvRoomStatus.RowHeadersVisible = false;
+
+            dgvRoomStatus.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Status",
+                HeaderText = "Room Status",
+                Width = 150
+            });
+
+            dgvRoomStatus.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Count",
+                HeaderText = "Count",
+                Width = 80,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+
+            dgvRoomStatus.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Percentage",
+                HeaderText = "Percentage",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+
+            dgvRoomStatus.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Rooms",
+                HeaderText = "Room Numbers",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
+        }
+
+        private void SetupRevenueBreakdownGrid()
+        {
+            dgvRevenueBreakdown.AutoGenerateColumns = false;
+            dgvRevenueBreakdown.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvRevenueBreakdown.MultiSelect = false;
+            dgvRevenueBreakdown.RowHeadersVisible = false;
+
+            dgvRevenueBreakdown.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PaymentMethod",
+                HeaderText = "Payment Method",
+                Width = 150
+            });
+
+            dgvRevenueBreakdown.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TransactionCount",
+                HeaderText = "Transactions",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+
+            dgvRevenueBreakdown.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Amount",
+                HeaderText = "Amount",
+                Width = 130,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2", Alignment = DataGridViewContentAlignment.MiddleRight }
+            });
+
+            dgvRevenueBreakdown.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Percentage",
+                HeaderText = "% of Total",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+        }
+
+        private void SetupRecentBookingsGrid()
+        {
+            dgvRecentBookings.AutoGenerateColumns = false;
+            dgvRecentBookings.MultiSelect = false;
+            dgvRecentBookings.RowHeadersVisible = false;
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "BookingId",
+                HeaderText = "ID",
+                Width = 50
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "GuestName",
+                HeaderText = "Guest Name",
+                Width = 180
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "RoomNumber",
+                HeaderText = "Room",
+                Width = 80,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "RoomType",
+                HeaderText = "Type",
+                Width = 100
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CheckIn",
+                HeaderText = "Check-In",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MMM dd, yyyy" }
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CheckOut",
+                HeaderText = "Check-Out",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "MMM dd, yyyy" }
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Nights",
+                HeaderText = "Nights",
+                Width = 60,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TotalAmount",
+                HeaderText = "Total",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2", Alignment = DataGridViewContentAlignment.MiddleRight }
+            });
+
+            dgvRecentBookings.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Status",
+                HeaderText = "Status",
+                Width = 110,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
+            });
+        }
+
+        #endregion
+
+        #region Load Report Data
+
+        private void LoadReport()
+        {
+            try
+            {
+                DateTime reportDate = dtpReportDate.Value.Date;
+                lblReportDate.Text = reportDate.ToString("dddd, MMMM dd, yyyy");
+                lblStatus.Text = "Loading report...";
+
+                LoadStatistics(reportDate);
+                LoadRoomStatusBreakdown();
+                LoadRevenueBreakdown(reportDate);
+                LoadRecentBookings(reportDate);
+
+                lblStatus.Text = $"Report loaded for {reportDate:MMM dd, yyyy} at {DateTime.Now:hh:mm:ss tt}";
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = "Error loading report";
+                MessageBox.Show(
+                    $"Error loading report:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+        }
+
+        /// <summary>
+        /// Load the 4 main statistics cards: check-ins, check-outs, revenue, occupancy
+        /// </summary>
+        private void LoadStatistics(DateTime reportDate)
+        {
+            List<Booking> allBookings = bookingRepository.GetAll();
+
+            // Today's check-ins: bookings where check-in date is today and status is CheckedIn
+            int checkIns = allBookings.Count(b =>
+                b.CheckInDate.Date == reportDate.Date &&
+                (b.Status == "CheckedIn" || b.Status == "CheckedOut"));
+
+            // If no actual check-ins, count confirmed bookings scheduled for today
+            if (checkIns == 0)
+            {
+                checkIns = allBookings.Count(b =>
+                    b.CheckInDate.Date == reportDate.Date &&
+                    b.Status == "Confirmed");
+            }
+
+            lblCheckInsValue.Text = checkIns.ToString();
+
+            // Today's check-outs: bookings where check-out date is today
+            int checkOuts = allBookings.Count(b =>
+                b.CheckOutDate.Date == reportDate.Date &&
+                b.Status == "CheckedOut");
+
+            // If no actual check-outs, count checked-in bookings scheduled for checkout today
+            if (checkOuts == 0)
+            {
+                checkOuts = allBookings.Count(b =>
+                    b.CheckOutDate.Date == reportDate.Date &&
+                    b.Status == "CheckedIn");
+            }
+
+            lblCheckOutsValue.Text = checkOuts.ToString();
+
+            // Today's revenue: sum of payments received today
+            List<Payment> todayPayments = paymentRepository.GetPaymentsByDateRange(
+                reportDate, reportDate.AddDays(1).AddSeconds(-1));
+            decimal todayRevenue = todayPayments
+                .Where(p => p.Status == "Completed")
+                .Sum(p => p.Amount);
+
+            lblRevenueValue.Text = todayRevenue.ToString("C2");
+
+            // Occupancy rate: occupied rooms / total rooms
+            List<Room> allRooms = roomRepository.GetAll();
+            int totalRooms = allRooms.Count;
+            int occupiedRooms = allRooms.Count(r => r.Status == "Occupied");
+
+            decimal occupancyRate = totalRooms > 0
+                ? Math.Round((decimal)occupiedRooms / totalRooms * 100, 1)
+                : 0;
+
+            lblOccupancyValue.Text = $"{occupancyRate}%";
+        }
+
+        /// <summary>
+        /// Load room status breakdown into the grid
+        /// </summary>
+        private void LoadRoomStatusBreakdown()
+        {
+            dgvRoomStatus.Rows.Clear();
+
+            List<Room> allRooms = roomRepository.GetAll();
+            int totalRooms = allRooms.Count;
+
+            if (totalRooms == 0) return;
+
+            // Group rooms by status
+            var statusGroups = allRooms
+                .GroupBy(r => r.Status)
+                .OrderByDescending(g => g.Count())
+                .ToList();
+
+            foreach (var group in statusGroups)
+            {
+                string status = group.Key;
+                int count = group.Count();
+                decimal percentage = Math.Round((decimal)count / totalRooms * 100, 1);
+                string roomNumbers = string.Join(", ", group.Select(r => r.RoomNumber).OrderBy(n => n));
+
+                int rowIndex = dgvRoomStatus.Rows.Add(status, count, $"{percentage}%", roomNumbers);
+
+                // Color-code status rows
+                DataGridViewRow row = dgvRoomStatus.Rows[rowIndex];
+                switch (status)
+                {
+                    case "Available":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(232, 245, 233);
+                        break;
+                    case "Occupied":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 243, 224);
+                        break;
+                    case "Reserved":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(227, 242, 253);
+                        break;
+                    case "Cleaning":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(243, 229, 245);
+                        break;
+                    case "Maintenance":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 238);
+                        break;
+                }
+            }
+
+            // Add total row
+            int totalRowIndex = dgvRoomStatus.Rows.Add("TOTAL", totalRooms, "100%", "");
+            dgvRoomStatus.Rows[totalRowIndex].DefaultCellStyle.Font = new Font(dgvRoomStatus.Font, FontStyle.Bold);
+            dgvRoomStatus.Rows[totalRowIndex].DefaultCellStyle.BackColor = Color.FromArgb(236, 240, 241);
+        }
+
+        /// <summary>
+        /// Load revenue breakdown by payment method for the selected date
+        /// </summary>
+        private void LoadRevenueBreakdown(DateTime reportDate)
+        {
+            dgvRevenueBreakdown.Rows.Clear();
+
+            List<Payment> todayPayments = paymentRepository.GetPaymentsByDateRange(
+                reportDate, reportDate.AddDays(1).AddSeconds(-1));
+
+            // Only completed payments
+            var completedPayments = todayPayments.Where(p => p.Status == "Completed").ToList();
+            decimal totalRevenue = completedPayments.Sum(p => p.Amount);
+
+            if (completedPayments.Count == 0)
+            {
+                dgvRevenueBreakdown.Rows.Add("No payments", "0", "$0.00", "-");
+                return;
+            }
+
+            // Group by payment method
+            var methodGroups = completedPayments
+                .GroupBy(p => p.PaymentMethod)
+                .OrderByDescending(g => g.Sum(p => p.Amount))
+                .ToList();
+
+            foreach (var group in methodGroups)
+            {
+                string method = group.Key;
+                int count = group.Count();
+                decimal amount = group.Sum(p => p.Amount);
+                decimal percentage = totalRevenue > 0
+                    ? Math.Round(amount / totalRevenue * 100, 1)
+                    : 0;
+
+                int rowIndex = dgvRevenueBreakdown.Rows.Add(method, count, amount, $"{percentage}%");
+
+                // Color-code payment methods
+                DataGridViewRow row = dgvRevenueBreakdown.Rows[rowIndex];
+                switch (method)
+                {
+                    case "Cash":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(232, 245, 233);
+                        break;
+                    case "CreditCard":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(227, 242, 253);
+                        break;
+                    default:
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(243, 229, 245);
+                        break;
+                }
+            }
+
+            // Add total row
+            int totalRowIndex = dgvRevenueBreakdown.Rows.Add("TOTAL", completedPayments.Count, totalRevenue, "100%");
+            dgvRevenueBreakdown.Rows[totalRowIndex].DefaultCellStyle.Font = new Font(dgvRevenueBreakdown.Font, FontStyle.Bold);
+            dgvRevenueBreakdown.Rows[totalRowIndex].DefaultCellStyle.BackColor = Color.FromArgb(236, 240, 241);
+        }
+
+        /// <summary>
+        /// Load recent bookings for the selected date and surrounding days
+        /// </summary>
+        private void LoadRecentBookings(DateTime reportDate)
+        {
+            dgvRecentBookings.Rows.Clear();
+
+            List<Booking> allBookings = bookingRepository.GetAll();
+            List<Room> allRooms = roomRepository.GetAll();
+            List<Guest> allGuests = guestRepository.GetAll();
+
+            // Get bookings relevant to the report date:
+            // check-in or check-out on the selected date, or currently active
+            var relevantBookings = allBookings
+                .Where(b =>
+                    b.CheckInDate.Date == reportDate.Date ||
+                    b.CheckOutDate.Date == reportDate.Date ||
+                    (b.CheckInDate.Date <= reportDate.Date && b.CheckOutDate.Date >= reportDate.Date &&
+                     b.Status != "Cancelled"))
+                .OrderByDescending(b => b.BookingDate)
+                .Take(20)
+                .ToList();
+
+            // If no relevant bookings for the date, show the most recent bookings overall
+            if (relevantBookings.Count == 0)
+            {
+                relevantBookings = allBookings
+                    .Where(b => b.Status != "Cancelled")
+                    .OrderByDescending(b => b.BookingDate)
+                    .Take(15)
+                    .ToList();
+                lblRecentBookingsTitle.Text = "Recent Bookings (Latest)";
+            }
+            else
+            {
+                lblRecentBookingsTitle.Text = $"Bookings for {reportDate:MMM dd, yyyy}";
+            }
+
+            foreach (var booking in relevantBookings)
+            {
+                // Find guest and room info
+                Guest guest = allGuests.FirstOrDefault(g => g.GuestId == booking.GuestId);
+                Room room = allRooms.FirstOrDefault(r => r.RoomId == booking.RoomId);
+
+                string guestName = guest != null ? guest.FullName : $"Guest #{booking.GuestId}";
+                string roomNumber = room != null ? room.RoomNumber : $"#{booking.RoomId}";
+                string roomType = room != null ? room.RoomType : "N/A";
+
+                int rowIndex = dgvRecentBookings.Rows.Add(
+                    booking.BookingId,
+                    guestName,
+                    roomNumber,
+                    roomType,
+                    booking.CheckInDate,
+                    booking.CheckOutDate,
+                    booking.NumberOfNights,
+                    booking.TotalAmount,
+                    booking.Status
+                );
+
+                // Color-code status
+                DataGridViewRow row = dgvRecentBookings.Rows[rowIndex];
+                switch (booking.Status)
+                {
+                    case "CheckedIn":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(227, 242, 253);
+                        break;
+                    case "CheckedOut":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(232, 245, 233);
+                        break;
+                    case "Confirmed":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 243, 224);
+                        break;
+                    case "Pending":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(243, 229, 245);
+                        break;
+                    case "Cancelled":
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 238);
+                        break;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void dtpReportDate_ValueChanged(object sender, EventArgs e)
+        {
+            LoadReport();
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            LoadReport();
+        }
+
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+            // Generate text-based report for printing
+            DateTime reportDate = dtpReportDate.Value.Date;
+            string report = GenerateTextReport(reportDate);
+
+            Form printForm = new Form
+            {
+                Text = $"Daily Operations Report - {reportDate:MMM dd, yyyy}",
+                Width = 800,
+                Height = 600,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+
+            TextBox txtReport = new TextBox
+            {
+                Multiline = true,
+                ScrollBars = ScrollBars.Both,
+                Dock = DockStyle.Fill,
+                Font = new Font("Consolas", 9F),
+                Text = report,
+                ReadOnly = true,
+                BackColor = Color.White
+            };
+
+            Button btnCopy = new Button
+            {
+                Text = "Copy to Clipboard",
+                Dock = DockStyle.Bottom,
+                Height = 35,
+                BackColor = Color.FromArgb(41, 128, 185),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9F)
+            };
+            btnCopy.Click += (s, ev) =>
+            {
+                Clipboard.SetText(report);
+                MessageBox.Show("Report copied to clipboard!", "Copied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
+
+            printForm.Controls.Add(txtReport);
+            printForm.Controls.Add(btnCopy);
+            printForm.ShowDialog();
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion
+
+        #region Text Report Generation
+
+        /// <summary>
+        /// Generate a formatted text report for printing/clipboard
+        /// </summary>
+        public string GenerateTextReport(DateTime reportDate)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            sb.AppendLine("╔══════════════════════════════════════════════════════════╗");
+            sb.AppendLine("║            HOTEL MANAGEMENT SYSTEM                      ║");
+            sb.AppendLine("║            Daily Operations Report                      ║");
+            sb.AppendLine("╚══════════════════════════════════════════════════════════╝");
+            sb.AppendLine();
+            sb.AppendLine($"  Report Date: {reportDate:dddd, MMMM dd, yyyy}");
+            sb.AppendLine($"  Generated:   {DateTime.Now:MMM dd, yyyy hh:mm tt}");
+            sb.AppendLine();
+
+            // Get data
+            List<Booking> allBookings = bookingRepository.GetAll();
+            List<Room> allRooms = roomRepository.GetAll();
+            List<Payment> todayPayments = paymentRepository.GetPaymentsByDateRange(
+                reportDate, reportDate.AddDays(1).AddSeconds(-1));
+
+            int totalRooms = allRooms.Count;
+            int occupiedRooms = allRooms.Count(r => r.Status == "Occupied");
+            decimal occupancyRate = totalRooms > 0 ? Math.Round((decimal)occupiedRooms / totalRooms * 100, 1) : 0;
+
+            int checkIns = allBookings.Count(b =>
+                b.CheckInDate.Date == reportDate.Date &&
+                (b.Status == "CheckedIn" || b.Status == "CheckedOut" || b.Status == "Confirmed"));
+            int checkOuts = allBookings.Count(b =>
+                b.CheckOutDate.Date == reportDate.Date &&
+                (b.Status == "CheckedOut" || b.Status == "CheckedIn"));
+
+            var completedPayments = todayPayments.Where(p => p.Status == "Completed").ToList();
+            decimal todayRevenue = completedPayments.Sum(p => p.Amount);
+
+            // Summary section
+            sb.AppendLine("  ─────────── SUMMARY ───────────");
+            sb.AppendLine($"  Check-Ins Today:    {checkIns}");
+            sb.AppendLine($"  Check-Outs Today:   {checkOuts}");
+            sb.AppendLine($"  Today's Revenue:    {todayRevenue:C2}");
+            sb.AppendLine($"  Occupancy Rate:     {occupancyRate}%");
+            sb.AppendLine($"  Occupied Rooms:     {occupiedRooms} / {totalRooms}");
+            sb.AppendLine();
+
+            // Room status
+            sb.AppendLine("  ─────────── ROOM STATUS ───────────");
+            var roomGroups = allRooms.GroupBy(r => r.Status).OrderByDescending(g => g.Count());
+            foreach (var group in roomGroups)
+            {
+                decimal pct = Math.Round((decimal)group.Count() / totalRooms * 100, 1);
+                string rooms = string.Join(", ", group.Select(r => r.RoomNumber).OrderBy(n => n));
+                sb.AppendLine($"  {group.Key,-15} {group.Count(),3} ({pct,5}%)  [{rooms}]");
+            }
+            sb.AppendLine($"  {"TOTAL",-15} {totalRooms,3} (100.0%)");
+            sb.AppendLine();
+
+            // Revenue breakdown
+            sb.AppendLine("  ─────────── REVENUE BREAKDOWN ───────────");
+            if (completedPayments.Count > 0)
+            {
+                var methodGroups = completedPayments.GroupBy(p => p.PaymentMethod).OrderByDescending(g => g.Sum(p => p.Amount));
+                foreach (var group in methodGroups)
+                {
+                    decimal amt = group.Sum(p => p.Amount);
+                    decimal pct = todayRevenue > 0 ? Math.Round(amt / todayRevenue * 100, 1) : 0;
+                    sb.AppendLine($"  {group.Key,-15} {group.Count(),3} txn(s)  {amt,12:C2}  ({pct}%)");
+                }
+                sb.AppendLine($"  {"TOTAL",-15} {completedPayments.Count,3} txn(s)  {todayRevenue,12:C2}");
+            }
+            else
+            {
+                sb.AppendLine("  No payments recorded for this date.");
+            }
+            sb.AppendLine();
+
+            sb.AppendLine("══════════════════════════════════════════════════════════");
+            sb.AppendLine("  End of Report");
+
+            return sb.ToString();
+        }
+
+        #endregion
+    }
+}

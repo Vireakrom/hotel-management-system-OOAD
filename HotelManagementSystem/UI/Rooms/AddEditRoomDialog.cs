@@ -1,5 +1,6 @@
 using HotelManagementSystem.DAL;
 using HotelManagementSystem.Models;
+using HotelManagementSystem.Helpers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -10,6 +11,7 @@ namespace HotelManagementSystem.UI.Rooms
     /// Dialog for adding or editing room information
     /// Demonstrates Factory Pattern usage and input validation
     /// Day 9 Implementation
+    /// Day 30 Enhancement - Comprehensive Validation
     /// </summary>
     public partial class AddEditRoomDialog : Form
     {
@@ -180,19 +182,21 @@ namespace HotelManagementSystem.UI.Rooms
         }
 
         /// <summary>
-        /// Validate all input fields
+        /// Validate all input fields - Enhanced for Day 30
         /// </summary>
         private bool ValidateInput(out string errorMessage)
         {
             errorMessage = string.Empty;
 
-            // Room Number validation
-            if (string.IsNullOrWhiteSpace(txtRoomNumber.Text))
-            {
-                errorMessage = "Room number is required.";
-                txtRoomNumber.Focus();
+            // Room Number validation using ValidationHelper
+            if (!ValidationHelper.ValidateRequired(txtRoomNumber, "Room number", out errorMessage))
                 return false;
-            }
+
+            if (!ValidationHelper.ValidateMinLength(txtRoomNumber, "Room number", 2, out errorMessage))
+                return false;
+
+            if (!ValidationHelper.ValidateMaxLength(txtRoomNumber, "Room number", 10, out errorMessage))
+                return false;
 
             // Check if room number already exists (only for new rooms)
             if (!isEditMode)
@@ -200,50 +204,78 @@ namespace HotelManagementSystem.UI.Rooms
                 var existingRoom = roomRepository.GetByRoomNumber(txtRoomNumber.Text.Trim());
                 if (existingRoom != null)
                 {
-                    errorMessage = $"Room number '{txtRoomNumber.Text}' already exists.";
+                    errorMessage = $"Room number '{txtRoomNumber.Text}' already exists.\nPlease choose a different room number.";
                     txtRoomNumber.Focus();
                     return false;
                 }
             }
 
             // Room Type validation
-            if (cmbRoomType.SelectedIndex < 0)
-            {
-                errorMessage = "Please select a room type.";
-                cmbRoomType.Focus();
+            if (!ValidationHelper.ValidateRequired(cmbRoomType, "room type", out errorMessage))
                 return false;
-            }
+
+            // Status validation
+            if (!ValidationHelper.ValidateRequired(cmbStatus, "room status", out errorMessage))
+                return false;
+
+            // Bed Type validation
+            if (!ValidationHelper.ValidateRequired(cmbBedType, "bed type", out errorMessage))
+                return false;
+
+            // View Type validation
+            if (!ValidationHelper.ValidateRequired(cmbViewType, "view type", out errorMessage))
+                return false;
 
             // Floor Number validation
-            if (numFloorNumber.Value < 1)
+            if (!ValidationHelper.ValidateNumericRange((decimal)numFloorNumber.Value, 1, 20, 
+                "Floor number", out errorMessage))
             {
-                errorMessage = "Floor number must be at least 1.";
                 numFloorNumber.Focus();
                 return false;
             }
 
             // Base Price validation
-            if (numBasePrice.Value <= 0)
+            if (!ValidationHelper.ValidatePositive(numBasePrice.Value, "Base price", out errorMessage))
             {
-                errorMessage = "Base price must be greater than 0.";
+                numBasePrice.Focus();
+                return false;
+            }
+
+            if (!ValidationHelper.ValidateNumericRange(numBasePrice.Value, 10, 10000, 
+                "Base price", out errorMessage))
+            {
                 numBasePrice.Focus();
                 return false;
             }
 
             // Max Occupancy validation
-            if (numMaxOccupancy.Value < 1)
+            if (!ValidationHelper.ValidateNumericRange((decimal)numMaxOccupancy.Value, 1, 10, 
+                "Maximum occupancy", out errorMessage))
             {
-                errorMessage = "Max occupancy must be at least 1.";
                 numMaxOccupancy.Focus();
                 return false;
             }
 
             // Area validation
-            if (numArea.Value < 10)
+            if (!ValidationHelper.ValidateNumericRange(numArea.Value, 10, 500, 
+                "Room area", out errorMessage))
             {
-                errorMessage = "Room area must be at least 10 sq.m.";
                 numArea.Focus();
                 return false;
+            }
+
+            // Description validation (optional but limited)
+            if (!string.IsNullOrWhiteSpace(txtDescription.Text))
+            {
+                if (!ValidationHelper.ValidateMaxLength(txtDescription, "Description", 500, out errorMessage))
+                    return false;
+            }
+
+            // Amenities validation (optional but limited)
+            if (!string.IsNullOrWhiteSpace(txtAmenities.Text))
+            {
+                if (!ValidationHelper.ValidateMaxLength(txtAmenities, "Amenities", 500, out errorMessage))
+                    return false;
             }
 
             return true;

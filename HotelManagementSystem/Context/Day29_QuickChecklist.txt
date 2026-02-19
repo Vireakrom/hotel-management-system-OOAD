@@ -1,0 +1,291 @@
+# Day 29 Bug Fixing - Quick Checklist
+
+## Pre-Testing Checklist
+- [ ] Project builds successfully
+- [ ] All NuGet packages are installed
+- [ ] Database connection is working
+- [ ] You have test data in the database
+
+---
+
+## Run Test Suite
+- [ ] Uncomment Main() in TestRunner.cs
+- [ ] Run `RunDay29BugFixingTests()`
+- [ ] Document any FAILED tests
+- [ ] Note error messages
+
+---
+
+## Manual Testing - Guest Management
+- [ ] Open Guest Management Form
+- [ ] View all guests in DataGridView
+- [ ] Add a new guest
+  - [ ] Form opens
+  - [ ] Can enter data
+  - [ ] Save works
+  - [ ] Guest appears in list
+- [ ] Edit a guest
+  - [ ] Double-click or Edit button
+  - [ ] Form populates with data
+  - [ ] Can modify fields
+  - [ ] Update works
+  - [ ] DataGridView refreshes
+- [ ] Delete a guest (if implemented)
+  - [ ] Confirmation dialog appears
+  - [ ] Guest removed from database
+  - [ ] List refreshes
+
+---
+
+## Manual Testing - Room Management
+- [ ] Open Room Management Form
+- [ ] View all rooms in DataGridView
+- [ ] Add a new room
+  - [ ] Form opens
+  - [ ] Room type selector works
+  - [ ] Can enter room number/price
+  - [ ] Save works
+  - [ ] Room appears in list with correct type
+- [ ] Edit a room
+  - [ ] Double-click or Edit button
+  - [ ] Form populated correctly
+  - [ ] Can modify price/status
+  - [ ] Update works
+  - [ ] DataGridView refreshes
+- [ ] View Room Status Dashboard
+  - [ ] Color-coded rooms display
+  - [ ] All rooms show with correct status
+  - [ ] Filter by status works
+
+---
+
+## Manual Testing - Complete Booking Workflow
+
+### Step 1: Create Booking
+- [ ] Open New Booking Form
+- [ ] Guest list populated (ComboBox not empty)
+- [ ] Select a guest
+- [ ] Select check-in date (DateTimePicker works)
+- [ ] Select check-out date (after check-in)
+- [ ] Click "Show Available Rooms"
+- [ ] Available rooms appear in list
+- [ ] Select a room
+- [ ] Total price calculates correctly
+  - [ ] Calculation: (CheckOut - CheckIn) days × Room.Price
+- [ ] Click "Create Booking"
+- [ ] Booking created successfully
+- [ ] Confirmation message appears
+- [ ] Room status changed to "Reserved" (check Room Management form)
+
+### Step 2: Check-In
+- [ ] Open Booking List Form
+- [ ] Find booking with status "Confirmed"
+- [ ] Select booking
+- [ ] Click "Check-In" button
+- [ ] Booking status changes to "CheckedIn"
+- [ ] Room status changes to "Occupied"
+- [ ] Form refreshes showing updated status
+
+### Step 3: Check-Out & Invoice
+- [ ] Find booking with status "CheckedIn"
+- [ ] Click "Check-Out" button
+- [ ] Invoice automatically generated
+- [ ] Invoice form displays:
+  - [ ] Booking details
+  - [ ] Room price × number of nights
+  - [ ] Tax amount (usually 10%)
+  - [ ] Total amount = SubTotal + Tax
+- [ ] Invoice shows correct amounts
+- [ ] Booking status changes to "CheckedOut"
+- [ ] Room status changes to "Cleaning"
+
+### Step 4: Verify Housekeeping Task
+- [ ] Open Housekeeping Tasks Form
+- [ ] New task appears for the room
+- [ ] Task type is "Cleaning"
+- [ ] Task status is "Pending"
+- [ ] Room ID matches checked-out room
+
+### Step 5: Process Payment
+- [ ] In Invoice form, click "Pay" or "Process Payment"
+- [ ] Payment form opens
+- [ ] Show payment method options (Cash)
+- [ ] Select Cash
+- [ ] Enter amount received (>= invoice total)
+- [ ] Change calculated correctly:
+  - [ ] Change = Amount Received - Invoice Total
+- [ ] Click "Process Payment"
+- [ ] Payment successful message
+- [ ] Invoice status changes to "Paid"
+- [ ] Payment record created in database
+
+### Step 6: Mark Housekeeping Complete
+- [ ] In Housekeeping Tasks form
+- [ ] Select the cleaning task
+- [ ] Change status to "Completed"
+- [ ] Click Update
+- [ ] Task status changes to "Completed"
+- [ ] Room can now be marked "Available" in Room Management
+
+---
+
+## Manual Testing - Invoice Management
+- [ ] Open Invoice List Form
+- [ ] All invoices displayed in DataGridView
+- [ ] Columns show: Invoice #, Booking, Amount, Tax, Total, Status
+- [ ] Click on invoice
+- [ ] Details form shows all information
+- [ ] Can verify calculations are correct
+
+---
+
+## Manual Testing - Payment Processing
+- [ ] Open Payment History Form (if exists)
+- [ ] All payments displayed
+- [ ] Payment method shows correctly
+- [ ] Payment date shows correctly
+- [ ] Amount paid matches invoice total
+
+---
+
+## Critical Bugs to Look For
+
+### Crashes (MUST FIX)
+- [ ] Click Check-Out without invoice → handles gracefully
+- [ ] Select booking with missing guest → shows error
+- [ ] No available rooms in date range → shows message
+- [ ] Any NULL reference exceptions → caught and handled
+- [ ] Database disconnection → proper error message
+
+### Data Calculation Bugs (MUST FIX)
+- [ ] Invoice amounts calculated incorrectly
+  - [ ] Wrong subtotal
+  - [ ] Tax not applied
+  - [ ] Total wrong
+- [ ] Check-out date before check-in date → rejected
+- [ ] Booking overlaps with existing booking → blocked or allowed (depends on design)
+- [ ] Room price not applied correctly
+
+### UI/Display Bugs (SHOULD FIX)
+- [ ] DataGridView not refreshing after CRUD
+- [ ] Form not closing after save
+- [ ] Controls disabled when should be enabled
+- [ ] Drop-down lists empty
+- [ ] Date pickers showing wrong format
+- [ ] Missing error messages for invalid input
+
+---
+
+## Bug Severity Scale
+
+### 🔴 CRITICAL - Fix Today
+- Application crash
+- Data loss
+- Incorrect financial calculation
+- Database connection failure
+
+### 🟠 HIGH - Fix Today if Possible
+- Feature completely non-functional
+- Wrong calculation in invoice/payment
+- Room status not updating
+- Database record not saving
+
+### 🟡 MEDIUM - Fix if Time Permits
+- UI glitch (control placement, text alignment)
+- Minor calculation issue
+- Slow performance
+- Missing validation message
+
+### 🟢 LOW - Document for Day 30
+- UI polish (colors, fonts)
+- Spelling/grammar
+- Performance optimization
+- Nice-to-have improvements
+
+---
+
+## Bug Report Template
+
+```
+Bug #[NUMBER]: [SHORT TITLE]
+Severity: [CRITICAL/HIGH/MEDIUM/LOW]
+Location: [Form Name or Method]
+
+Steps to Reproduce:
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+Expected Result:
+[What should happen]
+
+Actual Result:
+[What actually happened]
+
+Error Message:
+[Full error text if applicable]
+
+Screenshot:
+[Attach screenshot if possible]
+
+Notes:
+[Any additional information]
+```
+
+---
+
+## Success Criteria
+
+**By End of Day 29:**
+- ✅ 85%+ of tests pass
+- ✅ Can complete full booking workflow without crashes
+- ✅ All CRUD operations work (Create, Read, Update, List)
+- ✅ Invoice amounts calculate correctly
+- ✅ Payment processing works
+- ✅ Housekeeping tasks auto-create
+- ✅ All 5 design patterns verified
+- ✅ All critical bugs documented and fixed
+
+---
+
+## If You Get Stuck
+
+**For compilation errors:**
+- Check property names (GuestId not GuestID)
+- Check method names (Insert not Create)
+- Rebuild solution
+
+**For runtime errors:**
+- Check database connection first
+- Verify test data exists
+- Check null reference exceptions
+- Use try-catch and log errors
+
+**For test failures:**
+- Run individual tests
+- Check database state
+- Verify repository GetAll() returns data
+- Check database schema matches models
+
+---
+
+## Commit Your Work
+When done with Day 29:
+```
+git add .
+git commit -m "Day 29: Bug fixing - comprehensive CRUD testing and fixes"
+git push origin master
+```
+
+---
+
+## Today's Accomplishments
+✅ Comprehensive CRUD testing  
+✅ Verified 5 design patterns  
+✅ Identified and documented bugs  
+✅ Fixed critical issues  
+✅ System ready for Week 5 polish  
+
+**You're on track! Day 29 complete = Only 6 more days to the deadline!** 🎯
+
+---

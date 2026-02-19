@@ -271,37 +271,100 @@ namespace HotelManagementSystem.UI.Bookings
         }
 
         /// <summary>
-        /// Create booking button
+        /// Create booking button - Enhanced validation for Day 30
         /// </summary>
         private void btnCreateBooking_Click(object sender, EventArgs e)
         {
-            // Validation
-            if (cmbGuest.SelectedIndex <= 0)
+            // Comprehensive validation using ValidationHelper
+            string errorMessage;
+
+            // Guest selection validation
+            if (!ValidationHelper.ValidateRequired(cmbGuest, "guest", out errorMessage))
             {
-                MessageBox.Show("Please select a guest.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbGuest.Focus();
+                ValidationHelper.ShowValidationError(errorMessage);
                 return;
             }
 
-            if (cmbRoom.SelectedIndex <= 0)
+            // Room selection validation
+            if (!ValidationHelper.ValidateRequired(cmbRoom, "room", out errorMessage))
             {
-                MessageBox.Show("Please select a room.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbRoom.Focus();
+                ValidationHelper.ShowValidationError(errorMessage);
                 return;
+            }
+
+            // Date validations
+            DateTime checkIn = dtpCheckIn.Value.Date;
+            DateTime checkOut = dtpCheckOut.Value.Date;
+
+            // Check-in date must not be in the past
+            if (!ValidationHelper.ValidateFutureDate(checkIn, "Check-in date", out errorMessage))
+            {
+                ValidationHelper.ShowValidationError(errorMessage);
+                dtpCheckIn.Focus();
+                return;
+            }
+
+            // Check-out date must be after check-in date
+            if (!ValidationHelper.ValidateDateRange(checkIn, checkOut, "Check-in", "Check-out", out errorMessage))
+            {
+                ValidationHelper.ShowValidationError(errorMessage);
+                dtpCheckOut.Focus();
+                return;
+            }
+
+            // Validate number of nights (reasonable range)
+            int nights = (checkOut - checkIn).Days;
+            if (nights < 1)
+            {
+                ValidationHelper.ShowValidationError("Minimum stay is 1 night.");
+                dtpCheckOut.Focus();
+                return;
+            }
+
+            if (nights > 365)
+            {
+                ValidationHelper.ShowValidationError("Maximum stay is 365 nights. For longer stays, please contact reception.");
+                dtpCheckOut.Focus();
+                return;
+            }
+
+            // Number of guests validation
+            int numberOfGuests = (int)numGuests.Value;
+            Room selectedRoom = availableRooms[cmbRoom.SelectedIndex - 1];
+
+            if (numberOfGuests < 1)
+            {
+                ValidationHelper.ShowValidationError("Number of guests must be at least 1.");
+                numGuests.Focus();
+                return;
+            }
+
+            if (numberOfGuests > selectedRoom.MaxOccupancy)
+            {
+                ValidationHelper.ShowValidationError(
+                    $"Number of guests ({numberOfGuests}) exceeds room capacity ({selectedRoom.MaxOccupancy}).\n" +
+                    $"Please select a different room or reduce the number of guests.");
+                numGuests.Focus();
+                return;
+            }
+
+            // Special requests validation (optional)
+            if (!string.IsNullOrWhiteSpace(txtSpecialRequests.Text))
+            {
+                if (txtSpecialRequests.Text.Trim().Length > 500)
+                {
+                    ValidationHelper.ShowValidationError("Special requests must not exceed 500 characters.");
+                    txtSpecialRequests.Focus();
+                    return;
+                }
             }
 
             try
             {
-                // Get selected guest and room
+                // Get selected guest
                 Guest selectedGuest = allGuests[cmbGuest.SelectedIndex - 1];
-                Room selectedRoom = availableRooms[cmbRoom.SelectedIndex - 1];
 
                 // Get booking details
-                DateTime checkIn = dtpCheckIn.Value.Date;
-                DateTime checkOut = dtpCheckOut.Value.Date;
-                int numberOfGuests = (int)numGuests.Value;
                 string specialRequests = txtSpecialRequests.Text.Trim();
 
                 // Create booking using facade
@@ -316,8 +379,8 @@ namespace HotelManagementSystem.UI.Bookings
                 );
 
                 // Success message
-                int nights = (checkOut - checkIn).Days;
-                decimal total = bookingFacade.CalculateTotalAmount(selectedRoom.BasePrice * nights, 0m);
+                decimal roomCharges = selectedRoom.BasePrice * nights;
+                decimal total = bookingFacade.CalculateTotalAmount(roomCharges, 0m);
 
                 MessageBox.Show(
                     $"Booking created successfully!\n\n" +
@@ -326,7 +389,9 @@ namespace HotelManagementSystem.UI.Bookings
                     $"Room: {selectedRoom.RoomNumber} ({selectedRoom.RoomType})\n" +
                     $"Check-in: {checkIn:d}\n" +
                     $"Check-out: {checkOut:d}\n" +
-                    $"Total: ${total:F2}",
+                    $"Nights: {nights}\n" +
+                    $"Room Charges: ${roomCharges:F2}\n" +
+                    $"Total (incl. tax): ${total:F2}",
                     "Booking Created",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information
@@ -352,8 +417,8 @@ namespace HotelManagementSystem.UI.Bookings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error creating booking: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error creating booking: {ex.Message}\n\nPlease check all details and try again.", 
+                    "Booking Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

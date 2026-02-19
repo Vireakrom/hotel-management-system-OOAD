@@ -1,5 +1,6 @@
 using HotelManagementSystem.DAL;
 using HotelManagementSystem.Models;
+using HotelManagementSystem.Helpers;
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ namespace HotelManagementSystem.UI.Guests
     /// <summary>
     /// Dialog for adding or editing guest information
     /// Day 12 Implementation - Complete Guest CRUD
+    /// Day 30 Enhancement - Comprehensive Validation
     /// </summary>
     public partial class AddEditGuestDialog : Form
     {
@@ -133,82 +135,69 @@ namespace HotelManagementSystem.UI.Guests
         }
 
         /// <summary>
-        /// Validate all input fields
+        /// Validate all input fields - Enhanced for Day 30
         /// </summary>
         private bool ValidateInput(out string errorMessage)
         {
             errorMessage = string.Empty;
 
-            // First Name validation
-            if (string.IsNullOrWhiteSpace(txtFirstName.Text))
-            {
-                errorMessage = "First name is required.";
-                txtFirstName.Focus();
+            // First Name validation - using ValidationHelper
+            if (!ValidationHelper.ValidateRequired(txtFirstName, "First name", out errorMessage))
                 return false;
-            }
 
-            if (txtFirstName.Text.Trim().Length < 2)
-            {
-                errorMessage = "First name must be at least 2 characters.";
-                txtFirstName.Focus();
+            if (!ValidationHelper.ValidateMinLength(txtFirstName, "First name", 2, out errorMessage))
                 return false;
-            }
 
-            // Last Name validation
-            if (string.IsNullOrWhiteSpace(txtLastName.Text))
-            {
-                errorMessage = "Last name is required.";
-                txtLastName.Focus();
+            if (!ValidationHelper.ValidateMaxLength(txtFirstName, "First name", 50, out errorMessage))
                 return false;
-            }
 
-            if (txtLastName.Text.Trim().Length < 2)
-            {
-                errorMessage = "Last name must be at least 2 characters.";
-                txtLastName.Focus();
+            // Last Name validation - using ValidationHelper
+            if (!ValidationHelper.ValidateRequired(txtLastName, "Last name", out errorMessage))
                 return false;
-            }
 
-            // Email validation (if provided)
+            if (!ValidationHelper.ValidateMinLength(txtLastName, "Last name", 2, out errorMessage))
+                return false;
+
+            if (!ValidationHelper.ValidateMaxLength(txtLastName, "Last name", 50, out errorMessage))
+                return false;
+
+            // Email validation (optional but must be valid if provided)
             if (!string.IsNullOrWhiteSpace(txtEmail.Text))
             {
-                if (!IsValidEmail(txtEmail.Text.Trim()))
-                {
-                    errorMessage = "Please enter a valid email address.\nExample: name@example.com";
-                    txtEmail.Focus();
+                if (!ValidationHelper.ValidateEmail(txtEmail, out errorMessage))
                     return false;
-                }
             }
 
-            // Phone validation (if provided)
+            // Phone validation (optional but must be valid if provided)
             if (!string.IsNullOrWhiteSpace(txtPhone.Text))
             {
-                string phone = txtPhone.Text.Trim();
-                if (phone.Length < 7)
-                {
-                    errorMessage = "Phone number must be at least 7 digits.";
-                    txtPhone.Focus();
+                if (!ValidationHelper.ValidatePhone(txtPhone, out errorMessage))
                     return false;
-                }
             }
 
-            // ID Number validation (if provided)
+            // ID Number validation (optional but must be valid if provided)
             if (!string.IsNullOrWhiteSpace(txtIDNumber.Text))
             {
-                if (txtIDNumber.Text.Trim().Length < 5)
-                {
-                    errorMessage = "ID number must be at least 5 characters.";
-                    txtIDNumber.Focus();
+                if (!ValidationHelper.ValidateMinLength(txtIDNumber, "ID number", 5, out errorMessage))
                     return false;
-                }
+
+                if (!ValidationHelper.ValidateMaxLength(txtIDNumber, "ID number", 50, out errorMessage))
+                    return false;
+            }
+
+            // Address validation (optional)
+            if (!string.IsNullOrWhiteSpace(txtAddress.Text))
+            {
+                if (!ValidationHelper.ValidateMaxLength(txtAddress, "Address", 200, out errorMessage))
+                    return false;
             }
 
             // Date of Birth validation (if checked)
             if (chkHasDOB.Checked)
             {
-                if (dtpDateOfBirth.Value >= DateTime.Today)
+                // Must be in the past
+                if (!ValidationHelper.ValidatePastDate(dtpDateOfBirth.Value, "Date of birth", out errorMessage))
                 {
-                    errorMessage = "Date of birth must be in the past.";
                     dtpDateOfBirth.Focus();
                     return false;
                 }
@@ -220,37 +209,20 @@ namespace HotelManagementSystem.UI.Guests
 
                 if (age < 18)
                 {
-                    errorMessage = "Guest must be at least 18 years old.";
+                    errorMessage = "Guest must be at least 18 years old to make a booking.";
                     dtpDateOfBirth.Focus();
                     return false;
                 }
 
                 if (age > 120)
                 {
-                    errorMessage = "Please enter a valid date of birth.";
+                    errorMessage = "Please enter a valid date of birth (maximum age: 120 years).";
                     dtpDateOfBirth.Focus();
                     return false;
                 }
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Validate email format using regex
-        /// </summary>
-        private bool IsValidEmail(string email)
-        {
-            try
-            {
-                // Simple email validation pattern
-                string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-                return Regex.IsMatch(email, pattern);
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         /// <summary>

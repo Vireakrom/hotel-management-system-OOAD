@@ -1,0 +1,393 @@
+﻿using HotelManagementSystem.DAL;
+using HotelManagementSystem.Models;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace HotelManagementSystem.UI.Rooms
+{
+    /// <summary>
+    /// Dialog for adding or editing room information
+    /// Demonstrates Factory Pattern usage and input validation
+    /// Day 9 Implementation
+    /// </summary>
+    public partial class AddEditRoomDialog : Form
+    {
+        private RoomRepository roomRepository;
+        private Room currentRoom;
+        private bool isEditMode;
+
+        public AddEditRoomDialog()
+        {
+            InitializeComponent();
+            roomRepository = new RoomRepository();
+            isEditMode = false;
+            this.Load += AddEditRoomDialog_Load;
+        }
+
+        /// <summary>
+        /// Constructor for Edit mode
+        /// </summary>
+        public AddEditRoomDialog(Room room) : this()
+        {
+            if (room == null)
+                throw new ArgumentNullException(nameof(room));
+
+            currentRoom = room;
+            isEditMode = true;
+        }
+
+        private void AddEditRoomDialog_Load(object sender, EventArgs e)
+        {
+            InitializeControls();
+            
+            if (isEditMode)
+            {
+                LoadRoomData();
+                this.Text = "Edit Room";
+                btnSave.Text = "Update";
+            }
+            else
+            {
+                this.Text = "Add New Room";
+                btnSave.Text = "Add Room";
+            }
+        }
+
+        /// <summary>
+        /// Initialize form controls and populate combo boxes
+        /// </summary>
+        private void InitializeControls()
+        {
+            // Populate Room Type dropdown - Factory Pattern room types
+            cmbRoomType.Items.Clear();
+            cmbRoomType.Items.AddRange(new string[] { "Single", "Double", "Suite", "Deluxe" });
+            cmbRoomType.SelectedIndex = 0;
+
+            // Populate Status dropdown
+            cmbStatus.Items.Clear();
+            cmbStatus.Items.AddRange(new string[] { "Available", "Occupied", "Reserved", "Cleaning", "Maintenance" });
+            cmbStatus.SelectedIndex = 0;
+
+            // Populate Bed Type dropdown
+            cmbBedType.Items.Clear();
+            cmbBedType.Items.AddRange(new string[] { "Single", "Double", "Queen", "King", "Twin" });
+            cmbBedType.SelectedIndex = 0;
+
+            // Populate View Type dropdown
+            cmbViewType.Items.Clear();
+            cmbViewType.Items.AddRange(new string[] { "Standard", "City View", "Garden View", "Sea View", "Mountain View" });
+            cmbViewType.SelectedIndex = 0;
+
+            // Floor number (1-20)
+            numFloorNumber.Minimum = 1;
+            numFloorNumber.Maximum = 20;
+            numFloorNumber.Value = 1;
+
+            // Max Occupancy (1-10)
+            numMaxOccupancy.Minimum = 1;
+            numMaxOccupancy.Maximum = 10;
+            numMaxOccupancy.Value = 1;
+
+            // Base Price (10-10000)
+            numBasePrice.Minimum = 10;
+            numBasePrice.Maximum = 10000;
+            numBasePrice.DecimalPlaces = 2;
+            numBasePrice.Value = 50;
+
+            // Area (10-500 sq.m)
+            numArea.Minimum = 10;
+            numArea.Maximum = 500;
+            numArea.DecimalPlaces = 1;
+            numArea.Value = 20;
+
+            // When room type changes, update suggested defaults
+            cmbRoomType.SelectedIndexChanged += CmbRoomType_SelectedIndexChanged;
+        }
+
+        /// <summary>
+        /// Update suggested defaults when room type changes
+        /// Demonstrates Factory Pattern influence on UI
+        /// </summary>
+        private void CmbRoomType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (isEditMode) return; // Don't override when editing
+
+            string roomType = cmbRoomType.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(roomType)) return;
+
+            // Set default values based on room type (Factory Pattern defaults)
+            switch (roomType)
+            {
+                case "Single":
+                    numMaxOccupancy.Value = 1;
+                    numBasePrice.Value = 50;
+                    numArea.Value = 20;
+                    cmbBedType.SelectedItem = "Single";
+                    txtDescription.Text = "Cozy single room perfect for solo travelers";
+                    break;
+                case "Double":
+                    numMaxOccupancy.Value = 2;
+                    numBasePrice.Value = 80;
+                    numArea.Value = 30;
+                    cmbBedType.SelectedItem = "Queen";
+                    txtDescription.Text = "Comfortable double room for couples or friends";
+                    break;
+                case "Suite":
+                    numMaxOccupancy.Value = 4;
+                    numBasePrice.Value = 200;
+                    numArea.Value = 60;
+                    cmbBedType.SelectedItem = "King";
+                    txtDescription.Text = "Spacious suite with separate living area and luxury amenities";
+                    break;
+                case "Deluxe":
+                    numMaxOccupancy.Value = 4;
+                    numBasePrice.Value = 300;
+                    numArea.Value = 80;
+                    cmbBedType.SelectedItem = "King";
+                    txtDescription.Text = "Premium deluxe room with top-tier luxury features and stunning views";
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Load existing room data for editing
+        /// </summary>
+        private void LoadRoomData()
+        {
+            if (currentRoom == null) return;
+
+            txtRoomNumber.Text = currentRoom.RoomNumber;
+            cmbRoomType.SelectedItem = currentRoom.RoomType;
+            numFloorNumber.Value = currentRoom.FloorNumber;
+            numBasePrice.Value = currentRoom.BasePrice;
+            cmbStatus.SelectedItem = currentRoom.Status ?? "Available";
+            numMaxOccupancy.Value = currentRoom.MaxOccupancy;
+            cmbBedType.SelectedItem = currentRoom.BedType ?? "Single";
+            numArea.Value = currentRoom.Area > 0 ? currentRoom.Area : 20;
+            cmbViewType.SelectedItem = currentRoom.ViewType ?? "Standard";
+            txtDescription.Text = currentRoom.Description;
+            txtAmenities.Text = currentRoom.Amenities;
+            
+            chkHasBalcony.Checked = currentRoom.HasBalcony;
+            chkHasSeaView.Checked = currentRoom.HasSeaView;
+            chkHasJacuzzi.Checked = currentRoom.HasJacuzzi;
+            chkHasPrivatePool.Checked = currentRoom.HasPrivatePool;
+
+            // Disable room number editing in edit mode
+            txtRoomNumber.ReadOnly = true;
+            txtRoomNumber.BackColor = SystemColors.Control;
+        }
+
+        /// <summary>
+        /// Validate all input fields
+        /// </summary>
+        private bool ValidateInput(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            // Room Number validation
+            if (string.IsNullOrWhiteSpace(txtRoomNumber.Text))
+            {
+                errorMessage = "Room number is required.";
+                txtRoomNumber.Focus();
+                return false;
+            }
+
+            // Check if room number already exists (only for new rooms)
+            if (!isEditMode)
+            {
+                var existingRoom = roomRepository.GetByRoomNumber(txtRoomNumber.Text.Trim());
+                if (existingRoom != null)
+                {
+                    errorMessage = $"Room number '{txtRoomNumber.Text}' already exists.";
+                    txtRoomNumber.Focus();
+                    return false;
+                }
+            }
+
+            // Room Type validation
+            if (cmbRoomType.SelectedIndex < 0)
+            {
+                errorMessage = "Please select a room type.";
+                cmbRoomType.Focus();
+                return false;
+            }
+
+            // Floor Number validation
+            if (numFloorNumber.Value < 1)
+            {
+                errorMessage = "Floor number must be at least 1.";
+                numFloorNumber.Focus();
+                return false;
+            }
+
+            // Base Price validation
+            if (numBasePrice.Value <= 0)
+            {
+                errorMessage = "Base price must be greater than 0.";
+                numBasePrice.Focus();
+                return false;
+            }
+
+            // Max Occupancy validation
+            if (numMaxOccupancy.Value < 1)
+            {
+                errorMessage = "Max occupancy must be at least 1.";
+                numMaxOccupancy.Focus();
+                return false;
+            }
+
+            // Area validation
+            if (numArea.Value < 10)
+            {
+                errorMessage = "Room area must be at least 10 sq.m.";
+                numArea.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Save button click handler - uses Factory Pattern to create/update room
+        /// </summary>
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Validate input
+                if (!ValidateInput(out string errorMessage))
+                {
+                    MessageBox.Show(errorMessage, "Validation Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Create or update room using Factory Pattern
+                Room room;
+                if (isEditMode)
+                {
+                    // Update existing room
+                    room = currentRoom;
+                    room.RoomNumber = txtRoomNumber.Text.Trim();
+                    room.RoomType = cmbRoomType.SelectedItem.ToString();
+                    room.FloorNumber = (int)numFloorNumber.Value;
+                    room.BasePrice = numBasePrice.Value;
+                    room.Status = cmbStatus.SelectedItem.ToString();
+                    room.MaxOccupancy = (int)numMaxOccupancy.Value;
+                    room.BedType = cmbBedType.SelectedItem.ToString();
+                    room.Area = numArea.Value;
+                    room.ViewType = cmbViewType.SelectedItem.ToString();
+                    room.Description = txtDescription.Text.Trim();
+                    room.Amenities = txtAmenities.Text.Trim();
+                    room.HasBalcony = chkHasBalcony.Checked;
+                    room.HasSeaView = chkHasSeaView.Checked;
+                    room.HasJacuzzi = chkHasJacuzzi.Checked;
+                    room.HasPrivatePool = chkHasPrivatePool.Checked;
+                    room.ModifiedDate = DateTime.Now;
+                }
+                else
+                {
+                    // Create new room using Factory Pattern - Day 9 Feature!
+                    room = RoomFactory.CreateRoom(
+                        roomType: cmbRoomType.SelectedItem.ToString(),
+                        roomNumber: txtRoomNumber.Text.Trim(),
+                        floorNumber: (int)numFloorNumber.Value,
+                        basePrice: numBasePrice.Value,
+                        status: cmbStatus.SelectedItem.ToString()
+                    );
+
+                    // Set additional properties
+                    room.MaxOccupancy = (int)numMaxOccupancy.Value;
+                    room.BedType = cmbBedType.SelectedItem.ToString();
+                    room.Area = numArea.Value;
+                    room.ViewType = cmbViewType.SelectedItem.ToString();
+                    room.Description = txtDescription.Text.Trim();
+                    room.Amenities = txtAmenities.Text.Trim();
+                    room.HasBalcony = chkHasBalcony.Checked;
+                    room.HasSeaView = chkHasSeaView.Checked;
+                    room.HasJacuzzi = chkHasJacuzzi.Checked;
+                    room.HasPrivatePool = chkHasPrivatePool.Checked;
+                }
+
+                // Validate room object
+                if (!room.IsValid(out string roomError))
+                {
+                    MessageBox.Show(roomError, "Validation Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Save to database
+                bool success;
+                if (isEditMode)
+                {
+                    success = roomRepository.Update(room);
+                }
+                else
+                {
+                    success = roomRepository.Add(room);
+                }
+
+                if (success)
+                {
+                    string action = isEditMode ? "updated" : "added";
+                    MessageBox.Show(
+                        $"Room {room.RoomNumber} has been {action} successfully!\n\n" +
+                        $"Type: {room.RoomType}\n" +
+                        $"Price: ${room.BasePrice}/night\n" +
+                        $"Status: {room.Status}",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "Failed to save room. Please try again.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while saving the room:\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+        }
+
+        /// <summary>
+        /// Cancel button click handler
+        /// </summary>
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            // Confirm cancellation if data has been entered
+            if (!isEditMode && !string.IsNullOrWhiteSpace(txtRoomNumber.Text))
+            {
+                var result = MessageBox.Show(
+                    "Are you sure you want to cancel? Any unsaved changes will be lost.",
+                    "Confirm Cancel",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+
+                if (result != DialogResult.Yes)
+                    return;
+            }
+
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+    }
+}

@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Helpers\PasswordHelper.cs" />
     <Compile Include="Helpers\SessionManager.cs" />
+    <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\Booking.cs" />
     <Compile Include="Models\Guest.cs" />
     <Compile Include="Models\HousekeepingTask.cs" />
@@ -88,6 +89,11 @@
     <Compile Include="Testing\BookingFacadeTests.cs" />
     <Compile Include="Testing\BookingRepositoryTests.cs" />
     <Compile Include="Testing\Day17IntegrationTests.cs" />
+    <Compile Include="Testing\Day25PaymentEnhancementTests.cs" />
+    <Compile Include="Testing\Day26ReportingTests.cs" />
+    <Compile Include="Testing\Day28IntegrationTests.cs" />
+    <Compile Include="Testing\Day29BugFixingTests.cs" />
+    <Compile Include="Testing\Day30ValidationTests.cs" />
     <Compile Include="Testing\InvoiceFormTests.cs" />
     <Compile Include="Testing\InvoiceManagementTests.cs" />
     <Compile Include="Testing\ObserverPatternTests.cs" />
@@ -162,6 +168,18 @@
     <Compile Include="UI\Payments\PaymentForm.Designer.cs">
       <DependentUpon>PaymentForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Payments\PaymentHistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Payments\PaymentHistoryForm.Designer.cs">
+      <DependentUpon>PaymentHistoryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Payments\ReceiptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Payments\ReceiptForm.Designer.cs">
+      <DependentUpon>ReceiptForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Rooms\AddEditRoomDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -173,6 +191,12 @@
     </Compile>
     <Compile Include="UI\Rooms\RoomManagementForm.Designer.cs">
       <DependentUpon>RoomManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Reports\DailyOperationsReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Reports\DailyOperationsReportForm.Designer.cs">
+      <DependentUpon>DailyOperationsReportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Rooms\RoomStatusDashboard.cs">
       <SubType>Form</SubType>
@@ -201,26 +225,19 @@
     <EmbeddedResource Include="UI\Rooms\RoomManagementForm.resx">
       <DependentUpon>RoomManagementForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Context\Day10_Complete.md" />
-    <None Include="Context\DAY11_TESTING_GUIDE.md" />
-    <None Include="Context\DAY13_SUMMARY.md" />
-    <None Include="Context\Day14_Summary.md" />
-    <None Include="Context\day15_complete.md" />
-    <None Include="Context\DAY17_SUMMARY.md" />
-    <None Include="Context\day20_summary.md" />
-    <None Include="Context\DAY21_BUGFIX_SUMMARY.md" />
-    <None Include="Context\DAY21_SUMMARY.md" />
-    <None Include="Context\Day22_Complete.md" />
-    <None Include="Context\Day23_Summary.md" />
-    <None Include="Context\DAY24_COMPLETE.md" />
-    <None Include="Context\day24_quickref.md" />
-    <None Include="Context\day24_summary.md" />
-    <None Include="Context\day24_test_fix.md" />
-    <None Include="Context\Day9_QuickStart.md" />
-    <None Include="Context\DAY_12_SUMMARY.md" />
+    <None Include="Context\Day25_Completion_Report.md" />
+    <None Include="Context\Day25_Summary.md" />
+    <None Include="Context\Day29_BugFixingGuide.md" />
+    <None Include="Context\Day29_CommitGuide.md" />
+    <None Include="Context\Day29_Kickoff.md" />
+    <None Include="Context\Day29_Summary.md" />
+    <None Include="Context\Day29_TestingGuide.md" />
     <None Include="Context\done_day.md" />
-    <None Include="Context\RoomStatusDashboard_UserGuide.md" />
-    <None Include="Context\WEEK3_COMPLETE.md" />
+    <None Include="Documentation\Day30-Completion-Checklist.md" />
+    <None Include="Documentation\Day30-Summary.md" />
+    <None Include="Documentation\Day30-Validation-Complete.md" />
+    <None Include="Documentation\Day32-Summary.md" />
+    <None Include="Documentation\ValidationHelper-Usage-Guide.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -243,6 +260,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Context\database.sql" />
+    <Content Include="Context\Day29_QuickChecklist.txt" />
     <Content Include="Context\features.html" />
     <Content Include="Context\plan.html" />
   </ItemGroup>

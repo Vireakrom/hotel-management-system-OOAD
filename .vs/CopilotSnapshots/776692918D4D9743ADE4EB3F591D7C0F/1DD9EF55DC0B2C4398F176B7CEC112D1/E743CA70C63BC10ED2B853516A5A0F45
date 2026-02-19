@@ -1,0 +1,373 @@
+﻿using System;
+using System.Linq;
+using System.Text;
+using HotelManagementSystem.BLL;
+using HotelManagementSystem.DAL;
+using HotelManagementSystem.Helpers;
+using HotelManagementSystem.Models;
+using HotelManagementSystem.Patterns;
+
+namespace HotelManagementSystem.Testing
+{
+    /// <summary>
+    /// Day 28 Integration Tests - Full Workflow (Book -> Check-In -> Check-Out -> Payment)
+    /// </summary>
+    public static class Day28IntegrationTests
+    {
+        public static string RunAllTests()
+        {
+            StringBuilder results = new StringBuilder();
+            results.AppendLine("=== DAY 28 INTEGRATION TESTS ===");
+            results.AppendLine("Testing Full Workflow: Book -> Check-In -> Check-Out -> Payment");
+            results.AppendLine("==========================================\n");
+
+            int totalTests = 0;
+            int passedTests = 0;
+
+            // Test 1: Full Workflow End-to-End
+            totalTests++;
+            results.AppendLine("Test 1: Full workflow end-to-end");
+            try
+            {
+                if (TestFullWorkflow(results))
+                {
+                    results.AppendLine("✓ PASSED: Full workflow completed successfully\n");
+                    passedTests++;
+                }
+                else
+                {
+                    results.AppendLine("✗ FAILED: Full workflow did not complete as expected\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"✗ FAILED: {ex.Message}\n");
+            }
+
+            // Test 2: Housekeeping Task Auto-Creation
+            totalTests++;
+            results.AppendLine("Test 2: Housekeeping task auto-creation on checkout");
+            try
+            {
+                if (TestHousekeepingTaskAutoCreation())
+                {
+                    results.AppendLine("✓ PASSED: Housekeeping task created on checkout\n");
+                    passedTests++;
+                }
+                else
+                {
+                    results.AppendLine("✗ FAILED: Housekeeping task not created\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"✗ FAILED: {ex.Message}\n");
+            }
+
+            // Test 3: Payment updates invoice status
+            totalTests++;
+            results.AppendLine("Test 3: Payment updates invoice status");
+            try
+            {
+                if (TestInvoiceStatusAfterPayment())
+                {
+                    results.AppendLine("✓ PASSED: Invoice status updated to Paid after payment\n");
+                    passedTests++;
+                }
+                else
+                {
+                    results.AppendLine("✗ FAILED: Invoice status not updated after payment\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                results.AppendLine($"✗ FAILED: {ex.Message}\n");
+            }
+
+            // Summary
+            results.AppendLine("==========================================");
+            results.AppendLine($"SUMMARY: {passedTests}/{totalTests} tests passed");
+            results.AppendLine("==========================================");
+
+            if (passedTests == totalTests)
+            {
+                results.AppendLine("\n🎉 ALL DAY 28 TESTS PASSED! 🎉");
+                results.AppendLine("Full workflow integration is working correctly.");
+            }
+            else
+            {
+                results.AppendLine($"\n⚠ {totalTests - passedTests} test(s) failed. Please review.");
+            }
+
+            return results.ToString();
+        }
+
+        private static bool TestFullWorkflow(StringBuilder results)
+        {
+            EnsureTestUserSession();
+
+            BookingFacade bookingFacade = new BookingFacade();
+            BookingRepository bookingRepository = new BookingRepository();
+            RoomRepository roomRepository = new RoomRepository();
+            InvoiceRepository invoiceRepository = new InvoiceRepository();
+            PaymentRepository paymentRepository = new PaymentRepository();
+
+            var testData = CreateTestData();
+            if (testData == null)
+            {
+                results.AppendLine("  ✗ Could not create test data");
+                return false;
+            }
+
+            int bookingId = bookingFacade.CreateBooking(
+                testData.GuestId,
+                testData.RoomId,
+                DateTime.Today,
+                DateTime.Today.AddDays(1),
+                2,
+                "Day 28 integration test",
+                "Full workflow test"
+            );
+
+            if (bookingId <= 0)
+            {
+                results.AppendLine("  ✗ Booking creation failed");
+                return false;
+            }
+
+            bool confirmed = bookingFacade.ConfirmBooking(bookingId);
+            if (!confirmed)
+            {
+                results.AppendLine("  ✗ Booking confirmation failed");
+                return false;
+            }
+
+            bool checkedIn = bookingFacade.CheckIn(bookingId);
+            if (!checkedIn)
+            {
+                results.AppendLine("  ✗ Booking check-in failed");
+                return false;
+            }
+
+            Booking booking = bookingRepository.GetById(bookingId);
+            if (booking == null || booking.Status != "CheckedIn")
+            {
+                results.AppendLine("  ✗ Booking status not set to CheckedIn");
+                return false;
+            }
+
+            bool checkedOut = bookingRepository.CheckOut(bookingId);
+            if (!checkedOut)
+            {
+                results.AppendLine("  ✗ Booking check-out failed");
+                return false;
+            }
+
+            roomRepository.UpdateRoomStatus(booking.RoomId, "Cleaning");
+
+            RoomSubject.Instance.ClearObservers();
+            RoomSubject.Instance.Attach(new HousekeepingObserver());
+            RoomSubject.Instance.Notify(booking.RoomId, "CheckOut", bookingId);
+
+            Invoice invoice = GenerateInvoiceForBooking(booking, invoiceRepository);
+            if (invoice == null || invoice.InvoiceId <= 0)
+            {
+                results.AppendLine("  ✗ Invoice generation failed");
+                return false;
+            }
+
+            PaymentContext paymentContext = new PaymentContext();
+            decimal change;
+            Payment payment = paymentContext.ProcessCashPayment(invoice, invoice.TotalAmount, SessionManager.CurrentUser.UserId, out change);
+            if (payment == null || payment.PaymentId <= 0)
+            {
+                results.AppendLine("  ✗ Payment processing failed");
+                return false;
+            }
+
+            Invoice updatedInvoice = invoiceRepository.GetById(invoice.InvoiceId);
+            if (updatedInvoice == null || updatedInvoice.Status != "Paid")
+            {
+                results.AppendLine("  ✗ Invoice not marked as Paid after payment");
+                return false;
+            }
+
+            var payments = paymentRepository.GetPaymentsByInvoiceId(invoice.InvoiceId);
+            if (payments == null || payments.Count == 0)
+            {
+                results.AppendLine("  ✗ No payments found for invoice");
+                return false;
+            }
+
+            roomRepository.UpdateRoomStatus(testData.RoomId, "Available");
+            return true;
+        }
+
+        private static bool TestHousekeepingTaskAutoCreation()
+        {
+            EnsureTestUserSession();
+
+            RoomRepository roomRepository = new RoomRepository();
+            HousekeepingTaskRepository taskRepository = new HousekeepingTaskRepository();
+
+            Room room = RoomFactory.CreateRoom("Single", GenerateRoomNumber(), 2, 90m);
+            room.Status = "Cleaning";
+            int roomId = roomRepository.Insert(room);
+
+            RoomSubject.Instance.ClearObservers();
+            RoomSubject.Instance.Attach(new HousekeepingObserver());
+            RoomSubject.Instance.Notify(roomId, "CheckOut", 0);
+
+            var tasks = taskRepository.GetTasksByRoom(roomId);
+            roomRepository.UpdateRoomStatus(roomId, "Available");
+
+            return tasks.Any(t => t.TaskType == "Cleaning" && t.Status == "Pending");
+        }
+
+        private static bool TestInvoiceStatusAfterPayment()
+        {
+            EnsureTestUserSession();
+
+            InvoiceRepository invoiceRepository = new InvoiceRepository();
+            BookingRepository bookingRepository = new BookingRepository();
+            RoomRepository roomRepository = new RoomRepository();
+
+            var testData = CreateTestData();
+            if (testData == null)
+            {
+                return false;
+            }
+
+            Booking booking = new Booking
+            {
+                GuestId = testData.GuestId,
+                RoomId = testData.RoomId,
+                CreatedByUserId = SessionManager.CurrentUser.UserId,
+                CheckInDate = DateTime.Today.AddDays(-2),
+                CheckOutDate = DateTime.Today.AddDays(-1),
+                NumberOfGuests = 1,
+                RoomCharges = 120m,
+                ServiceCharges = 0m,
+                TotalAmount = 132m,
+                Status = "CheckedOut"
+            };
+
+            int bookingId = bookingRepository.Insert(booking);
+            booking.BookingId = bookingId;
+
+            Invoice invoice = GenerateInvoiceForBooking(booking, invoiceRepository);
+            if (invoice == null || invoice.InvoiceId <= 0)
+            {
+                return false;
+            }
+
+            PaymentContext paymentContext = new PaymentContext();
+            decimal change;
+            Payment payment = paymentContext.ProcessCashPayment(invoice, invoice.TotalAmount, SessionManager.CurrentUser.UserId, out change);
+            if (payment == null)
+            {
+                return false;
+            }
+
+            Invoice updatedInvoice = invoiceRepository.GetById(invoice.InvoiceId);
+            roomRepository.UpdateRoomStatus(testData.RoomId, "Available");
+            return updatedInvoice != null && updatedInvoice.Status == "Paid" && updatedInvoice.BalanceAmount <= 0;
+        }
+
+        private static void EnsureTestUserSession()
+        {
+            if (SessionManager.IsLoggedIn)
+            {
+                return;
+            }
+
+            UserRepository userRepository = new UserRepository();
+            User user = userRepository.GetAll().FirstOrDefault();
+            if (user == null)
+            {
+                throw new InvalidOperationException("No users found for test session.");
+            }
+
+            SessionManager.CurrentUser = user;
+        }
+
+        private static Invoice GenerateInvoiceForBooking(Booking booking, InvoiceRepository invoiceRepository)
+        {
+            Invoice invoice = new Invoice
+            {
+                BookingId = booking.BookingId,
+                InvoiceNumber = Invoice.GenerateInvoiceNumber(booking.BookingId),
+                IssueDate = DateTime.Now,
+                DueDate = DateTime.Now,
+                SubTotal = booking.RoomCharges + booking.ServiceCharges,
+                TaxRate = 10.00m,
+                Discount = 0m,
+                PaidAmount = 0m,
+                Status = "Pending",
+                PaymentTerms = "Payment due at checkout",
+                Notes = $"Invoice for booking #{booking.BookingId}"
+            };
+
+            invoice.CalculateTax();
+            invoice.CalculateTotal();
+            invoice.CalculateBalance();
+
+            int invoiceId = invoiceRepository.Insert(invoice);
+            if (invoiceId <= 0)
+            {
+                return null;
+            }
+
+            invoice.InvoiceId = invoiceId;
+            return invoice;
+        }
+
+        private static TestData CreateTestData()
+        {
+            GuestRepository guestRepository = new GuestRepository();
+            RoomRepository roomRepository = new RoomRepository();
+
+            Guest guest = new Guest
+            {
+                FirstName = "Day28",
+                LastName = "Integration",
+                Email = $"day28.{DateTime.Now:yyyyMMddHHmmssfff}@test.com",
+                Phone = "555-0128",
+                Address = "Day 28 Test St",
+                Nationality = "TestLand",
+                IDNumber = $"DAY28-{DateTime.Now:HHmmss}"
+            };
+
+            int guestId = guestRepository.Insert(guest);
+            if (guestId <= 0)
+            {
+                return null;
+            }
+
+            Room room = RoomFactory.CreateRoom("Single", GenerateRoomNumber(), 2, 100m);
+            room.Status = "Available";
+            int roomId = roomRepository.Insert(room);
+            if (roomId <= 0)
+            {
+                return null;
+            }
+
+            return new TestData
+            {
+                GuestId = guestId,
+                RoomId = roomId
+            };
+        }
+
+        private static string GenerateRoomNumber()
+        {
+            return $"D28-{DateTime.Now:HHmmss}";
+        }
+
+        private class TestData
+        {
+            public int GuestId { get; set; }
+            public int RoomId { get; set; }
+        }
+    }
+}
