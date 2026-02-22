@@ -179,9 +179,15 @@ namespace HotelManagementSystem.Helpers
         {
             errorMessage = string.Empty;
 
-            if (endDate <= startDate)
+            if (endDate.Date < startDate.Date)
             {
-                errorMessage = "End date must be after start date.";
+                errorMessage = "Check-out date cannot be before check-in date.";
+                return false;
+            }
+
+            if (endDate.Date == startDate.Date)
+            {
+                errorMessage = "Check-out date cannot be the same as check-in date (minimum 1 night).";
                 return false;
             }
 
@@ -196,9 +202,15 @@ namespace HotelManagementSystem.Helpers
         {
             errorMessage = string.Empty;
 
-            if (endDate <= startDate)
+            if (endDate.Date < startDate.Date)
             {
-                errorMessage = $"{endFieldName} must be after {startFieldName}.";
+                errorMessage = $"{endFieldName} date cannot be before {startFieldName} date.";
+                return false;
+            }
+
+            if (endDate.Date == startDate.Date)
+            {
+                errorMessage = $"{endFieldName} date cannot be the same as {startFieldName} date (minimum 1 night stay).";
                 return false;
             }
 

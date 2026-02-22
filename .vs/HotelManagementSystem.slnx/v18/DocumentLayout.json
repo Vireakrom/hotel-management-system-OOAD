@@ -1,32 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|c:\\users\\myname\\source\\repos\\hotelmanagementsystem\\hotelmanagementsystem\\documentation\\day32-summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|MarkdownPreview",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\documentation\\day32-summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|MarkdownPreview"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\hotelmanagementsystem\\documentation\\day32-summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\documentation\\day32-summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\hotelmanagementsystem\\ui\\invoices\\invoicelistform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\ui\\invoices\\invoicelistform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\hotelmanagementsystem\\documentation\\day32-summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|MarkdownSecurePreview",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\documentation\\day32-summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|MarkdownSecurePreview"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\hotelmanagementsystem\\context\\database.sql||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{CA9F33C6-174C-419F-9877-60256867508D}|HotelManagementSystem\\HotelManagementSystem.csproj|solutionrelative:hotelmanagementsystem\\context\\database.sql||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\.github\\copilot-instructions.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.github\\copilot-instructions.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -34,82 +9,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Day32-Summary.md [Preview]",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Documentation\\Day32-Summary.md [Preview]",
-              "RelativeToolTip": "HotelManagementSystem\\Documentation\\Day32-Summary.md [Preview]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-02-19T05:17:44.89Z",
-              "EditorCaption": " [Preview]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "InvoiceListForm.Designer.cs",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceListForm.Designer.cs",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\UI\\Invoices\\InvoiceListForm.Designer.cs",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\UI\\Invoices\\InvoiceListForm.Designer.cs",
-              "RelativeToolTip": "HotelManagementSystem\\UI\\Invoices\\InvoiceListForm.Designer.cs",
-              "ViewState": "AgIAAL4AAAAAAAAAAAAcwEQBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-19T05:15:37.484Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "copilot-instructions.md",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\.github\\copilot-instructions.md",
-              "RelativeDocumentMoniker": ".github\\copilot-instructions.md",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\.github\\copilot-instructions.md",
-              "RelativeToolTip": ".github\\copilot-instructions.md",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAACBAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-02-19T05:02:38.968Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Day32-Summary.md [Preview]",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Documentation\\Day32-Summary.md [Preview]",
-              "RelativeToolTip": "HotelManagementSystem\\Documentation\\Day32-Summary.md [Preview]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-02-19T04:58:56.18Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Day32-Summary.md",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "RelativeToolTip": "HotelManagementSystem\\Documentation\\Day32-Summary.md",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAuwEgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-02-19T04:58:01.559Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "database.sql",
-              "DocumentMoniker": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\database.sql",
-              "RelativeDocumentMoniker": "HotelManagementSystem\\Context\\database.sql",
-              "ToolTip": "C:\\Users\\MyName\\source\\repos\\HotelManagementSystem\\HotelManagementSystem\\Context\\database.sql",
-              "RelativeToolTip": "HotelManagementSystem\\Context\\database.sql",
-              "ViewState": "AgIAAIUCAAAAAAAAAAAAAI8CAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-02-19T04:54:49.539Z"
             }
           ]
         }

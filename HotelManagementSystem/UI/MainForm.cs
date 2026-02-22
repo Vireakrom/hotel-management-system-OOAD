@@ -36,18 +36,28 @@ namespace HotelManagementSystem.UI
 
         private void ConfigureUiTheme()
         {
-            Font = new Font("Segoe UI", 9F);
-            menuStrip1.Font = Font;
-            statusStrip1.Font = Font;
+            // Set consistent font for the entire application
+            Font = new Font("Segoe UI", 9.5F);
+            menuStrip1.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            statusStrip1.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
 
-            menuStrip1.BackColor = Color.WhiteSmoke;
-            menuStrip1.ForeColor = Color.FromArgb(45, 45, 45);
-            statusStrip1.BackColor = Color.WhiteSmoke;
-            statusStrip1.ForeColor = Color.FromArgb(45, 45, 45);
-            toolStripStatusLabelUser.ForeColor = Color.FromArgb(45, 45, 45);
-            toolStripStatusLabelTime.ForeColor = Color.FromArgb(45, 45, 45);
+            // Professional color scheme (Midnight Blue / Slate Gray)
+            Color primaryColor = Color.FromArgb(43, 87, 154); // Deep Blue
+            Color secondaryColor = Color.FromArgb(240, 240, 240); // Off-White
+            Color textColor = Color.FromArgb(33, 33, 33); // Dark Gray
 
-            menuStrip1.ImageScalingSize = new Size(16, 16);
+            menuStrip1.BackColor = secondaryColor;
+            menuStrip1.ForeColor = textColor;
+            
+            statusStrip1.BackColor = primaryColor;
+            statusStrip1.ForeColor = Color.White;
+            
+            toolStripStatusLabelUser.ForeColor = Color.White;
+            toolStripStatusLabelUser.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            
+            toolStripStatusLabelTime.ForeColor = Color.White;
+
+            menuStrip1.ImageScalingSize = new Size(18, 18);
             ApplyMenuIcons();
         }
 
@@ -58,34 +68,40 @@ namespace HotelManagementSystem.UI
 
         private void ApplyMenuIcons()
         {
+            // Category Icons
             fileToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
+            roomsToolStripMenuItem.Image = ToMenuImage(SystemIcons.WinLogo);
+            guestsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
+            bookingsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
+            billingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
+            housekeepingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Asterisk);
+            reportsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
+            helpToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
+
+            // Sub-menu Icons
             logoutToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
             exitToolStripMenuItem.Image = ToMenuImage(SystemIcons.Error);
 
-            roomsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Asterisk);
-            roomManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
-            roomStatusDashboardToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
+            roomManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
+            roomStatusDashboardToolStripMenuItem.Image = ToMenuImage(SystemIcons.WinLogo);
 
-            guestsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
-            guestManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
+            guestManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
+            searchGuestsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
 
-            bookingsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
             newBookingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            viewAllBookingsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
+            viewAllBookingsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
+            checkInToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
+            checkOutToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
 
-            billingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
             invoiceManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            processPaymentToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
+            processPaymentToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
 
-            housekeepingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
             viewTasksToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
 
-            reportsToolStripMenuItem.Image = ToMenuImage(SystemIcons.WinLogo);
             dailyOperationToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
             revenueReportToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
             occupancyStatisticsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
 
-            helpToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
             userGuideToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
             aboutToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
         }
@@ -351,23 +367,18 @@ namespace HotelManagementSystem.UI
         {
             MessageBox.Show(
                 "HOTEL MANAGEMENT SYSTEM\n" +
-                "Version 1.0.0 - Day 6 Complete\n\n" +
+                "Version 1.0.0 - Day 31 Complete\n\n" +
                 "Developed for OOAD Final Project\n" +
                 "Computer Science - Year 4\n\n" +
                 "DESIGN PATTERNS IMPLEMENTED:\n" +
-                "✅ Singleton (DatabaseManager) - Day 1\n" +
-                "✅ Repository (Data Access Layer) - Day 2\n" +
-                "✅ Factory (Room Types) - Day 5-6 ENHANCED\n" +
-                "⏳ Facade (Booking Operations) - Day 14\n" +
-                "⏳ Strategy (Payment Methods) - Day 23\n" +
-                "⏳ Observer (Housekeeping) - Day 21\n\n" +
-                "Progress: 3/5 Patterns (60%) ✓\n" +
-                "Week 1: 6/7 days (86%) - AHEAD OF SCHEDULE! 🎉\n\n" +
-                "DAY 6 ACHIEVEMENTS:\n" +
-                "✅ Enhanced Room models with 8+ utility methods\n" +
-                "✅ Dynamic pricing (sea view, pool premiums)\n" +
-                "✅ Comprehensive test suite (10 tests)\n" +
-                "✅ Full validation and error handling\n\n" +
+                "✅ Singleton (DatabaseManager)\n" +
+                "✅ Repository (DAL)\n" +
+                "✅ Factory (RoomFactory)\n" +
+                "✅ Facade (BookingFacade)\n" +
+                "✅ Observer (Housekeeping Pattern)\n" +
+                "✅ Strategy (Payment Strategies)\n\n" +
+                "PROGRESS: 100% Core Features Complete ✓\n" +
+                "Day 31 Milestone: UI Polish & Consistency ✓\n\n" +
                 "© 2026 - All Rights Reserved\n" +
                 "Deadline: March 10, 2026",
                 "About Hotel Management System",
@@ -1284,11 +1295,27 @@ namespace HotelManagementSystem.UI
                 }
             }
 
-            // Form not open - create new instance
+            // Apply consistent styling to child forms (Day 31 Polish)
             childForm.MdiParent = this;
             childForm.WindowState = FormWindowState.Maximized;
-            childForm.Font = Font;
+            childForm.Font = new Font("Segoe UI", 9.5F);
             childForm.BackColor = Color.White;
+            
+            // Apply standard background to DataGridViews if they exist
+            foreach (Control ctrl in childForm.Controls)
+            {
+                if (ctrl is DataGridView dgv)
+                {
+                    dgv.BackgroundColor = Color.White;
+                    dgv.BorderStyle = BorderStyle.None;
+                    dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+                    dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(230, 230, 230);
+                    dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+                    dgv.EnableHeadersVisualStyles = false;
+                }
+            }
+
             childForm.Show();
         }
 
