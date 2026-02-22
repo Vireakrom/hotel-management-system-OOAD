@@ -76,6 +76,6 @@ This project demonstrates proficiency in OOAD by implementing **6 major design p
 ---
 
 ## 👨‍💻 Project Details
-- **Developer**: Vireak (Year 4 CS Student, RUPP)
+- **Developer**: Year 4 CS Student, RUPP
 - **Status**: Day 33 Complete - Documentation Finalized.
 - **Completion Date**: March 2026
