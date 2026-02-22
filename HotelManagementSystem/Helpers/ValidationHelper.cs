@@ -36,7 +36,7 @@ namespace HotelManagementSystem.Helpers
         {
             errorMessage = string.Empty;
 
-            if (comboBox.SelectedIndex <= 0 || comboBox.SelectedItem == null || 
+            if (comboBox.SelectedIndex < 0 || comboBox.SelectedItem == null || 
                 comboBox.SelectedItem.ToString().StartsWith("--"))
             {
                 errorMessage = $"Please select a {fieldName}.";

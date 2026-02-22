@@ -17,6 +17,7 @@ namespace HotelManagementSystem.UI.Bookings
         private RoomRepository roomRepository;
         private BookingFacade bookingFacade;
         private List<Guest> allGuests;
+        private List<Guest> displayedGuests; // Added to track filtered guests
         private List<Room> availableRooms;
 
         public NewBookingForm()
@@ -44,6 +45,7 @@ namespace HotelManagementSystem.UI.Bookings
             try
             {
                 allGuests = guestRepository.GetAll();
+                displayedGuests = new List<Guest>(allGuests); // Initialize with all guests
 
                 // Clear existing items
                 cmbGuest.Items.Clear();
@@ -51,8 +53,8 @@ namespace HotelManagementSystem.UI.Bookings
                 // Add "Select Guest..." as first item
                 cmbGuest.Items.Add("-- Select Guest --");
 
-                // Add all guests
-                foreach (Guest guest in allGuests)
+                // Add all guests from displayedGuests
+                foreach (Guest guest in displayedGuests)
                 {
                     // Display format: "John Smith (john@example.com)"
                     cmbGuest.Items.Add($"{guest.FirstName} {guest.LastName} ({guest.Email})");
@@ -229,7 +231,7 @@ namespace HotelManagementSystem.UI.Bookings
             try
             {
                 // Filter guests by search term
-                List<Guest> filteredGuests = allGuests.Where(g =>
+                displayedGuests = allGuests.Where(g =>
                     g.FirstName.ToLower().Contains(searchTerm) ||
                     g.LastName.ToLower().Contains(searchTerm) ||
                     g.Email.ToLower().Contains(searchTerm)
@@ -239,16 +241,16 @@ namespace HotelManagementSystem.UI.Bookings
                 cmbGuest.Items.Clear();
                 cmbGuest.Items.Add("-- Select Guest --");
 
-                foreach (Guest guest in filteredGuests)
+                foreach (Guest guest in displayedGuests)
                 {
                     cmbGuest.Items.Add($"{guest.FirstName} {guest.LastName} ({guest.Email})");
                 }
 
                 cmbGuest.SelectedIndex = 0;
 
-                lblGuestCount.Text = $"{filteredGuests.Count} guests found";
+                lblGuestCount.Text = $"{displayedGuests.Count} guests found";
 
-                if (filteredGuests.Count == 0)
+                if (displayedGuests.Count == 0)
                 {
                     MessageBox.Show("No guests found matching your search.", "Search Results",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -361,8 +363,8 @@ namespace HotelManagementSystem.UI.Bookings
 
             try
             {
-                // Get selected guest
-                Guest selectedGuest = allGuests[cmbGuest.SelectedIndex - 1];
+                // Get selected guest from displayedGuests (not allGuests)
+                Guest selectedGuest = displayedGuests[cmbGuest.SelectedIndex - 1];
 
                 // Get booking details
                 string specialRequests = txtSpecialRequests.Text.Trim();
