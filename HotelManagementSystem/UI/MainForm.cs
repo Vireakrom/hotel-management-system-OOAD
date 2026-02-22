@@ -15,6 +15,9 @@ namespace HotelManagementSystem.UI
 {
     public partial class MainForm : Form
     {
+        private RoomSubject roomSubject;
+        private HousekeepingObserver housekeepingObserver;
+
         public MainForm()
         {
             InitializeComponent();
@@ -28,6 +31,11 @@ namespace HotelManagementSystem.UI
 
             // Set background gradient for MDI area
             this.BackColor = Color.LightSteelBlue;
+
+            // Initialize global Observer Pattern (Day 21) - One instance for the entire app!
+            roomSubject = RoomSubject.Instance;
+            housekeepingObserver = new HousekeepingObserver();
+            roomSubject.Attach(housekeepingObserver);
 
             // Start status bar timer
             timerStatusBar.Interval = 1000; // Update every second

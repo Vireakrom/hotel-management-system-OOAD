@@ -111,6 +111,28 @@ namespace HotelManagementSystem.DAL
             }
         }
 
+        /// <summary>
+        /// Get all users with a specific role
+        /// </summary>
+        public List<User> GetByRole(string role)
+        {
+            List<User> users = new List<User>();
+            string query = "SELECT * FROM Users WHERE Role = @Role AND IsActive = 1";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Role", role);
+                conn.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        users.Add(MapReaderToUser(reader));
+                }
+            }
+            return users;
+        }
+
         // ========== AUTHENTICATION METHOD ==========
         public User Authenticate(string username, string password)
         {

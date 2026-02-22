@@ -21,7 +21,6 @@ namespace HotelManagementSystem.UI.Bookings
 
         // Observer Pattern (Design Pattern #5)
         private RoomSubject roomSubject;
-        private HousekeepingObserver housekeepingObserver;
 
         public BookingListForm()
         {
@@ -31,10 +30,8 @@ namespace HotelManagementSystem.UI.Bookings
             roomRepository = new RoomRepository();
             invoiceRepository = new InvoiceRepository();
             
-            // Initialize Observer Pattern (Day 21)
+            // Get global Observer instance (Initialized in MainForm)
             roomSubject = RoomSubject.Instance;
-            housekeepingObserver = new HousekeepingObserver();
-            roomSubject.Attach(housekeepingObserver); // Register observer
             
             this.Load += BookingListForm_Load;
         }

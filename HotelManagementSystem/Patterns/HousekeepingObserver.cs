@@ -13,6 +13,7 @@ namespace HotelManagementSystem.Patterns
     public class HousekeepingObserver : IObserver
     {
         private HousekeepingTaskRepository _taskRepository;
+        private UserRepository _userRepository;
 
         /// <summary>
         /// Constructor
@@ -20,6 +21,7 @@ namespace HotelManagementSystem.Patterns
         public HousekeepingObserver()
         {
             _taskRepository = new HousekeepingTaskRepository();
+            _userRepository = new UserRepository();
         }
 
         /// <summary>
@@ -75,14 +77,24 @@ namespace HotelManagementSystem.Patterns
             // Extract booking ID if provided
             int? bookingId = additionalData as int?;
 
+            // Smart Auto-Assignment: Find the first available housekeeping staff
+            int? assignedStaffId = null;
+            var housekeepingStaff = _userRepository.GetByRole("Housekeeping");
+            if (housekeepingStaff.Count > 0)
+            {
+                assignedStaffId = housekeepingStaff[0].UserId;
+            }
+
             // Create new housekeeping task
             HousekeepingTask task = new HousekeepingTask
             {
                 RoomId = roomId,
                 TaskType = "Cleaning",
-                Status = "Pending",
+                Status = assignedStaffId.HasValue ? "InProgress" : "Pending",
                 Priority = "High", // High priority for checkout cleaning
                 ScheduledDate = DateTime.Now, // Schedule immediately
+                StartTime = assignedStaffId.HasValue ? DateTime.Now : (DateTime?)null,
+                AssignedToUserId = assignedStaffId,
                 Notes = bookingId.HasValue 
                     ? $"Room cleaning required after checkout (Booking #{bookingId.Value}). Auto-created by system." 
                     : "Room cleaning required after checkout. Auto-created by system.",
