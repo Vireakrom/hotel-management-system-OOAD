@@ -1,4 +1,4 @@
-﻿namespace HotelManagementSystem.UI
+namespace HotelManagementSystem.UI
 {
     partial class MainForm
     {
@@ -32,7 +32,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.separatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roomsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roomManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,6 +44,7 @@
             this.bookingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newBookingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewAllBookingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.separatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkInToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkOutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.billingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,10 +54,9 @@
             this.viewTasksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dailyOperationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.revenueReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.occupancyStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.developerToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testFactoryPatternToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testBookingRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testBookingFacadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,7 +98,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.logoutToolStripMenuItem,
-            this.separatorToolStripMenuItem,
+            this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -108,6 +109,7 @@
             this.logoutToolStripMenuItem.Name = "logoutToolStripMenuItem";
             this.logoutToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.logoutToolStripMenuItem.Text = "Logout";
+            this.logoutToolStripMenuItem.Click += new System.EventHandler(this.logoutToolStripMenuItem_Click);
             // 
             // separatorToolStripMenuItem
             // 
@@ -115,11 +117,22 @@
             this.separatorToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.separatorToolStripMenuItem.Text = "Separator";
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(121, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(198, 6);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // roomsToolStripMenuItem
             // 
@@ -147,8 +160,7 @@
             // guestsToolStripMenuItem
             // 
             this.guestsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.guestManagementToolStripMenuItem,
-            this.searchGuestsToolStripMenuItem});
+            this.guestManagementToolStripMenuItem});
             this.guestsToolStripMenuItem.Name = "guestsToolStripMenuItem";
             this.guestsToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.guestsToolStripMenuItem.Text = "Guests";
@@ -157,22 +169,14 @@
             // 
             this.guestManagementToolStripMenuItem.Name = "guestManagementToolStripMenuItem";
             this.guestManagementToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.guestManagementToolStripMenuItem.Text = "Guest management";
+            this.guestManagementToolStripMenuItem.Text = "Guest Management";
             this.guestManagementToolStripMenuItem.Click += new System.EventHandler(this.guestManagementToolStripMenuItem_Click_1);
-            // 
-            // searchGuestsToolStripMenuItem
-            // 
-            this.searchGuestsToolStripMenuItem.Name = "searchGuestsToolStripMenuItem";
-            this.searchGuestsToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.searchGuestsToolStripMenuItem.Text = "Search Guests";
             // 
             // bookingsToolStripMenuItem
             // 
             this.bookingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newBookingToolStripMenuItem,
-            this.viewAllBookingsToolStripMenuItem,
-            this.checkInToolStripMenuItem,
-            this.checkOutToolStripMenuItem});
+            this.viewAllBookingsToolStripMenuItem});
             this.bookingsToolStripMenuItem.Name = "bookingsToolStripMenuItem";
             this.bookingsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.bookingsToolStripMenuItem.Text = "Booking";
@@ -188,26 +192,13 @@
             // 
             this.viewAllBookingsToolStripMenuItem.Name = "viewAllBookingsToolStripMenuItem";
             this.viewAllBookingsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.viewAllBookingsToolStripMenuItem.Text = "View All Bookings";
+            this.viewAllBookingsToolStripMenuItem.Text = "Booking List (Check-In/Out)";
             this.viewAllBookingsToolStripMenuItem.Click += new System.EventHandler(this.viewAllBookingsToolStripMenuItem_Click);
-            // 
-            // checkInToolStripMenuItem
-            // 
-            this.checkInToolStripMenuItem.Name = "checkInToolStripMenuItem";
-            this.checkInToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.checkInToolStripMenuItem.Text = "Check-In";
-            // 
-            // checkOutToolStripMenuItem
-            // 
-            this.checkOutToolStripMenuItem.Name = "checkOutToolStripMenuItem";
-            this.checkOutToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.checkOutToolStripMenuItem.Text = "Check-Out";
             // 
             // billingToolStripMenuItem
             // 
             this.billingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.invoiceManagementToolStripMenuItem,
-            this.processPaymentToolStripMenuItem});
+            this.invoiceManagementToolStripMenuItem});
             this.billingToolStripMenuItem.Name = "billingToolStripMenuItem";
             this.billingToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.billingToolStripMenuItem.Text = "Billing";
@@ -216,15 +207,8 @@
             // 
             this.invoiceManagementToolStripMenuItem.Name = "invoiceManagementToolStripMenuItem";
             this.invoiceManagementToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.invoiceManagementToolStripMenuItem.Text = "Invoice Management";
+            this.invoiceManagementToolStripMenuItem.Text = "Invoices & Payments";
             this.invoiceManagementToolStripMenuItem.Click += new System.EventHandler(this.invoiceManagementToolStripMenuItem_Click);
-            // 
-            // processPaymentToolStripMenuItem
-            // 
-            this.processPaymentToolStripMenuItem.Name = "processPaymentToolStripMenuItem";
-            this.processPaymentToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.processPaymentToolStripMenuItem.Text = "Process Payment";
-            this.processPaymentToolStripMenuItem.Click += new System.EventHandler(this.processPaymentToolStripMenuItem_Click);
             // 
             // housekeepingToolStripMenuItem
             // 
@@ -244,9 +228,7 @@
             // reportsToolStripMenuItem
             // 
             this.reportsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dailyOperationToolStripMenuItem,
-            this.revenueReportToolStripMenuItem,
-            this.occupancyStatisticsToolStripMenuItem});
+            this.dailyOperationToolStripMenuItem});
             this.reportsToolStripMenuItem.Name = "reportsToolStripMenuItem";
             this.reportsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
             this.reportsToolStripMenuItem.Text = "Reports";
@@ -255,38 +237,15 @@
             // 
             this.dailyOperationToolStripMenuItem.Name = "dailyOperationToolStripMenuItem";
             this.dailyOperationToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.dailyOperationToolStripMenuItem.Text = "Daily Operation";
+            this.dailyOperationToolStripMenuItem.Text = "Daily Operations Report";
             this.dailyOperationToolStripMenuItem.Click += new System.EventHandler(this.dailyOperationsToolStripMenuItem_Click);
-            // 
-            // revenueReportToolStripMenuItem
-            // 
-            this.revenueReportToolStripMenuItem.Name = "revenueReportToolStripMenuItem";
-            this.revenueReportToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.revenueReportToolStripMenuItem.Text = "Revenue Report";
-            this.revenueReportToolStripMenuItem.Click += new System.EventHandler(this.revenueReportToolStripMenuItem_Click);
-            // 
-            // occupancyStatisticsToolStripMenuItem
-            // 
-            this.occupancyStatisticsToolStripMenuItem.Name = "occupancyStatisticsToolStripMenuItem";
-            this.occupancyStatisticsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.occupancyStatisticsToolStripMenuItem.Text = "Occupancy Statistics";
-            this.occupancyStatisticsToolStripMenuItem.Click += new System.EventHandler(this.occupancyStatisticsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.userGuideToolStripMenuItem,
-            this.testFactoryPatternToolStripMenuItem,
-            this.testBookingRepositoryToolStripMenuItem,
-            this.testBookingFacadeToolStripMenuItem,
-            this.testDay17IntegrationToolStripMenuItem,
-            this.testDay28IntegrationToolStripMenuItem,
-            this.testObserverPatternToolStripMenuItem,
-            this.testStrategyPatternToolStripMenuItem,
-            this.testInvoiceManagementToolStripMenuItem,
-            this.testInvoiceFormToolStripMenuItem,
-            this.testPaymentEnhancementToolStripMenuItem,
-            this.testDailyOperationsReportToolStripMenuItem,
+            this.developerToolsToolStripMenuItem,
+            this.toolStripSeparator2,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -297,6 +256,25 @@
             this.userGuideToolStripMenuItem.Name = "userGuideToolStripMenuItem";
             this.userGuideToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.userGuideToolStripMenuItem.Text = "User Guide";
+            this.userGuideToolStripMenuItem.Click += new System.EventHandler(this.userGuideToolStripMenuItem_Click);
+            // 
+            // developerToolsToolStripMenuItem
+            // 
+            this.developerToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.testFactoryPatternToolStripMenuItem,
+            this.testBookingRepositoryToolStripMenuItem,
+            this.testBookingFacadeToolStripMenuItem,
+            this.testDay17IntegrationToolStripMenuItem,
+            this.testDay28IntegrationToolStripMenuItem,
+            this.testObserverPatternToolStripMenuItem,
+            this.testStrategyPatternToolStripMenuItem,
+            this.testInvoiceManagementToolStripMenuItem,
+            this.testInvoiceFormToolStripMenuItem,
+            this.testPaymentEnhancementToolStripMenuItem,
+            this.testDailyOperationsReportToolStripMenuItem});
+            this.developerToolsToolStripMenuItem.Name = "developerToolsToolStripMenuItem";
+            this.developerToolsToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.developerToolsToolStripMenuItem.Text = "Developer Tools (Tests)";
             // 
             // testFactoryPatternToolStripMenuItem
             // 
@@ -380,6 +358,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -404,6 +383,12 @@
             this.toolStripStatusLabelTime.Size = new System.Drawing.Size(139, 17);
             this.toolStripStatusLabelTime.Text = "toolStripStatusLabelTime";
             // 
+            // timerStatusBar
+            // 
+            this.timerStatusBar.Enabled = true;
+            this.timerStatusBar.Interval = 1000;
+            this.timerStatusBar.Tick += new System.EventHandler(this.timerStatusBar_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -416,6 +401,7 @@
             this.Name = "MainForm";
             this.Text = "Hotel Management System";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load_1);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -429,6 +415,9 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem developerToolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem separatorToolStripMenuItem;
@@ -451,8 +440,6 @@
         private System.Windows.Forms.ToolStripMenuItem viewTasksToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dailyOperationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem revenueReportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem occupancyStatisticsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem userGuideToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testFactoryPatternToolStripMenuItem;

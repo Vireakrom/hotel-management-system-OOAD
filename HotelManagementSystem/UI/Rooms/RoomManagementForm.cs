@@ -344,13 +344,11 @@ namespace HotelManagementSystem.UI.Rooms
 
             Room selectedRoom = dgvRooms.SelectedRows[0].DataBoundItem as Room;
 
-            // Show detailed information
-            MessageBox.Show(
-                selectedRoom.GetDetailedInfo(),
-                $"Room {selectedRoom.RoomNumber} - Details",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            // Show detailed information in styled dialog
+            using (var dialog = new RoomDetailsDialog(selectedRoom))
+            {
+                dialog.ShowDialog(this);
+            }
         }
 
         #endregion

@@ -126,6 +126,10 @@
     <Compile Include="UI\Guests\AddEditGuestDialog.Designer.cs">
       <DependentUpon>AddEditGuestDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Guests\GuestDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Guests\GuestDetailsDialog.Designer.cs" />
     <Compile Include="UI\Guests\GuestManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -186,6 +190,10 @@
     <Compile Include="UI\Rooms\AddEditRoomDialog.Designer.cs">
       <DependentUpon>AddEditRoomDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Rooms\RoomDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Rooms\RoomDetailsDialog.Designer.cs" />
     <Compile Include="UI\Rooms\RoomManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -201,21 +201,8 @@ namespace HotelManagementSystem.UI.Guests
 
             Guest selectedGuest = (Guest)dgvGuests.SelectedRows[0].DataBoundItem;
 
-            string details = $"GUEST DETAILS\n" +
-                           $"{'=',50}\n\n" +
-                           $"ID: {selectedGuest.GuestId}\n" +
-                           $"Name: {selectedGuest.FullName}\n" +
-                           $"Email: {selectedGuest.Email ?? "N/A"}\n" +
-                           $"Phone: {selectedGuest.Phone ?? "N/A"}\n" +
-                           $"ID Number: {selectedGuest.IDNumber ?? "N/A"}\n" +
-                           $"Date of Birth: {(selectedGuest.DateOfBirth.HasValue ? selectedGuest.DateOfBirth.Value.ToShortDateString() : "N/A")}\n" +
-                           $"Nationality: {selectedGuest.Nationality ?? "N/A"}\n" +
-                           $"Address: {selectedGuest.Address ?? "N/A"}\n\n" +
-                           $"Registered: {selectedGuest.CreatedDate:MM/dd/yyyy}\n" +
-                           $"Last Modified: {(selectedGuest.ModifiedDate.HasValue ? selectedGuest.ModifiedDate.Value.ToString("MM/dd/yyyy") : "Never")}";
-
-            MessageBox.Show(details, "Guest Details",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            GuestDetailsDialog dialog = new GuestDetailsDialog(selectedGuest);
+            dialog.ShowDialog();
         }
 
         /// <summary>

@@ -17,16 +17,15 @@ namespace HotelManagementSystem.UI.Rooms
         private RoomRepository roomRepository;
         private List<Room> allRooms;
         private string selectedStatusFilter = "All";
+        private bool isInitialized = false;
 
         public RoomStatusDashboard()
         {
             InitializeComponent();
             roomRepository = new RoomRepository();
-            
+
             // Set default filter to "All"
             cmbFilterStatus.SelectedIndex = 0;
-            
-            LoadDashboard();
         }
 
         /// <summary>
@@ -49,8 +48,16 @@ namespace HotelManagementSystem.UI.Rooms
                 // Apply filter if selected
                 List<Room> filteredRooms = ApplyFilter(allRooms);
 
-                // Clear existing panels
-                flowLayoutPanelRooms.Controls.Clear();
+                // Suspend layout to prevent panels from rendering at incorrect sizes
+                flowLayoutPanelRooms.SuspendLayout();
+
+                // Dispose existing controls before clearing to free resources
+                while (flowLayoutPanelRooms.Controls.Count > 0)
+                {
+                    Control ctrl = flowLayoutPanelRooms.Controls[0];
+                    flowLayoutPanelRooms.Controls.RemoveAt(0);
+                    ctrl.Dispose();
+                }
 
                 // Create a panel for each room
                 foreach (var room in filteredRooms.OrderBy(r => r.RoomNumber))
@@ -58,6 +65,9 @@ namespace HotelManagementSystem.UI.Rooms
                     Panel roomPanel = CreateRoomPanel(room);
                     flowLayoutPanelRooms.Controls.Add(roomPanel);
                 }
+
+                // Resume layout and force a full recalculation
+                flowLayoutPanelRooms.ResumeLayout(true);
 
                 // Update status counts
                 UpdateStatusCounts();
@@ -181,29 +191,10 @@ namespace HotelManagementSystem.UI.Rooms
         /// </summary>
         private void ShowRoomDetails(Room room)
         {
-            string details = $"Room Details\n\n" +
-                           $"Room Number: {room.RoomNumber}\n" +
-                           $"Room Type: {room.RoomType}\n" +
-                           $"Floor: {room.FloorNumber}\n" +
-                           $"Status: {room.Status}\n" +
-                           $"Base Price: ${room.BasePrice:F2}/night\n" +
-                           $"Max Occupancy: {room.MaxOccupancy} guest(s)\n" +
-                           $"Bed Type: {room.BedType ?? "N/A"}\n" +
-                           $"Area: {room.Area} sq.m\n" +
-                           $"View Type: {room.ViewType ?? "Standard"}\n\n" +
-                           $"Special Features:\n" +
-                           $"  • Balcony: {(room.HasBalcony ? "Yes" : "No")}\n" +
-                           $"  • Sea View: {(room.HasSeaView ? "Yes" : "No")}\n" +
-                           $"  • Jacuzzi: {(room.HasJacuzzi ? "Yes" : "No")}\n" +
-                           $"  • Private Pool: {(room.HasPrivatePool ? "Yes" : "No")}\n\n";
-
-            if (!string.IsNullOrWhiteSpace(room.Description))
+            using (var dialog = new RoomDetailsDialog(room))
             {
-                details += $"Description: {room.Description}";
+                dialog.ShowDialog(this);
             }
-
-            MessageBox.Show(details, $"Room {room.RoomNumber} - Details",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -252,6 +243,7 @@ namespace HotelManagementSystem.UI.Rooms
         private void cmbFilterStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedStatusFilter = cmbFilterStatus.SelectedItem?.ToString() ?? "All";
+            if (!isInitialized) return;
             LoadDashboard();
         }
 
@@ -277,7 +269,8 @@ namespace HotelManagementSystem.UI.Rooms
 
         private void RoomStatusDashboard_Load(object sender, EventArgs e)
         {
-            // Form load event - already loaded in constructor
+            isInitialized = true;
+            LoadDashboard();
         }
     }
 }

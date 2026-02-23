@@ -37,6 +37,7 @@ namespace HotelManagementSystem.UI.Housekeeping
             this.label2 = new System.Windows.Forms.Label();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnViewDetails = new System.Windows.Forms.Button();
+            this.btnCompleteTask = new System.Windows.Forms.Button();
             this.lblTaskCount = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTasks)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -138,6 +139,17 @@ namespace HotelManagementSystem.UI.Housekeeping
             this.btnViewDetails.UseVisualStyleBackColor = true;
             this.btnViewDetails.Click += new System.EventHandler(this.btnViewDetails_Click);
             // 
+            // btnCompleteTask
+            // 
+            this.btnCompleteTask.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnCompleteTask.Location = new System.Drawing.Point(145, 595);
+            this.btnCompleteTask.Name = "btnCompleteTask";
+            this.btnCompleteTask.Size = new System.Drawing.Size(130, 30);
+            this.btnCompleteTask.TabIndex = 3;
+            this.btnCompleteTask.Text = "Complete Task";
+            this.btnCompleteTask.UseVisualStyleBackColor = false;
+            this.btnCompleteTask.Click += new System.EventHandler(this.btnCompleteTask_Click);
+            // 
             // lblTaskCount
             // 
             this.lblTaskCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -154,6 +166,7 @@ namespace HotelManagementSystem.UI.Housekeeping
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 641);
+            this.Controls.Add(this.btnCompleteTask);
             this.Controls.Add(this.lblTaskCount);
             this.Controls.Add(this.btnViewDetails);
             this.Controls.Add(this.groupBox1);
@@ -180,6 +193,7 @@ namespace HotelManagementSystem.UI.Housekeeping
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnViewDetails;
+        private System.Windows.Forms.Button btnCompleteTask;
         private System.Windows.Forms.Label lblTaskCount;
     }
 }

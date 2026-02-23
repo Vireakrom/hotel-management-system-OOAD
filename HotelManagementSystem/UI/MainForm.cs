@@ -1,6 +1,7 @@
-﻿using HotelManagementSystem.Helpers;
+using HotelManagementSystem.Helpers;
 using HotelManagementSystem.UI.Auth;
 using HotelManagementSystem.Models;
+using HotelManagementSystem.Patterns;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,78 +41,114 @@ namespace HotelManagementSystem.UI
             // Start status bar timer
             timerStatusBar.Interval = 1000; // Update every second
             timerStatusBar.Start();
+
+            InitializeModernUI();
+        }
+
+        private void InitializeModernUI()
+        {
+            // Update menu text to match modern style
+            billingToolStripMenuItem.Text = "Financials";
+            invoiceManagementToolStripMenuItem.Text = "Invoices & Payments";
+            viewAllBookingsToolStripMenuItem.Text = "Manage Bookings (Check-In/Out)";
         }
 
         private void ConfigureUiTheme()
         {
             // Set consistent font for the entire application
             Font = new Font("Segoe UI", 9.5F);
-            menuStrip1.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            menuStrip1.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
             statusStrip1.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
 
-            // Professional color scheme (Midnight Blue / Slate Gray)
+            // Professional Midnight Blue & White Theme
             Color primaryColor = Color.FromArgb(43, 87, 154); // Deep Blue
-            Color secondaryColor = Color.FromArgb(240, 240, 240); // Off-White
+            Color menuBackColor = Color.FromArgb(248, 249, 250); // Light Gray-White
             Color textColor = Color.FromArgb(33, 33, 33); // Dark Gray
 
-            menuStrip1.BackColor = secondaryColor;
+            menuStrip1.BackColor = menuBackColor;
             menuStrip1.ForeColor = textColor;
+            menuStrip1.RenderMode = ToolStripRenderMode.Professional;
+            menuStrip1.Padding = new Padding(6, 4, 0, 4);
             
             statusStrip1.BackColor = primaryColor;
             statusStrip1.ForeColor = Color.White;
+            statusStrip1.RenderMode = ToolStripRenderMode.Professional;
             
             toolStripStatusLabelUser.ForeColor = Color.White;
             toolStripStatusLabelUser.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             
             toolStripStatusLabelTime.ForeColor = Color.White;
 
-            menuStrip1.ImageScalingSize = new Size(18, 18);
+            menuStrip1.ImageScalingSize = new Size(20, 20);
             ApplyMenuIcons();
+
+            // Set MDI background to a clean professional color
+            foreach (Control control in this.Controls)
+            {
+                if (control is MdiClient mdiClient)
+                {
+                    mdiClient.BackColor = Color.FromArgb(232, 236, 241); // Light Blue-Gray
+                    break;
+                }
+            }
         }
 
-        private static Image ToMenuImage(Icon icon)
+        private static Image EmojiToImage(string emoji)
         {
-            return new Bitmap(icon.ToBitmap(), new Size(16, 16));
+            // Create a high-quality bitmap from a modern emoji
+            Bitmap bmp = new Bitmap(24, 24);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                
+                // Segoe UI Emoji is the standard Windows emoji font
+                using (Font font = new Font("Segoe UI Emoji", 12f))
+                {
+                    // Center the emoji in the 24x24 box
+                    TextRenderer.DrawText(g, emoji, font, new Rectangle(0, 0, 24, 24), 
+                        Color.Black, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                }
+            }
+            return bmp;
         }
 
         private void ApplyMenuIcons()
         {
-            // Category Icons
-            fileToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            roomsToolStripMenuItem.Image = ToMenuImage(SystemIcons.WinLogo);
-            guestsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
-            bookingsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
-            billingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
-            housekeepingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Asterisk);
-            reportsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
-            helpToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
+            // Category Icons - Using Modern Colorful Emojis
+            fileToolStripMenuItem.Image = EmojiToImage("🏨");
+            roomsToolStripMenuItem.Image = EmojiToImage("🛌");
+            guestsToolStripMenuItem.Image = EmojiToImage("👥");
+            bookingsToolStripMenuItem.Image = EmojiToImage("📅");
+            billingToolStripMenuItem.Image = EmojiToImage("💰");
+            housekeepingToolStripMenuItem.Image = EmojiToImage("🧹");
+            reportsToolStripMenuItem.Image = EmojiToImage("📊");
+            helpToolStripMenuItem.Image = EmojiToImage("❓");
 
             // Sub-menu Icons
-            logoutToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
-            exitToolStripMenuItem.Image = ToMenuImage(SystemIcons.Error);
+            logoutToolStripMenuItem.Image = EmojiToImage("🔓");
+            exitToolStripMenuItem.Image = EmojiToImage("❌");
 
-            roomManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            roomStatusDashboardToolStripMenuItem.Image = ToMenuImage(SystemIcons.WinLogo);
+            roomManagementToolStripMenuItem.Image = EmojiToImage("🔧");
+            roomStatusDashboardToolStripMenuItem.Image = EmojiToImage("🖥️");
 
-            guestManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
-            searchGuestsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
+            guestManagementToolStripMenuItem.Image = EmojiToImage("👤");
 
-            newBookingToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            viewAllBookingsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Shield);
-            checkInToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
-            checkOutToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
+            newBookingToolStripMenuItem.Image = EmojiToImage("➕");
+            viewAllBookingsToolStripMenuItem.Image = EmojiToImage("📋");
 
-            invoiceManagementToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            processPaymentToolStripMenuItem.Image = ToMenuImage(SystemIcons.Warning);
+            invoiceManagementToolStripMenuItem.Image = EmojiToImage("🧾");
 
-            viewTasksToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
+            viewTasksToolStripMenuItem.Image = EmojiToImage("📝");
 
-            dailyOperationToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
-            revenueReportToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
-            occupancyStatisticsToolStripMenuItem.Image = ToMenuImage(SystemIcons.Question);
+            dailyOperationToolStripMenuItem.Image = EmojiToImage("☀️");
 
-            userGuideToolStripMenuItem.Image = ToMenuImage(SystemIcons.Information);
-            aboutToolStripMenuItem.Image = ToMenuImage(SystemIcons.Application);
+            userGuideToolStripMenuItem.Image = EmojiToImage("📖");
+            developerToolsToolStripMenuItem.Image = EmojiToImage("🛠️");
+            aboutToolStripMenuItem.Image = EmojiToImage("ℹ️");
+            
+            // Set the icon size for the menu strip
+            menuStrip1.ImageScalingSize = new Size(20, 20);
         }
 
         #region Menu Configuration
@@ -330,21 +367,6 @@ namespace HotelManagementSystem.UI
 
         private void dailyOperationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Day 26 - Daily Operations Report is now ready!
-            OpenChildForm(new HotelManagementSystem.UI.Reports.DailyOperationsReportForm());
-        }
-
-        private void revenueReportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Revenue Report uses the same Daily Operations Report with date filter
-            // The report already includes revenue breakdown by payment method
-            OpenChildForm(new HotelManagementSystem.UI.Reports.DailyOperationsReportForm());
-        }
-
-        private void occupancyStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Occupancy Statistics uses the same Daily Operations Report
-            // The report already includes occupancy rate and room status breakdown
             OpenChildForm(new HotelManagementSystem.UI.Reports.DailyOperationsReportForm());
         }
 
@@ -1297,18 +1319,37 @@ namespace HotelManagementSystem.UI
             {
                 if (openForm.GetType() == childForm.GetType())
                 {
-                    // Form already open - bring it to front and activate it
+                    // Dispose the unused new instance to avoid resource leaks
+                    childForm.Dispose();
+
+                    // Close all other child forms so only one is visible
+                    foreach (Form other in this.MdiChildren)
+                    {
+                        if (other != openForm)
+                            other.Close();
+                    }
+
+                    // Restore if minimized, then bring to front
+                    if (openForm.WindowState == FormWindowState.Minimized)
+                        openForm.WindowState = FormWindowState.Maximized;
+
+                    openForm.BringToFront();
                     openForm.Activate();
                     return;
                 }
             }
 
+            // Close all existing child forms so only one form is displayed at a time
+            foreach (Form openForm in this.MdiChildren)
+            {
+                openForm.Close();
+            }
+
             // Apply consistent styling to child forms (Day 31 Polish)
             childForm.MdiParent = this;
-            childForm.WindowState = FormWindowState.Maximized;
             childForm.Font = new Font("Segoe UI", 9.5F);
             childForm.BackColor = Color.White;
-            
+
             // Apply standard background to DataGridViews if they exist
             foreach (Control ctrl in childForm.Controls)
             {
@@ -1324,7 +1365,9 @@ namespace HotelManagementSystem.UI
                 }
             }
 
+            // Show first, then maximize to avoid MDI rendering glitches
             childForm.Show();
+            childForm.WindowState = FormWindowState.Maximized;
         }
 
         #endregion

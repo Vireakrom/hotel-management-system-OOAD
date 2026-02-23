@@ -15,12 +15,14 @@ namespace HotelManagementSystem.UI.Housekeeping
     public partial class HousekeepingTasksForm : Form
     {
         private HousekeepingTaskRepository taskRepository;
+        private RoomRepository roomRepository;
         private List<HousekeepingTask> allTasks;
 
         public HousekeepingTasksForm()
         {
             InitializeComponent();
             taskRepository = new HousekeepingTaskRepository();
+            roomRepository = new RoomRepository();
             this.Load += HousekeepingTasksForm_Load;
         }
 
@@ -91,7 +93,7 @@ namespace HotelManagementSystem.UI.Housekeeping
             {
                 Name = "Description",
                 HeaderText = "Description",
-                DataPropertyName = "Description",
+                DataPropertyName = "Notes",
                 Width = 300
             });
 
@@ -264,7 +266,7 @@ namespace HotelManagementSystem.UI.Housekeeping
             if (task != null)
             {
                 string details = $"Task Details\n" +
-                               $"???????????????????????\n\n" +
+                               $"========================\n\n" +
                                $"Task ID: {task.TaskId}\n" +
                                $"Room: {task.RoomNumber ?? "N/A"}\n" +
                                $"Task Type: {task.TaskType ?? "N/A"}\n" +
@@ -285,6 +287,64 @@ namespace HotelManagementSystem.UI.Housekeeping
         private void dgvTasks_DoubleClick(object sender, EventArgs e)
         {
             btnViewDetails_Click(sender, e);
+        }
+
+        private void btnCompleteTask_Click(object sender, EventArgs e)
+        {
+            CompleteSelectedTask();
+        }
+
+        /// <summary>
+        /// Logic to complete a task and sync room status
+        /// </summary>
+        private void CompleteSelectedTask()
+        {
+            if (dgvTasks.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a task first.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int taskId = (int)dgvTasks.SelectedRows[0].Cells["TaskId"].Value;
+            HousekeepingTask task = allTasks.FirstOrDefault(t => t.TaskId == taskId);
+
+            if (task == null) return;
+
+            if (task.Status == "Completed")
+            {
+                MessageBox.Show("This task is already completed.", "Already Completed",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Set StartTime if not already set
+            if (!task.StartTime.HasValue)
+            {
+                task.StartTime = DateTime.Now;
+            }
+
+            task.Status = "Completed";
+            task.EndTime = DateTime.Now;
+
+            // CRITICAL: When cleaning is done, the ROOM becomes Available!
+            if (task.TaskType == "Cleaning")
+            {
+                roomRepository.UpdateRoomStatus(task.RoomId, "Available");
+            }
+
+            if (taskRepository.Update(task))
+            {
+                string msg = task.TaskType == "Cleaning"
+                    ? "Task completed! Room is now Available."
+                    : "Task completed!";
+                MessageBox.Show(msg, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoadTasks();
+            }
+            else
+            {
+                MessageBox.Show("Failed to update task.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
