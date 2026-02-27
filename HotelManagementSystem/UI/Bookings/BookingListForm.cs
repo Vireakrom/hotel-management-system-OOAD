@@ -369,56 +369,10 @@ namespace HotelManagementSystem.UI.Bookings
             var guest = guestRepository.GetById(booking.GuestId);
             var room = roomRepository.GetById(booking.RoomId);
 
-            string details = $"Booking Details:\n\n" +
-                $"Booking ID: {booking.BookingId}\n" +
-                $"Status: {booking.Status}\n\n" +
-                $"Guest Information:\n" +
-                $"  Name: {(guest != null ? guest.FullName : "Unknown")}\n" +
-                $"  Email: {(guest != null ? guest.Email : "N/A")}\n" +
-                $"  Phone: {(guest != null ? guest.Phone : "N/A")}\n\n" +
-                $"Room Information:\n" +
-                $"  Room Number: {(room != null ? room.RoomNumber : "N/A")}\n" +
-                $"  Room Type: {(room != null ? room.RoomType : "N/A")}\n" +
-                $"  Floor: {(room != null ? room.FloorNumber.ToString() : "N/A")}\n\n" +
-                $"Booking Dates:\n" +
-                $"  Check-In: {booking.CheckInDate:MM/dd/yyyy}\n" +
-                $"  Check-Out: {booking.CheckOutDate:MM/dd/yyyy}\n" +
-                $"  Number of Nights: {booking.NumberOfNights}\n";
-
-            if (booking.ActualCheckInDate.HasValue)
+            using (var detailsForm = new BookingDetailsForm(booking, guest, room))
             {
-                details += $"  Actual Check-In: {booking.ActualCheckInDate:MM/dd/yyyy HH:mm}\n";
+                detailsForm.ShowDialog(this);
             }
-            if (booking.ActualCheckOutDate.HasValue)
-            {
-                details += $"  Actual Check-Out: {booking.ActualCheckOutDate:MM/dd/yyyy HH:mm}\n";
-            }
-
-            details += $"\nGuests: {booking.NumberOfGuests}\n\n" +
-                $"Financial Details:\n" +
-                $"  Room Charges: ${booking.RoomCharges:F2}\n" +
-                $"  Service Charges: ${booking.ServiceCharges:F2}\n" +
-                $"  Total Amount: ${booking.TotalAmount:F2}\n\n" +
-                $"Booking Date: {booking.BookingDate:MM/dd/yyyy HH:mm}\n";
-
-            if (!string.IsNullOrWhiteSpace(booking.SpecialRequests))
-            {
-                details += $"\nSpecial Requests:\n{booking.SpecialRequests}\n";
-            }
-
-            if (!string.IsNullOrWhiteSpace(booking.Notes))
-            {
-                details += $"\nNotes:\n{booking.Notes}\n";
-            }
-
-            if (booking.Status == "Cancelled" && !string.IsNullOrWhiteSpace(booking.CancellationReason))
-            {
-                details += $"\nCancellation Date: {booking.CancelledDate:MM/dd/yyyy HH:mm}\n" +
-                    $"Cancellation Reason:\n{booking.CancellationReason}";
-            }
-
-            MessageBox.Show(details, "Booking Details",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
