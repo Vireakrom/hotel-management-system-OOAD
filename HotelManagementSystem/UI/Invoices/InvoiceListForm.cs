@@ -124,6 +124,13 @@ namespace HotelManagementSystem.UI.Invoices
 
             // Enable row color coding
             dgvInvoices.CellFormatting += DgvInvoices_CellFormatting;
+
+            // Clear selection after data binding completes
+            dgvInvoices.DataBindingComplete += (s, e) =>
+            {
+                dgvInvoices.CurrentCell = null;
+                dgvInvoices.ClearSelection();
+            };
         }
 
         /// <summary>
@@ -236,42 +243,6 @@ namespace HotelManagementSystem.UI.Invoices
 
             int invoiceId = Convert.ToInt32(dgvInvoices.SelectedRows[0].Cells["InvoiceId"].Value);
             ShowInvoiceDetails(invoiceId);
-        }
-
-        /// <summary>
-        /// View payment history for selected invoice
-        /// </summary>
-        private void btnPaymentHistory_Click(object sender, EventArgs e)
-        {
-            if (dgvInvoices.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Please select an invoice to view payment history.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            int invoiceId = Convert.ToInt32(dgvInvoices.SelectedRows[0].Cells["InvoiceId"].Value);
-            ShowPaymentHistory(invoiceId);
-        }
-
-        /// <summary>
-        /// Show payment history form for invoice
-        /// </summary>
-        private void ShowPaymentHistory(int invoiceId)
-        {
-            try
-            {
-                Payments.PaymentHistoryForm paymentHistoryForm = new Payments.PaymentHistoryForm(invoiceId);
-                paymentHistoryForm.ShowDialog();
-
-                // Refresh invoices after viewing payment history
-                LoadInvoices();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error displaying payment history: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         /// <summary>

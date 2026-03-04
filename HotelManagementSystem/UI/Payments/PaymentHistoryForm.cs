@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using HotelManagementSystem.Models;
 using HotelManagementSystem.DAL;
@@ -176,10 +179,80 @@ namespace HotelManagementSystem.UI.Payments
 
         private void btnExportToExcel_Click(object sender, EventArgs e)
         {
-            // Placeholder for Excel export functionality
-            MessageBox.Show("Excel export functionality will be implemented in a future version.\n\n" +
-                "For now, you can copy the data from the grid manually.",
-                "Excel Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (_payments == null || _payments.Count == 0)
+            {
+                MessageBox.Show("No payment data to export.", "Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                using (var sfd = new SaveFileDialog())
+                {
+                    sfd.Title = "Export Payment History";
+                    sfd.Filter = "CSV File (*.csv)|*.csv";
+                    sfd.FilterIndex = 1;
+                    sfd.FileName = $"PaymentHistory_{_invoice?.InvoiceNumber ?? _invoiceId.ToString()}";
+                    sfd.DefaultExt = "csv";
+
+                    if (sfd.ShowDialog() != DialogResult.OK)
+                        return;
+
+                    var sb = new StringBuilder();
+
+                    // Invoice summary section
+                    sb.AppendLine("INVOICE SUMMARY");
+                    sb.AppendLine("Field,Value");
+                    sb.AppendLine($"Invoice Number,{CsvEscape(_invoice?.InvoiceNumber)}");
+                    sb.AppendLine($"Invoice Date,{_invoice?.IssueDate.ToString("dd/MM/yyyy")}");
+                    sb.AppendLine($"Guest,{CsvEscape(lblGuestName.Text)}");
+                    sb.AppendLine($"Room,{CsvEscape(lblRoomInfo.Text)}");
+                    sb.AppendLine($"Total Amount,{_invoice?.TotalAmount.ToString("F2")}");
+                    sb.AppendLine($"Amount Paid,{_invoice?.PaidAmount.ToString("F2")}");
+                    sb.AppendLine($"Balance,{_invoice?.BalanceAmount.ToString("F2")}");
+                    sb.AppendLine($"Status,{CsvEscape(_invoice?.Status)}");
+                    sb.AppendLine();
+
+                    // Payment rows
+                    sb.AppendLine("PAYMENT HISTORY");
+                    sb.AppendLine("Payment ID,Date,Method,Amount,Transaction ID,Status");
+                    foreach (Payment p in _payments)
+                    {
+                        sb.AppendLine(string.Join(",",
+                            p.PaymentId,
+                            CsvEscape(p.PaymentDate.ToString("dd/MM/yyyy HH:mm")),
+                            CsvEscape(p.PaymentMethod),
+                            p.Amount.ToString("F2"),
+                            CsvEscape(p.TransactionId ?? "-"),
+                            CsvEscape(p.Status)));
+                    }
+
+                    File.WriteAllText(sfd.FileName, sb.ToString(), Encoding.UTF8);
+
+                    var openResult = MessageBox.Show(
+                        $"Payment history exported successfully!\n\nFile: {sfd.FileName}\n\nWould you like to open the file?",
+                        "Export Successful",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information);
+
+                    if (openResult == DialogResult.Yes)
+                        Process.Start(sfd.FileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error exporting payment history: {ex.Message}", "Export Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static string CsvEscape(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
+                return "\"" + value.Replace("\"", "\"\"") + "\"";
+            return value;
         }
 
         private void dgvPayments_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)

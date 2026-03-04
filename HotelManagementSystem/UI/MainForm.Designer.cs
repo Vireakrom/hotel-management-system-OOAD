@@ -54,6 +54,8 @@ namespace HotelManagementSystem.UI
             this.viewTasksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dailyOperationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.administrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.staffManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.developerToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,6 +89,7 @@ namespace HotelManagementSystem.UI
             this.billingToolStripMenuItem,
             this.housekeepingToolStripMenuItem,
             this.reportsToolStripMenuItem,
+            this.administrationToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -239,6 +242,21 @@ namespace HotelManagementSystem.UI
             this.dailyOperationToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.dailyOperationToolStripMenuItem.Text = "Daily Operations Report";
             this.dailyOperationToolStripMenuItem.Click += new System.EventHandler(this.dailyOperationsToolStripMenuItem_Click);
+            // 
+            // administrationToolStripMenuItem
+            // 
+            this.administrationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.staffManagementToolStripMenuItem});
+            this.administrationToolStripMenuItem.Name = "administrationToolStripMenuItem";
+            this.administrationToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
+            this.administrationToolStripMenuItem.Text = "Administration";
+            // 
+            // staffManagementToolStripMenuItem
+            // 
+            this.staffManagementToolStripMenuItem.Name = "staffManagementToolStripMenuItem";
+            this.staffManagementToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.staffManagementToolStripMenuItem.Text = "Staff Management";
+            this.staffManagementToolStripMenuItem.Click += new System.EventHandler(this.staffManagementToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -440,6 +458,8 @@ namespace HotelManagementSystem.UI
         private System.Windows.Forms.ToolStripMenuItem viewTasksToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dailyOperationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem administrationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem staffManagementToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem userGuideToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testFactoryPatternToolStripMenuItem;

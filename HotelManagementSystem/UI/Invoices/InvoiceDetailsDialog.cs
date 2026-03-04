@@ -39,7 +39,6 @@ namespace HotelManagementSystem.UI.Invoices
             this.roomRepository = new RoomRepository();
 
             LoadInvoiceDetails();
-            LoadPaymentHistory();
         }
 
         /// <summary>
@@ -118,99 +117,25 @@ namespace HotelManagementSystem.UI.Invoices
         }
 
         /// <summary>
-        /// Load payment history into DataGridView
-        /// </summary>
-        private void LoadPaymentHistory()
-        {
-            try
-            {
-                dgvPaymentHistory.AutoGenerateColumns = false;
-                dgvPaymentHistory.AllowUserToAddRows = false;
-                dgvPaymentHistory.AllowUserToDeleteRows = false;
-                dgvPaymentHistory.ReadOnly = true;
-                dgvPaymentHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-                // Define columns
-                dgvPaymentHistory.Columns.Clear();
-
-                dgvPaymentHistory.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "PaymentId",
-                    HeaderText = "Payment ID",
-                    DataPropertyName = "PaymentId",
-                    Width = 80
-                });
-
-                dgvPaymentHistory.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "PaymentDate",
-                    HeaderText = "Date",
-                    DataPropertyName = "PaymentDate",
-                    Width = 120,
-                    DefaultCellStyle = new DataGridViewCellStyle { Format = "MMM dd, yyyy HH:mm" }
-                });
-
-                dgvPaymentHistory.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Amount",
-                    HeaderText = "Amount",
-                    DataPropertyName = "Amount",
-                    Width = 100,
-                    DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" }
-                });
-
-                dgvPaymentHistory.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "PaymentMethod",
-                    HeaderText = "Method",
-                    DataPropertyName = "PaymentMethod",
-                    Width = 100
-                });
-
-                dgvPaymentHistory.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "TransactionId",
-                    HeaderText = "Transaction ID",
-                    DataPropertyName = "TransactionId",
-                    Width = 180
-                });
-
-                dgvPaymentHistory.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Status",
-                    HeaderText = "Status",
-                    DataPropertyName = "Status",
-                    Width = 100
-                });
-
-                // Bind data
-                dgvPaymentHistory.DataSource = payments;
-
-                // Update summary
-                if (payments != null && payments.Count > 0)
-                {
-                    lblPaymentCount.Text = $"Total Payments: {payments.Count}";
-                    lblPaymentTotal.Text = $"Total Amount Paid: {payments.Sum(p => p.Amount):C2}";
-                }
-                else
-                {
-                    lblPaymentCount.Text = "Total Payments: 0";
-                    lblPaymentTotal.Text = "Total Amount Paid: $0.00";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading payment history: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
         /// Close dialog
         /// </summary>
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnViewPaymentHistory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Payments.PaymentHistoryForm paymentHistoryForm = new Payments.PaymentHistoryForm(invoice.InvoiceId);
+                paymentHistoryForm.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error displaying payment history: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>

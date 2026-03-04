@@ -23,8 +23,8 @@ namespace HotelManagementSystem.UI.Guests
 
         private void GuestManagementForm_Load(object sender, EventArgs e)
         {
-            LoadGuests();
             SetupDataGridView();
+            LoadGuests();
             UpdateGuestCount();
         }
 
@@ -43,12 +43,20 @@ namespace HotelManagementSystem.UI.Guests
 
                 // Update count label
                 lblTotalGuests.Text = $"Total Guests: {allGuests.Count}";
+
+                // Defer clearing selection until after all initialization completes
+                dgvGuests.BeginInvoke(new Action(() =>
+                {
+                    dgvGuests.CurrentCell = null;
+                    dgvGuests.ClearSelection();
+                }));
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading guests: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         /// <summary>
@@ -283,6 +291,13 @@ namespace HotelManagementSystem.UI.Guests
                 dgvGuests.DataSource = searchResults;
 
                 lblTotalGuests.Text = $"Found: {searchResults.Count} guest(s)";
+
+                // Defer clearing selection until after all initialization completes
+                dgvGuests.BeginInvoke(new Action(() =>
+                {
+                    dgvGuests.CurrentCell = null;
+                    dgvGuests.ClearSelection();
+                }));
 
                 if (searchResults.Count == 0)
                 {

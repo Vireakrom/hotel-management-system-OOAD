@@ -170,11 +170,13 @@ namespace HotelManagementSystem.UI
                     // Receptionist cannot access Reports or Housekeeping
                     reportsToolStripMenuItem.Visible = false;
                     housekeepingToolStripMenuItem.Visible = false;
+                    administrationToolStripMenuItem.Visible = false;
                     break;
 
                 case "Manager":
                     // Manager can see reports but not housekeeping tasks
                     housekeepingToolStripMenuItem.Visible = false;
+                    administrationToolStripMenuItem.Visible = false;
                     break;
 
                 case "Housekeeping":
@@ -182,7 +184,9 @@ namespace HotelManagementSystem.UI
                     roomsToolStripMenuItem.Visible = false;
                     guestsToolStripMenuItem.Visible = false;
                     bookingsToolStripMenuItem.Visible = false;
+                    billingToolStripMenuItem.Visible = false;
                     reportsToolStripMenuItem.Visible = false;
+                    administrationToolStripMenuItem.Visible = false;
                     break;
 
                 default:
@@ -192,6 +196,7 @@ namespace HotelManagementSystem.UI
                     bookingsToolStripMenuItem.Visible = false;
                     housekeepingToolStripMenuItem.Visible = false;
                     reportsToolStripMenuItem.Visible = false;
+                    administrationToolStripMenuItem.Visible = false;
                     break;
             }
         }
@@ -368,6 +373,15 @@ namespace HotelManagementSystem.UI
         private void dailyOperationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenChildForm(new HotelManagementSystem.UI.Reports.DailyOperationsReportForm());
+        }
+
+        #endregion
+
+        #region Administration Menu Events
+
+        private void staffManagementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new HotelManagementSystem.UI.Staff.StaffManagementForm());
         }
 
         #endregion

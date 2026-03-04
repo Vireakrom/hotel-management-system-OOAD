@@ -31,10 +31,7 @@ namespace HotelManagementSystem.UI.Invoices
             this.panelTop = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelContent = new System.Windows.Forms.Panel();
-            this.groupBoxPaymentHistory = new System.Windows.Forms.GroupBox();
-            this.lblPaymentTotal = new System.Windows.Forms.Label();
-            this.lblPaymentCount = new System.Windows.Forms.Label();
-            this.dgvPaymentHistory = new System.Windows.Forms.DataGridView();
+            this.btnViewPaymentHistory = new System.Windows.Forms.Button();
             this.groupBoxFinancial = new System.Windows.Forms.GroupBox();
             this.lblBalanceAmount = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -72,8 +69,6 @@ namespace HotelManagementSystem.UI.Invoices
             this.btnClose = new System.Windows.Forms.Button();
             this.panelTop.SuspendLayout();
             this.panelContent.SuspendLayout();
-            this.groupBoxPaymentHistory.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPaymentHistory)).BeginInit();
             this.groupBoxFinancial.SuspendLayout();
             this.groupBoxBooking.SuspendLayout();
             this.groupBoxGuest.SuspendLayout();
@@ -106,7 +101,7 @@ namespace HotelManagementSystem.UI.Invoices
             // 
             this.panelContent.AutoScroll = true;
             this.panelContent.BackColor = System.Drawing.Color.White;
-            this.panelContent.Controls.Add(this.groupBoxPaymentHistory);
+            this.panelContent.Controls.Add(this.btnViewPaymentHistory);
             this.panelContent.Controls.Add(this.groupBoxFinancial);
             this.panelContent.Controls.Add(this.groupBoxBooking);
             this.panelContent.Controls.Add(this.groupBoxGuest);
@@ -118,48 +113,19 @@ namespace HotelManagementSystem.UI.Invoices
             this.panelContent.Size = new System.Drawing.Size(900, 690);
             this.panelContent.TabIndex = 1;
             // 
-            // groupBoxPaymentHistory
+            // btnViewPaymentHistory
             // 
-            this.groupBoxPaymentHistory.Controls.Add(this.lblPaymentTotal);
-            this.groupBoxPaymentHistory.Controls.Add(this.lblPaymentCount);
-            this.groupBoxPaymentHistory.Controls.Add(this.dgvPaymentHistory);
-            this.groupBoxPaymentHistory.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.groupBoxPaymentHistory.Location = new System.Drawing.Point(13, 470);
-            this.groupBoxPaymentHistory.Name = "groupBoxPaymentHistory";
-            this.groupBoxPaymentHistory.Size = new System.Drawing.Size(860, 200);
-            this.groupBoxPaymentHistory.TabIndex = 4;
-            this.groupBoxPaymentHistory.TabStop = false;
-            this.groupBoxPaymentHistory.Text = "Payment History";
-            // 
-            // lblPaymentTotal
-            // 
-            this.lblPaymentTotal.AutoSize = true;
-            this.lblPaymentTotal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblPaymentTotal.ForeColor = System.Drawing.Color.Green;
-            this.lblPaymentTotal.Location = new System.Drawing.Point(250, 175);
-            this.lblPaymentTotal.Name = "lblPaymentTotal";
-            this.lblPaymentTotal.Size = new System.Drawing.Size(148, 15);
-            this.lblPaymentTotal.TabIndex = 2;
-            this.lblPaymentTotal.Text = "Total Amount Paid: $0.00";
-            // 
-            // lblPaymentCount
-            // 
-            this.lblPaymentCount.AutoSize = true;
-            this.lblPaymentCount.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblPaymentCount.Location = new System.Drawing.Point(10, 175);
-            this.lblPaymentCount.Name = "lblPaymentCount";
-            this.lblPaymentCount.Size = new System.Drawing.Size(102, 15);
-            this.lblPaymentCount.TabIndex = 1;
-            this.lblPaymentCount.Text = "Total Payments: 0";
-            // 
-            // dgvPaymentHistory
-            // 
-            this.dgvPaymentHistory.BackgroundColor = System.Drawing.Color.White;
-            this.dgvPaymentHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPaymentHistory.Location = new System.Drawing.Point(10, 25);
-            this.dgvPaymentHistory.Name = "dgvPaymentHistory";
-            this.dgvPaymentHistory.Size = new System.Drawing.Size(840, 140);
-            this.dgvPaymentHistory.TabIndex = 0;
+            this.btnViewPaymentHistory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnViewPaymentHistory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnViewPaymentHistory.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnViewPaymentHistory.ForeColor = System.Drawing.Color.White;
+            this.btnViewPaymentHistory.Location = new System.Drawing.Point(13, 473);
+            this.btnViewPaymentHistory.Name = "btnViewPaymentHistory";
+            this.btnViewPaymentHistory.Size = new System.Drawing.Size(230, 35);
+            this.btnViewPaymentHistory.TabIndex = 5;
+            this.btnViewPaymentHistory.Text = "💳 View Payment History";
+            this.btnViewPaymentHistory.UseVisualStyleBackColor = false;
+            this.btnViewPaymentHistory.Click += new System.EventHandler(this.btnViewPaymentHistory_Click);
             // 
             // groupBoxFinancial
             // 
@@ -564,7 +530,7 @@ namespace HotelManagementSystem.UI.Invoices
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 810);
+            this.ClientSize = new System.Drawing.Size(900, 640);
             this.Controls.Add(this.panelContent);
             this.Controls.Add(this.panelButtons);
             this.Controls.Add(this.panelTop);
@@ -577,9 +543,6 @@ namespace HotelManagementSystem.UI.Invoices
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.panelContent.ResumeLayout(false);
-            this.groupBoxPaymentHistory.ResumeLayout(false);
-            this.groupBoxPaymentHistory.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPaymentHistory)).EndInit();
             this.groupBoxFinancial.ResumeLayout(false);
             this.groupBoxFinancial.PerformLayout();
             this.groupBoxBooking.ResumeLayout(false);
@@ -627,10 +590,7 @@ namespace HotelManagementSystem.UI.Invoices
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label lblBalanceAmount;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.GroupBox groupBoxPaymentHistory;
-        private System.Windows.Forms.DataGridView dgvPaymentHistory;
-        private System.Windows.Forms.Label lblPaymentCount;
-        private System.Windows.Forms.Label lblPaymentTotal;
+        private System.Windows.Forms.Button btnViewPaymentHistory;
         private System.Windows.Forms.Panel panelButtons;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnPrint;

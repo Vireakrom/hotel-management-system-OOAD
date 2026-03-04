@@ -29,8 +29,8 @@ namespace HotelManagementSystem.UI.Housekeeping
         private void HousekeepingTasksForm_Load(object sender, EventArgs e)
         {
             SetupDataGridView();
-            LoadTasks(); // Load tasks BEFORE setting up filter to avoid null reference
             LoadStatusFilter();
+            LoadTasks(); // Load tasks AFTER setting up filter
             UpdateTaskCount();
         }
 
@@ -138,7 +138,8 @@ namespace HotelManagementSystem.UI.Housekeeping
             {
                 allTasks = taskRepository.GetAll();
                 ApplyFilters();
-                ColorCodeRows();
+                // Defer color coding to ensure it happens after rendering
+                dgvTasks.BeginInvoke(new Action(() => ColorCodeRows()));
             }
             catch (Exception ex)
             {
@@ -181,6 +182,12 @@ namespace HotelManagementSystem.UI.Housekeeping
             // Bind to grid
             dgvTasks.DataSource = filtered.ToList();
             UpdateTaskCount();
+            dgvTasks.BeginInvoke(new Action(() =>
+            {
+                ColorCodeRows();
+                dgvTasks.CurrentCell = null; // Clear selection
+                dgvTasks.ClearSelection();
+            }));
         }
 
         /// <summary>

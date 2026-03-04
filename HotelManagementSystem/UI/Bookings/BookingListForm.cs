@@ -93,6 +93,8 @@ namespace HotelManagementSystem.UI.Bookings
                 }
 
                 ApplyFilters();
+
+                
             }
             catch (Exception ex)
             {
@@ -135,7 +137,12 @@ namespace HotelManagementSystem.UI.Bookings
             dgvBookings.DataSource = filtered.OrderByDescending(b => b.BookingDate).ToList();
 
             UpdateBookingCount();
-            ColorCodeRows();
+            dgvBookings.BeginInvoke(new Action(() =>
+            {
+                ColorCodeRows();
+                dgvBookings.CurrentCell = null;
+                dgvBookings.ClearSelection();
+            }));
         }
 
         /// <summary>
@@ -392,7 +399,7 @@ namespace HotelManagementSystem.UI.Bookings
 
             if (booking == null) return;
 
-            // Validate booking status
+            // Validate booking status - only Pending or Confirmed can check-in
             if (booking.Status == "CheckedIn")
             {
                 MessageBox.Show("Guest is already checked in.", "Already Checked In",
@@ -410,6 +417,13 @@ namespace HotelManagementSystem.UI.Bookings
             if (booking.Status == "Cancelled")
             {
                 MessageBox.Show("Cannot check-in a cancelled booking.", "Cancelled Booking",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (booking.Status != "Pending" && booking.Status != "Confirmed")
+            {
+                MessageBox.Show("Booking must be Pending or Confirmed to check-in.", "Invalid Status",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -658,18 +672,6 @@ namespace HotelManagementSystem.UI.Bookings
             
             if (paymentForm.ShowDialog() == DialogResult.OK)
             {
-                // Refresh invoice data
-                invoice = invoiceRepository.GetByBookingId(bookingId);
-                
-                MessageBox.Show($"Payment processed successfully!\n\n" +
-                    $"Invoice: {invoice.InvoiceNumber}\n" +
-                    $"Total: {invoice.TotalAmount:C}\n" +
-                    $"Paid: {invoice.PaidAmount:C}\n" +
-                    $"Balance: {invoice.BalanceAmount:C}\n" +
-                    $"Status: {invoice.Status}",
-                    "Payment Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
                 LoadBookings(); // Refresh list
             }
         }
@@ -765,11 +767,8 @@ namespace HotelManagementSystem.UI.Bookings
                         
                         if (success)
                         {
-                            // Update room status to Available if not checked in
-                            if (booking.Status != "CheckedIn")
-                            {
-                                roomRepository.UpdateRoomStatus(booking.RoomId, "Available");
-                            }
+                            // Update room status to Available
+                            roomRepository.UpdateRoomStatus(booking.RoomId, "Available");
                             
                             MessageBox.Show("Booking cancelled successfully!", "Success",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);

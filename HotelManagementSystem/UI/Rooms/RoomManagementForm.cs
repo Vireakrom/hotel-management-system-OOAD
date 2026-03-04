@@ -23,8 +23,9 @@ namespace HotelManagementSystem.UI.Rooms
 
         private void RoomManagementForm_Load(object sender, EventArgs e)
         {
-            LoadRooms();
+            
             SetupDataGridView();
+            LoadRooms();
             UpdateStatusCounts();
         }
 
@@ -49,6 +50,11 @@ namespace HotelManagementSystem.UI.Rooms
                 // Bind to DataGridView
                 dgvRooms.DataSource = null;
                 dgvRooms.DataSource = filteredRooms;
+                dgvRooms.BeginInvoke(new Action(() =>
+                {
+                    dgvRooms.CurrentCell = null;
+                    dgvRooms.ClearSelection();
+                }));
 
                 // Update count label
                 lblTotalRooms.Text = $"Total Rooms: {filteredRooms.Count}";

@@ -133,6 +133,26 @@ namespace HotelManagementSystem.DAL
             return users;
         }
 
+        public bool UpdatePassword(int userId, string newPassword)
+        {
+            string salt = PasswordHelper.GenerateSalt();
+            string passwordHash = PasswordHelper.HashPassword(newPassword, salt);
+
+            string query = @"UPDATE Users SET PasswordHash = @PasswordHash, Salt = @Salt,
+                                LastPasswordChange = GETDATE(), ModifiedDate = GETDATE()
+                             WHERE UserId = @UserId";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                cmd.Parameters.AddWithValue("@PasswordHash", passwordHash);
+                cmd.Parameters.AddWithValue("@Salt", salt);
+                conn.Open();
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
         // ========== AUTHENTICATION METHOD ==========
         public User Authenticate(string username, string password)
         {

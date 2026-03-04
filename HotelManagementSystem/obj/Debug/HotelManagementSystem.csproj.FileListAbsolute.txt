@@ -14,3 +14,8 @@ C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Deb
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelMan.F5E31FD0.Up2Date
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.exe
 C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.pdb
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.UI.Payments.ReceiptForm.resources
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\bin\Debug\HotelManagementSystem.exe.manifest
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\bin\Debug\HotelManagementSystem.application
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.exe.manifest
+C:\Users\MyName\source\repos\HotelManagementSystem\HotelManagementSystem\obj\Debug\HotelManagementSystem.application

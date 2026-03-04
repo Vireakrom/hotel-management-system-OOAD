@@ -162,18 +162,7 @@ namespace HotelManagementSystem.UI.Payments
                     if (payment != null)
                     {
                         _lastPaymentId = payment.PaymentId;
-                        DialogResult result = MessageBox.Show(
-                            $"Payment processed successfully!\n\n" +
-                            $"Amount Paid: ${amount:F2}\n" +
-                            $"Amount Received: ${amountReceived:F2}\n" +
-                            $"Change: ${change:F2}\n\n" +
-                            $"Would you like to view the receipt?", 
-                            "Payment Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-                        if (result == DialogResult.Yes)
-                        {
-                            ShowReceipt(_lastPaymentId);
-                        }
+                        ShowReceipt(_lastPaymentId);
                     }
                 }
                 else if (rbCreditCard.Checked)
@@ -246,17 +235,7 @@ namespace HotelManagementSystem.UI.Payments
                         paymentRepo.Update(payment);
 
                         _lastPaymentId = payment.PaymentId;
-                        DialogResult result = MessageBox.Show(
-                            $"Payment processed successfully!\n\n" +
-                            $"Amount Paid: ${amount:F2}\n" +
-                            $"Card: **** **** **** {payment.CardNumber}\n\n" +
-                            $"Would you like to view the receipt?", 
-                            "Payment Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-                        if (result == DialogResult.Yes)
-                        {
-                            ShowReceipt(_lastPaymentId);
-                        }
+                        ShowReceipt(_lastPaymentId);
                     }
                 }
 

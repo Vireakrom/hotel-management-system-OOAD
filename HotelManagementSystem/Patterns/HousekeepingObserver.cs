@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using HotelManagementSystem.DAL;
 using HotelManagementSystem.Models;
 using HotelManagementSystem.Helpers;
@@ -77,12 +79,20 @@ namespace HotelManagementSystem.Patterns
             // Extract booking ID if provided
             int? bookingId = additionalData as int?;
 
-            // Smart Auto-Assignment: Find the first available housekeeping staff
+            // Smart Auto-Assignment: Find the housekeeping staff with the fewest active tasks
             int? assignedStaffId = null;
             var housekeepingStaff = _userRepository.GetByRole("Housekeeping");
             if (housekeepingStaff.Count > 0)
             {
-                assignedStaffId = housekeepingStaff[0].UserId;
+                var activeTasks = _taskRepository.GetTasksByStatus("InProgress")
+                    .Concat(_taskRepository.GetTasksByStatus("Pending"))
+                    .Where(t => t.AssignedToUserId.HasValue)
+                    .GroupBy(t => t.AssignedToUserId.Value)
+                    .ToDictionary(g => g.Key, g => g.Count());
+
+                assignedStaffId = housekeepingStaff
+                    .OrderBy(s => activeTasks.ContainsKey(s.UserId) ? activeTasks[s.UserId] : 0)
+                    .First().UserId;
             }
 
             // Create new housekeeping task
