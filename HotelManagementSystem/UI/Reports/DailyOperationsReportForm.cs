@@ -45,6 +45,14 @@ namespace HotelManagementSystem.UI.Reports
 
             // Load report
             LoadReport();
+
+            // Clear grid selection once the window handle is created (constructor runs before it exists)
+            this.Load += (s, e) =>
+            {
+                dgvRoomStatus.ClearSelection();
+                dgvRevenueBreakdown.ClearSelection();
+                dgvRecentBookings.ClearSelection();
+            };
         }
 
         #region Grid Setup
@@ -218,6 +226,17 @@ namespace HotelManagementSystem.UI.Reports
                 LoadRoomStatusBreakdown();
                 LoadRevenueBreakdown(reportDate);
                 LoadRecentBookings(reportDate);
+
+                // Defer clear until after the DataGridView finishes rendering
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        dgvRoomStatus.ClearSelection();
+                        dgvRevenueBreakdown.ClearSelection();
+                        dgvRecentBookings.ClearSelection();
+                    }));
+                }
 
                 lblStatus.Text = $"Report loaded for {reportDate:MMM dd, yyyy} at {DateTime.Now:hh:mm:ss tt}";
             }
