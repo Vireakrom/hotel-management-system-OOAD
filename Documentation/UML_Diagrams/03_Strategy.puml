@@ -1,0 +1,74 @@
+@startuml Strategy Pattern
+
+skinparam classAttributeIconSize 0
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+    FontName Arial
+    FontSize 11
+    HeaderBackgroundColor White
+}
+skinparam note {
+    BackgroundColor White
+    BorderColor Black
+    FontName Arial
+    FontSize 10
+}
+
+title Strategy Pattern
+
+class PaymentForm as Client {
+    ..
+    +ProcessCashPayment(): void
+    +ProcessCreditCardPayment(): void
+}
+
+class PaymentContext as Context {
+    -_strategy : IPaymentStrategy
+    ..
+    +PaymentContext()
+    +SetPaymentStrategy(method: string): void
+    +ExecutePayment(invoice, amount, userId): Payment
+}
+
+interface "<<Interface>>\nIPaymentStrategy" as IStrategy {
+    ..
+    +ProcessPayment(invoice, amount, userId): Payment
+    +ValidatePayment(amount: decimal): bool
+    +GetPaymentMethodName(): string
+}
+
+class CashPaymentStrategy {
+    ..
+    +ProcessPayment(invoice, amount, userId): Payment
+    +ValidatePayment(amount: decimal): bool
+    +GetPaymentMethodName(): string
+    +CalculateChange(due, received): decimal
+}
+
+class CreditCardPaymentStrategy {
+    ..
+    +ProcessPayment(invoice, amount, userId): Payment
+    +ValidatePayment(amount: decimal): bool
+    +GetPaymentMethodName(): string
+    +ValidateCardNumber(number: string): bool
+    +SimulateGatewayAuthorization(...): bool
+}
+
+Client  o--  Context  : -context
+Client  -->  IStrategy : -strategy
+
+Context ..> IStrategy
+Context ..> CashPaymentStrategy
+Context ..> CreditCardPaymentStrategy
+
+CashPaymentStrategy        ..|> IStrategy
+CreditCardPaymentStrategy  ..|> IStrategy
+
+note "context.SetPaymentStrategy(\"Cash\")\npayment = context.ExecutePayment(invoice, amount, userId)" as N1
+Client .. N1
+
+@enduml

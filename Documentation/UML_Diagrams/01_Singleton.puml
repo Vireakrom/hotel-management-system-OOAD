@@ -1,0 +1,65 @@
+@startuml Singleton Pattern
+
+skinparam classAttributeIconSize 0
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+    FontName Arial
+    FontSize 11
+    HeaderBackgroundColor White
+}
+skinparam note {
+    BackgroundColor White
+    BorderColor Black
+    FontName Arial
+    FontSize 10
+}
+
+title Singleton Pattern
+
+class GuestRepository {
+    ..
+    ...
+}
+
+class RoomRepository {
+    ..
+    ...
+}
+
+class BookingRepository {
+    ..
+    ...
+}
+
+class DatabaseManager {
+    -{static} _instance : DatabaseManager
+    -{static} _lock : object
+    ..
+    -DatabaseManager()
+    +{static} Instance : DatabaseManager
+    ..
+    +GetConnection() : SqlConnection
+    +ExecuteQuery(query, params) : DataTable
+    +ExecuteNonQuery(query, params) : int
+    +ExecuteScalar(query, params) : object
+}
+
+GuestRepository   --> DatabaseManager : -db
+RoomRepository    --> DatabaseManager : -db
+BookingRepository --> DatabaseManager : -db
+
+note "manager = DatabaseManager.Instance" as N1
+GuestRepository .. N1
+
+note right of DatabaseManager
+    Private constructor prevents
+    external instantiation.
+    Thread-safe double-check locking
+    ensures a single shared instance.
+end note
+
+@enduml

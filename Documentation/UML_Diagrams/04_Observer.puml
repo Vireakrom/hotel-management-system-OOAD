@@ -1,0 +1,74 @@
+@startuml Observer Pattern
+
+skinparam classAttributeIconSize 0
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+    FontName Arial
+    FontSize 11
+    HeaderBackgroundColor White
+}
+skinparam note {
+    BackgroundColor White
+    BorderColor Black
+    FontName Arial
+    FontSize 10
+}
+
+title Observer Pattern
+
+class BookingListForm as Client {
+    ..
+    +btnCheckOut_Click(): void
+}
+
+class RoomSubject as Subject {
+    -{static} _instance : RoomSubject
+    -{static} _lock : object
+    -_observers : List<IObserver>
+    ..
+    -RoomSubject()
+    +{static} Instance : RoomSubject
+    ..
+    +Attach(observer: IObserver): void
+    +Detach(observer: IObserver): void
+    +Notify(roomId, eventType, data): void
+}
+
+interface "<<Interface>>\nIObserver" as IObserver {
+    ..
+    +Update(roomId: int, eventType: string,
+    additionalData: object): void
+}
+
+class HousekeepingObserver {
+    ..
+    +Update(roomId, eventType, data): void
+    -CreateCheckOutCleaningTask(roomId, data): void
+    -CreateMaintenanceTask(roomId: int): void
+}
+
+Client  o--  Subject  : -roomSubject
+Client  -->  IObserver : -observer
+
+Subject  ..>  IObserver
+Subject  ..>  HousekeepingObserver
+
+HousekeepingObserver ..|> IObserver
+
+note "roomSubject.Notify(roomId, \"CheckOut\", bookingId)" as N1
+Client .. N1
+
+note right of HousekeepingObserver
+    On "CheckOut":
+      Creates Cleaning task (High priority).
+      Auto-assigns to least-busy
+      housekeeping staff member.
+    On "Maintenance":
+      Creates Maintenance task.
+end note
+
+@enduml
