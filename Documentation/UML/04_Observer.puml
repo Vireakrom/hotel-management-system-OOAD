@@ -1,0 +1,50 @@
+@startuml Observer Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 13
+skinparam classBackgroundColor #F3E5F5
+skinparam classBorderColor #6A1B9A
+skinparam arrowColor #333333
+skinparam interfaceBackgroundColor #EDE7F6
+skinparam shadowing false
+skinparam titleFontSize 16
+
+title Observer Pattern
+
+interface IObserver {
+  + Update(roomId : int, eventType : string, data : object) : void
+}
+
+class RoomSubject <<Singleton>> {
+  - {static} _instance : RoomSubject
+  - {static} _lock : object
+  - _observers : List<IObserver>
+  --
+  + {static} Instance : RoomSubject <<get>>
+  - RoomSubject()
+  + Attach(observer : IObserver) : void
+  + Detach(observer : IObserver) : void
+  + Notify(roomId : int, eventType : string, data : object) : void
+}
+
+class HousekeepingObserver {
+  + Update(roomId : int, eventType : string, data : object) : void
+  - CreateCheckOutCleaningTask(roomId, data) : void
+  - CreateMaintenanceTask(roomId : int) : void
+}
+
+IObserver <|.. HousekeepingObserver
+RoomSubject o--> "0..*" IObserver : notifies >
+
+note top of RoomSubject
+  On checkout:
+  Notify(roomId, "CheckOut", bookingId)
+end note
+
+note bottom of HousekeepingObserver
+  Auto-creates High-priority
+  cleaning task and assigns
+  to least-busy staff.
+end note
+
+@enduml

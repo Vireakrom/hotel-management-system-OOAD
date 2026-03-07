@@ -1,0 +1,55 @@
+@startuml Singleton Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 13
+skinparam classBackgroundColor #F0F8FF
+skinparam classBorderColor #2E86AB
+skinparam arrowColor #333333
+skinparam shadowing false
+skinparam titleFontSize 16
+
+title Singleton Pattern
+
+class DatabaseManager {
+  - {static} _instance : DatabaseManager
+  - {static} _lock : object
+  --
+  + {static} Instance : DatabaseManager <<get>>
+  --
+  - DatabaseManager()
+  + GetConnection() : SqlConnection
+  + ExecuteQuery() : DataTable
+  + ExecuteNonQuery() : int
+  + ExecuteScalar() : object
+}
+
+note right of DatabaseManager
+  Thread-safe double-check locking:
+  if (_instance == null)
+    lock (_lock)
+      if (_instance == null)
+        _instance = new DatabaseManager()
+end note
+
+class RoomSubject {
+  - {static} _instance : RoomSubject
+  - {static} _lock : object
+  - _observers : List<IObserver>
+  --
+  + {static} Instance : RoomSubject <<get>>
+  --
+  - RoomSubject()
+  + Attach(observer : IObserver) : void
+  + Detach(observer : IObserver) : void
+  + Notify(roomId : int, eventType : string) : void
+}
+
+note bottom of RoomSubject
+  Also a Singleton so all parts
+  of the system share the same
+  notification subject.
+end note
+
+DatabaseManager -[hidden]right- RoomSubject
+
+@enduml

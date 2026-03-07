@@ -32,7 +32,7 @@
   <dependency>
     <dependentOS>
       <osVersionInfo>
-        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+        <os majorVersion="4" minorVersion="10" buildNumber="0" servicePackMajor="0" />
       </osVersionInfo>
     </dependentOS>
   </dependency>
@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HotelManagementSystem.exe" size="557984">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HotelManagementSystem.exe" size="561056">
       <assemblyIdentity name="HotelManagementSystem" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>e5GCDWawgwZbj9eUkgmmRxvFuSw2aFcum2zt3GtYdxc=</dsig:DigestValue>
+        <dsig:DigestValue>Yia/jTC++Cz7u1Rf6TK3Qhy2j96rWMWLcoS6N3kEscA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -52,8 +52,13 @@ namespace HotelManagementSystem.UI.Bookings
             this.lblSpecialRequests = new System.Windows.Forms.Label();
             this.numGuests = new System.Windows.Forms.NumericUpDown();
             this.lblNumberOfGuests = new System.Windows.Forms.Label();
+            this.grpAddOnServices = new System.Windows.Forms.GroupBox();
+            this.chkAirportTransfer = new System.Windows.Forms.CheckBox();
+            this.chkExtraBed = new System.Windows.Forms.CheckBox();
+            this.chkBreakfast = new System.Windows.Forms.CheckBox();
             this.grpBookingSummary = new System.Windows.Forms.GroupBox();
             this.lblTotal = new System.Windows.Forms.Label();
+            this.lblServiceCharges = new System.Windows.Forms.Label();
             this.lblSubtotal = new System.Windows.Forms.Label();
             this.btnCreateBooking = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -62,6 +67,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.grpRoomSelection.SuspendLayout();
             this.grpBookingDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numGuests)).BeginInit();
+            this.grpAddOnServices.SuspendLayout();
             this.grpBookingSummary.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -318,13 +324,60 @@ namespace HotelManagementSystem.UI.Bookings
             this.lblNumberOfGuests.TabIndex = 0;
             this.lblNumberOfGuests.Text = "Number of Guests:";
             // 
+            // grpAddOnServices — Decorator Pattern (Design Pattern #5)
+            // Each checkbox wraps the Room in a concrete RoomDecorator that adds price/description.
+            // 
+            this.grpAddOnServices.Controls.Add(this.chkBreakfast);
+            this.grpAddOnServices.Controls.Add(this.chkExtraBed);
+            this.grpAddOnServices.Controls.Add(this.chkAirportTransfer);
+            this.grpAddOnServices.Location = new System.Drawing.Point(12, 486);
+            this.grpAddOnServices.Name = "grpAddOnServices";
+            this.grpAddOnServices.Size = new System.Drawing.Size(760, 110);
+            this.grpAddOnServices.TabIndex = 4;
+            this.grpAddOnServices.TabStop = false;
+            this.grpAddOnServices.Text = "Add-on Services (Decorator Pattern)";
+            // 
+            // chkBreakfast
+            // 
+            this.chkBreakfast.AutoSize = true;
+            this.chkBreakfast.Location = new System.Drawing.Point(20, 28);
+            this.chkBreakfast.Name = "chkBreakfast";
+            this.chkBreakfast.Size = new System.Drawing.Size(220, 20);
+            this.chkBreakfast.TabIndex = 0;
+            this.chkBreakfast.Text = "Breakfast Included  (+$15 / night)";
+            this.chkBreakfast.UseVisualStyleBackColor = true;
+            this.chkBreakfast.CheckedChanged += new System.EventHandler(this.AddOnCheckedChanged);
+            // 
+            // chkExtraBed
+            // 
+            this.chkExtraBed.AutoSize = true;
+            this.chkExtraBed.Location = new System.Drawing.Point(20, 55);
+            this.chkExtraBed.Name = "chkExtraBed";
+            this.chkExtraBed.Size = new System.Drawing.Size(200, 20);
+            this.chkExtraBed.TabIndex = 1;
+            this.chkExtraBed.Text = "Extra Bed  (+$30 / night)";
+            this.chkExtraBed.UseVisualStyleBackColor = true;
+            this.chkExtraBed.CheckedChanged += new System.EventHandler(this.AddOnCheckedChanged);
+            // 
+            // chkAirportTransfer
+            // 
+            this.chkAirportTransfer.AutoSize = true;
+            this.chkAirportTransfer.Location = new System.Drawing.Point(20, 82);
+            this.chkAirportTransfer.Name = "chkAirportTransfer";
+            this.chkAirportTransfer.Size = new System.Drawing.Size(230, 20);
+            this.chkAirportTransfer.TabIndex = 2;
+            this.chkAirportTransfer.Text = "Airport Transfer  (+$25 / night)";
+            this.chkAirportTransfer.UseVisualStyleBackColor = true;
+            this.chkAirportTransfer.CheckedChanged += new System.EventHandler(this.AddOnCheckedChanged);
+            // 
             // grpBookingSummary
             // 
             this.grpBookingSummary.Controls.Add(this.lblTotal);
+            this.grpBookingSummary.Controls.Add(this.lblServiceCharges);
             this.grpBookingSummary.Controls.Add(this.lblSubtotal);
-            this.grpBookingSummary.Location = new System.Drawing.Point(12, 486);
+            this.grpBookingSummary.Location = new System.Drawing.Point(12, 602);
             this.grpBookingSummary.Name = "grpBookingSummary";
-            this.grpBookingSummary.Size = new System.Drawing.Size(760, 90);
+            this.grpBookingSummary.Size = new System.Drawing.Size(760, 100);
             this.grpBookingSummary.TabIndex = 4;
             this.grpBookingSummary.TabStop = false;
             this.grpBookingSummary.Text = "Booking Summary";
@@ -334,17 +387,28 @@ namespace HotelManagementSystem.UI.Bookings
             this.lblTotal.AutoSize = true;
             this.lblTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-            this.lblTotal.Location = new System.Drawing.Point(20, 55);
+            this.lblTotal.Location = new System.Drawing.Point(20, 70);
             this.lblTotal.Name = "lblTotal";
             this.lblTotal.Size = new System.Drawing.Size(92, 25);
             this.lblTotal.TabIndex = 1;
             this.lblTotal.Text = "Total: $0";
             // 
+            // lblServiceCharges
+            // 
+            this.lblServiceCharges.AutoSize = true;
+            this.lblServiceCharges.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblServiceCharges.ForeColor = System.Drawing.Color.DarkOrange;
+            this.lblServiceCharges.Location = new System.Drawing.Point(20, 45);
+            this.lblServiceCharges.Name = "lblServiceCharges";
+            this.lblServiceCharges.Size = new System.Drawing.Size(175, 20);
+            this.lblServiceCharges.TabIndex = 2;
+            this.lblServiceCharges.Text = "Add-on Services: $0.00";
+            // 
             // lblSubtotal
             // 
             this.lblSubtotal.AutoSize = true;
             this.lblSubtotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSubtotal.Location = new System.Drawing.Point(20, 30);
+            this.lblSubtotal.Location = new System.Drawing.Point(20, 20);
             this.lblSubtotal.Name = "lblSubtotal";
             this.lblSubtotal.Size = new System.Drawing.Size(161, 20);
             this.lblSubtotal.TabIndex = 0;
@@ -356,7 +420,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.btnCreateBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateBooking.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCreateBooking.ForeColor = System.Drawing.Color.White;
-            this.btnCreateBooking.Location = new System.Drawing.Point(482, 590);
+            this.btnCreateBooking.Location = new System.Drawing.Point(482, 716);
             this.btnCreateBooking.Name = "btnCreateBooking";
             this.btnCreateBooking.Size = new System.Drawing.Size(180, 40);
             this.btnCreateBooking.TabIndex = 5;
@@ -370,7 +434,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(668, 590);
+            this.btnCancel.Location = new System.Drawing.Point(668, 716);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(104, 40);
             this.btnCancel.TabIndex = 6;
@@ -382,10 +446,11 @@ namespace HotelManagementSystem.UI.Bookings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 642);
+            this.ClientSize = new System.Drawing.Size(784, 768);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnCreateBooking);
             this.Controls.Add(this.grpBookingSummary);
+            this.Controls.Add(this.grpAddOnServices);
             this.Controls.Add(this.grpBookingDetails);
             this.Controls.Add(this.grpRoomSelection);
             this.Controls.Add(this.grpBookingDates);
@@ -405,6 +470,8 @@ namespace HotelManagementSystem.UI.Bookings
             this.grpBookingDetails.ResumeLayout(false);
             this.grpBookingDetails.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numGuests)).EndInit();
+            this.grpAddOnServices.ResumeLayout(false);
+            this.grpAddOnServices.PerformLayout();
             this.grpBookingSummary.ResumeLayout(false);
             this.grpBookingSummary.PerformLayout();
             this.ResumeLayout(false);
@@ -435,6 +502,7 @@ namespace HotelManagementSystem.UI.Bookings
         private System.Windows.Forms.Label lblSpecialRequests;
         private System.Windows.Forms.GroupBox grpBookingSummary;
         private System.Windows.Forms.Label lblTotal;
+        private System.Windows.Forms.Label lblServiceCharges;
         private System.Windows.Forms.Label lblSubtotal;
         private System.Windows.Forms.Button btnCreateBooking;
         private System.Windows.Forms.Button btnCancel;
@@ -442,5 +510,9 @@ namespace HotelManagementSystem.UI.Bookings
         private System.Windows.Forms.TextBox txtSearchGuest;
         private System.Windows.Forms.Label lblSearchGuest;
         private System.Windows.Forms.Button btnClearSearch;
+        private System.Windows.Forms.GroupBox grpAddOnServices;
+        private System.Windows.Forms.CheckBox chkBreakfast;
+        private System.Windows.Forms.CheckBox chkExtraBed;
+        private System.Windows.Forms.CheckBox chkAirportTransfer;
     }
 }

@@ -2,6 +2,7 @@ using HotelManagementSystem.BLL;
 using HotelManagementSystem.DAL;
 using HotelManagementSystem.Helpers;
 using HotelManagementSystem.Models;
+using HotelManagementSystem.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -162,27 +163,52 @@ namespace HotelManagementSystem.UI.Bookings
         }
 
         /// <summary>
-        /// Update nights and total calculation
+        /// Returns the currently selected room wrapped in whichever decorators are checked.
+        /// Applies Decorator pattern: each checked add-on wraps the previous result.
+        /// </summary>
+        private Room GetDecoratedRoom(Room baseRoom)
+        {
+            Room decorated = baseRoom;
+            if (chkBreakfast.Checked)        decorated = new BreakfastDecorator(decorated);
+            if (chkExtraBed.Checked)         decorated = new ExtraBedDecorator(decorated);
+            if (chkAirportTransfer.Checked)  decorated = new AirportTransferDecorator(decorated);
+            return decorated;
+        }
+
+        /// <summary>
+        /// Event handler for all add-on checkboxes — refreshes the price summary.
+        /// </summary>
+        private void AddOnCheckedChanged(object sender, EventArgs e)
+        {
+            UpdateNightsAndTotal();
+        }
+
+        /// <summary>
+        /// Update nights and total calculation using the decorated room price.
         /// </summary>
         private void UpdateNightsAndTotal()
         {
             int nights = (dtpCheckOut.Value.Date - dtpCheckIn.Value.Date).Days;
             lblNights.Text = $"{nights} night(s)";
 
-            // Update total if room is selected
             if (cmbRoom.SelectedIndex > 0)
             {
-                Room selectedRoom = availableRooms[cmbRoom.SelectedIndex - 1];
-                decimal roomCharges = selectedRoom.BasePrice * nights;
-                decimal total = bookingFacade.CalculateTotalAmount(roomCharges, 0m);
+                Room baseRoom      = availableRooms[cmbRoom.SelectedIndex - 1];
+                Room decoratedRoom = GetDecoratedRoom(baseRoom);
 
-                lblSubtotal.Text = $"Room Charges: ${roomCharges:F2}";
-                lblTotal.Text = $"Total (incl. 10% tax): ${total:F2}";
+                decimal roomCharges    = baseRoom.BasePrice * nights;
+                decimal addOnCharges   = (decoratedRoom.GetPrice() - baseRoom.GetPrice()) * nights;
+                decimal total          = bookingFacade.CalculateTotalAmount(roomCharges + addOnCharges, 0m);
+
+                lblSubtotal.Text       = $"Room Charges: ${roomCharges:F2}";
+                lblServiceCharges.Text = $"Add-on Services: ${addOnCharges:F2}";
+                lblTotal.Text          = $"Total (incl. 10% tax): ${total:F2}";
             }
             else
             {
-                lblSubtotal.Text = "Room Charges: $0.00";
-                lblTotal.Text = "Total: $0.00";
+                lblSubtotal.Text       = "Room Charges: $0.00";
+                lblServiceCharges.Text = "Add-on Services: $0.00";
+                lblTotal.Text          = "Total: $0.00";
             }
         }
 
@@ -366,10 +392,16 @@ namespace HotelManagementSystem.UI.Bookings
                 // Get selected guest from displayedGuests (not allGuests)
                 Guest selectedGuest = displayedGuests[cmbGuest.SelectedIndex - 1];
 
+                // Apply Decorator pattern: wrap the base room with chosen add-on decorators
+                Room decoratedRoom  = GetDecoratedRoom(selectedRoom);
+                decimal addOnPerNight   = decoratedRoom.GetPrice() - selectedRoom.GetPrice();
+                decimal roomCharges     = selectedRoom.BasePrice * nights;
+                decimal serviceCharges  = addOnPerNight * nights;
+
                 // Get booking details
                 string specialRequests = txtSpecialRequests.Text.Trim();
 
-                // Create booking using facade
+                // Create booking using facade, passing decorator-derived service charges
                 int bookingId = bookingFacade.CreateBooking(
                     guestId: selectedGuest.GuestId,
                     roomId: selectedRoom.RoomId,
@@ -377,12 +409,18 @@ namespace HotelManagementSystem.UI.Bookings
                     checkOutDate: checkOut,
                     numberOfGuests: numberOfGuests,
                     specialRequests: string.IsNullOrEmpty(specialRequests) ? null : specialRequests,
-                    notes: $"Booking created by {SessionManager.CurrentUser.FullName}"
+                    notes: $"Booking created by {SessionManager.CurrentUser.FullName}",
+                    serviceCharges: serviceCharges
                 );
 
                 // Success message
-                decimal roomCharges = selectedRoom.BasePrice * nights;
-                decimal total = bookingFacade.CalculateTotalAmount(roomCharges, 0m);
+                decimal total = bookingFacade.CalculateTotalAmount(roomCharges + serviceCharges, 0m);
+                string addOnSummary = decoratedRoom.GetDescription().Contains("+")
+                    ? "\nAdd-ons: " + string.Join(", ",
+                        decoratedRoom.GetDescription()
+                            .Split(new[] { " + " }, StringSplitOptions.None)
+                            .Skip(1))
+                    : "";
 
                 MessageBox.Show(
                     $"Booking created successfully!\n\n" +
@@ -393,6 +431,7 @@ namespace HotelManagementSystem.UI.Bookings
                     $"Check-out: {checkOut:d}\n" +
                     $"Nights: {nights}\n" +
                     $"Room Charges: ${roomCharges:F2}\n" +
+                    $"Service Charges: ${serviceCharges:F2}{addOnSummary}\n" +
                     $"Total (incl. tax): ${total:F2}",
                     "Booking Created",
                     MessageBoxButtons.OK,
@@ -436,6 +475,9 @@ namespace HotelManagementSystem.UI.Bookings
             numGuests.Value = 1;
             txtSpecialRequests.Clear();
             txtSearchGuest.Clear();
+            chkBreakfast.Checked = false;
+            chkExtraBed.Checked = false;
+            chkAirportTransfer.Checked = false;
             LoadGuests();
             UpdateAvailableRooms();
         }

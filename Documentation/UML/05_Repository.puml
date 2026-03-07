@@ -1,0 +1,108 @@
+@startuml Repository Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam classBackgroundColor #E8F5E9
+skinparam classBorderColor #1B5E20
+skinparam arrowColor #333333
+skinparam interfaceBackgroundColor #C8E6C9
+skinparam shadowing false
+skinparam titleFontSize 16
+
+title Repository Pattern
+
+interface "IRepository<T>" as IRepository {
+  + Insert(entity : T) : int
+  + GetById(id : int) : T
+  + GetAll() : List<T>
+  + Update(entity : T) : bool
+  + Delete(id : int) : bool
+}
+
+class GuestRepository {
+  + Insert(guest) : int
+  + GetById(id) : Guest
+  + GetAll() : List<Guest>
+  + Update(guest) : bool
+  + Delete(id) : bool
+  + Search(searchTerm) : List<Guest>
+}
+
+class RoomRepository {
+  + Insert(room) : int
+  + GetById(id) : Room
+  + GetAll() : List<Room>
+  + Update(room) : bool
+  + Delete(id) : bool
+  + GetAvailableRooms() : List<Room>
+  + UpdateRoomStatus(id, status) : bool
+  + GetByRoomNumber(number) : Room
+}
+
+class BookingRepository {
+  + Insert(booking) : int
+  + GetById(id) : Booking
+  + GetAll() : List<Booking>
+  + Update(booking) : bool
+  + Delete(id) : bool
+  + GetBookingsByGuest(guestId) : List<Booking>
+  + GetActiveBookings() : List<Booking>
+  + CheckIn(bookingId) : bool
+  + CheckOut(bookingId) : bool
+  + CancelBooking(id, reason) : bool
+}
+
+class InvoiceRepository {
+  + Insert / GetById / GetAll
+  + Update / Delete
+  + GetByBookingId(bookingId) : Invoice
+  + GetInvoicesByStatus(status) : List<Invoice>
+}
+
+class PaymentRepository {
+  + Insert / GetById / GetAll
+  + Update / Delete
+  + GetPaymentsByInvoiceId(id) : List<Payment>
+  + GetPaymentsByMethod(method) : List<Payment>
+  + GetPaymentsByDateRange(...) : List<Payment>
+}
+
+class UserRepository {
+  + Insert / GetById / GetAll
+  + Update / Delete
+  + Authenticate(username, password) : User
+  + GetByRole(role) : List<User>
+  + UpdatePassword(userId, hash, salt) : bool
+}
+
+class HousekeepingTaskRepository {
+  + Insert / GetById / GetAll
+  + Update / Delete
+  + GetTasksByStatus(status) : List<Task>
+  + GetTasksByRoom(roomId) : List<Task>
+  + UpdateStatus(taskId, status) : bool
+}
+
+class DatabaseManager <<Singleton>> {
+  + {static} Instance : DatabaseManager
+  + ExecuteQuery(...) : DataTable
+  + ExecuteNonQuery(...) : int
+}
+
+IRepository <|.. GuestRepository
+IRepository <|.. RoomRepository
+IRepository <|.. BookingRepository
+IRepository <|.. InvoiceRepository
+IRepository <|.. PaymentRepository
+IRepository <|.. UserRepository
+IRepository <|.. HousekeepingTaskRepository
+
+GuestRepository --> DatabaseManager : uses >
+RoomRepository --> DatabaseManager : uses >
+BookingRepository --> DatabaseManager : uses >
+InvoiceRepository --> DatabaseManager : uses >
+PaymentRepository --> DatabaseManager : uses >
+UserRepository --> DatabaseManager : uses >
+HousekeepingTaskRepository --> DatabaseManager : uses >
+
+@enduml

@@ -31,11 +31,14 @@ namespace HotelManagementSystem.BLL
         }
 
         /// <summary>
-        /// Create a new booking with validation and coordination
-        /// This method orchestrates multiple repositories and business logic
+        /// Create a new booking with validation and coordination.
+        /// This method orchestrates multiple repositories and business logic.
+        /// serviceCharges is the total add-on cost supplied by the Decorator pattern
+        /// (Breakfast, Extra Bed, Airport Transfer, etc.) already multiplied by nights.
         /// </summary>
         public int CreateBooking(int guestId, int roomId, DateTime checkInDate, DateTime checkOutDate,
-            int numberOfGuests, string specialRequests = null, string notes = null)
+            int numberOfGuests, string specialRequests = null, string notes = null,
+            decimal serviceCharges = 0m)
         {
             // Step 1: Validate dates
             if (!ValidateBookingDates(checkInDate, checkOutDate))
@@ -72,7 +75,7 @@ namespace HotelManagementSystem.BLL
             // Step 6: Calculate charges
             int numberOfNights = (checkOutDate - checkInDate).Days;
             decimal roomCharges = room.BasePrice * numberOfNights;
-            decimal serviceCharges = 0m; // No additional services in this version
+            // serviceCharges is provided by the caller (Decorator pattern add-ons)
             decimal totalAmount = CalculateTotalAmount(roomCharges, serviceCharges);
 
             // Step 7: Create booking object

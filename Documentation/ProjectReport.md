@@ -17,7 +17,7 @@ The primary purpose of this system is to replace manual hotel operations with an
 | **Authentication** | Secure login with hashed passwords (SHA-256 + salt), role‑based access control (Admin, Receptionist, Housekeeping), "Remember Me" functionality |
 | **Guest Management** | Register new guests, update guest profiles, search guests by name/email/phone, soft‑delete records, view guest booking history |
 | **Room Management** | Add/edit rooms of 4 types (Single, Double, Suite, Deluxe), track room status (Available, Occupied, Reserved, Maintenance, Cleaning), visual status dashboard |
-| **Booking Management** | Create, confirm, modify, and cancel bookings; check‑in/check‑out guests; automatic room charge calculation based on room price × nights; date conflict detection |
+| **Booking Management** | Create, confirm, modify, and cancel bookings; check‑in/check‑out guests; automatic room charge calculation based on room price × nights; date conflict detection; optional add-on services (Breakfast, Extra Bed, Airport Transfer) via Decorator pattern |
 | **Invoicing** | Auto‑generate invoices on checkout with subtotal, 10% tax, discounts; track invoice status (Pending, Paid, Partially Paid, Cancelled) |
 | **Payment Processing** | Process Cash and Credit Card payments using the Strategy design pattern; change calculation for cash; Luhn card validation; styled receipt generation with print/copy support |
 | **Housekeeping** | Auto‑create cleaning tasks on checkout via Observer pattern; smart staff assignment (assigns to least‑busy housekeeping staff); task status tracking (Pending → In Progress → Completed) |
@@ -193,7 +193,7 @@ Dashboard providing an overview of daily hotel operations and key metrics.
 
 ## III. Design Patterns Implementation
 
-This project implements **6 design patterns**, exceeding the minimum requirement of 5.
+This project implements **7 design patterns**, exceeding the minimum requirement of 5.
 
 ### Pattern 1 — Singleton Pattern
 
@@ -571,6 +571,104 @@ public class BookingFacade
 
 **Where it's used:** `NewBookingForm` calls `BookingFacade.CreateBooking()` to handle the entire booking workflow, and `BookingFacade.CalculateTotalAmount()` for price display.
 
+> **Note:** The `BookingFacade.CreateBooking()` signature was updated to accept an optional `serviceCharges` parameter (supplied by the Decorator pattern — see Pattern 7 below), allowing add-on costs to flow through the same facade call.
+
+---
+
+### Pattern 7 — Decorator Pattern
+
+**Files:** `Patterns/RoomDecorator.cs`, `Patterns/BreakfastDecorator.cs`, `Patterns/ExtraBedDecorator.cs`, `Patterns/AirportTransferDecorator.cs`
+
+**Purpose:** Dynamically adds optional services (Breakfast, Extra Bed, Airport Transfer) to any room at booking time, augmenting the per-night price and description without modifying or subclassing the concrete room types.
+
+**Implementation:**
+
+```csharp
+// Abstract Decorator — wraps any Room and delegates to it
+public abstract class RoomDecorator : Room
+{
+    protected readonly Room _wrappedRoom;
+
+    protected RoomDecorator(Room room)
+    {
+        _wrappedRoom = room;
+        // Mirrors every Room property so this decorator is transparent to the rest of the system
+        RoomId = room.RoomId;  RoomNumber = room.RoomNumber;  // ... all other properties
+    }
+
+    public override decimal GetPrice()       => _wrappedRoom.GetPrice();
+    public override string  GetDescription() => _wrappedRoom.GetDescription();
+}
+
+// Concrete Decorator: Breakfast (+$15 / night)
+public class BreakfastDecorator : RoomDecorator
+{
+    public const decimal PRICE_PER_NIGHT = 15m;
+    public BreakfastDecorator(Room room) : base(room) { }
+
+    public override decimal GetPrice()       => _wrappedRoom.GetPrice() + PRICE_PER_NIGHT;
+    public override string  GetDescription() => _wrappedRoom.GetDescription() + " + Breakfast Included ($15/night)";
+}
+
+// Concrete Decorator: Extra Bed (+$30 / night)
+public class ExtraBedDecorator : RoomDecorator
+{
+    public const decimal PRICE_PER_NIGHT = 30m;
+    public ExtraBedDecorator(Room room) : base(room) { }
+
+    public override decimal GetPrice()       => _wrappedRoom.GetPrice() + PRICE_PER_NIGHT;
+    public override string  GetDescription() => _wrappedRoom.GetDescription() + " + Extra Bed ($30/night)";
+}
+
+// Concrete Decorator: Airport Transfer (+$25 / night)
+public class AirportTransferDecorator : RoomDecorator
+{
+    public const decimal PRICE_PER_NIGHT = 25m;
+    public AirportTransferDecorator(Room room) : base(room) { }
+
+    public override decimal GetPrice()       => _wrappedRoom.GetPrice() + PRICE_PER_NIGHT;
+    public override string  GetDescription() => _wrappedRoom.GetDescription() + " + Airport Transfer ($25/night)";
+}
+```
+
+**Stacking decorators at booking time (`NewBookingForm`):**
+
+```csharp
+// Each checked add-on wraps the previous result — decorators stack transparently
+private Room GetDecoratedRoom(Room baseRoom)
+{
+    Room decorated = baseRoom;
+    if (chkBreakfast.Checked)       decorated = new BreakfastDecorator(decorated);
+    if (chkExtraBed.Checked)        decorated = new ExtraBedDecorator(decorated);
+    if (chkAirportTransfer.Checked) decorated = new AirportTransferDecorator(decorated);
+    return decorated;
+}
+
+// Price breakdown in the booking summary:
+Room decoratedRoom    = GetDecoratedRoom(selectedRoom);
+decimal addOnPerNight = decoratedRoom.GetPrice() - selectedRoom.GetPrice();
+decimal serviceCharges = addOnPerNight * nights;
+// serviceCharges is passed into BookingFacade.CreateBooking(..., serviceCharges: serviceCharges)
+```
+
+**Example — all three add-ons applied to a Double Room ($80/night, 3 nights):**
+
+| Component | Per Night | × 3 Nights |
+|---|---|---|
+| Double Room | $80.00 | $240.00 |
+| Breakfast | +$15.00 | +$45.00 |
+| Extra Bed | +$30.00 | +$90.00 |
+| Airport Transfer | +$25.00 | +$75.00 |
+| **Subtotal** | **$150.00** | **$450.00** |
+| 10% Tax | | $45.00 |
+| **Total** | | **$495.00** |
+
+**Why Decorator:** The hotel needs optional services that increase room cost without permanently altering the room type. Subclassing every combination (BreakfastSingleRoom, ExtraBedDoubleRoom, etc.) would cause a class explosion with 4 room types × 8 service combinations = 32 subclasses. The Decorator pattern allows any combination to be applied at runtime by wrapping the base room — fully complying with the Open/Closed Principle.
+
+**Where it's used:**
+- **`NewBookingForm`** — An "Add-on Services (Decorator Pattern)" group box with three checkboxes (Breakfast, Extra Bed, Airport Transfer). When any checkbox changes, `GetDecoratedRoom()` rebuilds the decorator stack and `UpdateNightsAndTotal()` recalculates the price summary live.
+- **`BookingFacade.CreateBooking()`** — Receives the total `serviceCharges` (add-on cost × nights) and stores it in the `Booking.ServiceCharges` field.
+
 ---
 
 ## IV. Conclusion
@@ -582,7 +680,7 @@ The **Hotel Management System** was developed as a comprehensive C# Windows Form
 - **Presentation Layer (UI):** 18+ Windows Forms providing intuitive interfaces for each hotel operation module
 - **Business Logic Layer (BLL):** Facades and factories encapsulating complex business rules and workflows
 - **Data Access Layer (DAL):** Generic Repository pattern with 7 repository implementations for clean database operations
-- **Design Patterns Layer:** 6 well‑integrated design patterns (Singleton, Factory, Strategy, Observer, Repository, Facade) applied to solve real architectural challenges
+- **Design Patterns Layer:** 7 well‑integrated design patterns (Singleton, Factory, Strategy, Observer, Repository, Facade, Decorator) applied to solve real architectural challenges
 
 ### Key Technical Achievements
 
@@ -591,8 +689,9 @@ The **Hotel Management System** was developed as a comprehensive C# Windows Form
 3. **Flexible Payment Processing:** The Strategy pattern makes it trivial to add new payment methods without modifying existing payment logic
 4. **Maintainable Data Layer:** The Repository pattern with a generic `IRepository<T>` interface provides consistent CRUD operations across all 7 entities
 5. **Simplified Complex Operations:** The Facade pattern reduces multi‑step booking creation to a single validated method call
-6. **Input Validation:** A comprehensive `ValidationHelper` class provides reusable validation for emails, phone numbers, credit cards (Luhn algorithm), dates, and numeric ranges
+6. **Extensible Add-on Services:** The Decorator pattern allows any combination of room services (Breakfast, Extra Bed, Airport Transfer) to be stacked at runtime without modifying existing room classes
+7. **Input Validation:** A comprehensive `ValidationHelper` class provides reusable validation for emails, phone numbers, credit cards (Luhn algorithm), dates, and numeric ranges
 
 ### Overall Outcome
 
-The system successfully delivers a fully functional hotel management platform that covers the complete hotel operation lifecycle — from guest registration through booking, stay management, checkout, payment, and housekeeping. The implementation of 6 design patterns demonstrates solid software engineering principles including separation of concerns, loose coupling, code reusability, and the Open/Closed Principle. The modular architecture ensures the system can be extended with new features (e.g., additional room types, new payment methods, more observer actions) with minimal changes to existing code.
+The system successfully delivers a fully functional hotel management platform that covers the complete hotel operation lifecycle — from guest registration through booking, stay management, checkout, payment, and housekeeping. The implementation of 7 design patterns demonstrates solid software engineering principles including separation of concerns, loose coupling, code reusability, and the Open/Closed Principle. The modular architecture ensures the system can be extended with new features (e.g., additional room types, new payment methods, new add-on services, more observer actions) with minimal changes to existing code.

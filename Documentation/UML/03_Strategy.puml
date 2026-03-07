@@ -1,0 +1,58 @@
+@startuml Strategy Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 13
+skinparam classBackgroundColor #FFFDE7
+skinparam classBorderColor #F57F17
+skinparam arrowColor #333333
+skinparam interfaceBackgroundColor #FFF9C4
+skinparam shadowing false
+skinparam titleFontSize 16
+
+title Strategy Pattern
+
+interface IPaymentStrategy {
+  + ProcessPayment(invoice, amount, userId) : Payment
+  + ValidatePayment(amount : decimal) : bool
+  + GetPaymentMethodName() : string
+}
+
+class CashPaymentStrategy {
+  + ProcessPayment(invoice, amount, userId) : Payment
+  + ValidatePayment(amount : decimal) : bool
+  + GetPaymentMethodName() : string
+  + {static} CalculateChange(due, received) : decimal
+}
+
+class CreditCardPaymentStrategy {
+  - _cardNumber : string
+  - _cardHolderName : string
+  - _expiryDate : string
+  - _cvv : string
+  --
+  + ProcessPayment(invoice, amount, userId) : Payment
+  + ValidatePayment(amount : decimal) : bool
+  + GetPaymentMethodName() : string
+  + {static} ValidateCardNumber(cardNumber) : bool
+  + {static} SimulateGatewayAuthorization(...) : bool
+}
+
+class PaymentContext {
+  - _strategy : IPaymentStrategy
+  --
+  + PaymentContext()
+  + SetPaymentStrategy(paymentMethod : string) : void
+  + ExecutePayment(invoice, amount, userId) : Payment
+}
+
+IPaymentStrategy <|.. CashPaymentStrategy
+IPaymentStrategy <|.. CreditCardPaymentStrategy
+PaymentContext o--> IPaymentStrategy : uses >
+
+note right of PaymentContext
+  SetPaymentStrategy() switches
+  between Cash and CreditCard
+  at runtime based on user selection.
+end note
+
+@enduml

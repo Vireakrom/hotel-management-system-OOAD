@@ -1,0 +1,73 @@
+@startuml Facade Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 13
+skinparam classBackgroundColor #FBE9E7
+skinparam classBorderColor #BF360C
+skinparam arrowColor #333333
+skinparam shadowing false
+skinparam titleFontSize 16
+
+title Facade Pattern
+
+package "UI Layer" <<Frame>> {
+  class NewBookingForm {
+    - _bookingFacade : BookingFacade
+    --
+    + btnCreate_Click() : void
+  }
+}
+
+package "Facade (BLL)" <<Frame>> {
+  class BookingFacade {
+    - _guestRepository : GuestRepository
+    - _roomRepository : RoomRepository
+    - _bookingRepository : BookingRepository
+    --
+    + CreateBooking(guestId, roomId, checkIn,\n  checkOut, guests, requests, notes) : int
+    + CalculateTotalAmount(roomCharges, serviceCharges) : decimal
+    + IsRoomAvailable(roomId, checkIn, checkOut) : bool
+    + GetAvailableRooms(checkIn, checkOut) : List<Room>
+    + ConfirmBooking(bookingId) : bool
+    + CheckIn(bookingId) : bool
+    + CheckOut(bookingId) : bool
+    + CancelBooking(bookingId, reason) : bool
+  }
+}
+
+package "Data Access Layer (DAL)" <<Frame>> {
+  class GuestRepository {
+    + GetById(id) : Guest
+    + GetAll() : List<Guest>
+  }
+  class RoomRepository {
+    + GetAvailableRooms() : List<Room>
+    + UpdateRoomStatus(id, status) : bool
+  }
+  class BookingRepository {
+    + Insert(booking) : int
+    + CheckIn(bookingId) : bool
+    + CheckOut(bookingId) : bool
+    + CancelBooking(id, reason) : bool
+  }
+}
+
+NewBookingForm --> BookingFacade : calls >
+
+BookingFacade --> GuestRepository : validates guest >
+BookingFacade --> RoomRepository : checks availability & updates status >
+BookingFacade --> BookingRepository : creates & manages booking >
+
+note right of BookingFacade
+  Hides 8 steps behind one call:
+  1. Validate dates
+  2. Validate guest exists
+  3. Validate room exists
+  4. Check capacity
+  5. Check availability
+  6. Calculate charges
+  7. Create Booking (Pending)
+  8. Set room → Reserved
+end note
+
+@enduml

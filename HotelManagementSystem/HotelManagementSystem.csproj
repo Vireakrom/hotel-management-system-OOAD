@@ -106,12 +106,16 @@
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\RoomFactory.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Patterns\AirportTransferDecorator.cs" />
+    <Compile Include="Patterns\BreakfastDecorator.cs" />
     <Compile Include="Patterns\CashPaymentStrategy.cs" />
     <Compile Include="Patterns\CreditCardPaymentStrategy.cs" />
+    <Compile Include="Patterns\ExtraBedDecorator.cs" />
     <Compile Include="Patterns\HousekeepingObserver.cs" />
     <Compile Include="Patterns\IObserver.cs" />
     <Compile Include="Patterns\IPaymentStrategy.cs" />
     <Compile Include="Patterns\PaymentContext.cs" />
+    <Compile Include="Patterns\RoomDecorator.cs" />
     <Compile Include="Patterns\RoomSubject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

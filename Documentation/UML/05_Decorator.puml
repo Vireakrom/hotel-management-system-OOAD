@@ -1,0 +1,83 @@
+@startuml Decorator Pattern
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 13
+skinparam classBackgroundColor #E3F2FD
+skinparam classBorderColor #0D47A1
+skinparam arrowColor #333333
+skinparam shadowing false
+skinparam titleFontSize 16
+
+title Decorator Pattern
+
+abstract class Room {
+  + RoomId : int
+  + RoomNumber : string
+  + BasePrice : decimal
+  --
+  + {abstract} GetPrice() : decimal
+  + {abstract} GetDescription() : string
+  + CalculateTotalPrice(nights : int) : decimal
+}
+
+class SingleRoom {
+  + GetPrice() : decimal
+  + GetDescription() : string
+}
+
+class DoubleRoom {
+  + GetPrice() : decimal
+  + GetDescription() : string
+}
+
+abstract class RoomDecorator {
+  # _wrappedRoom : Room
+  --
+  + RoomDecorator(room : Room)
+  + GetPrice() : decimal
+  + GetDescription() : string
+}
+
+class BreakfastDecorator {
+  + {static} PRICE_PER_NIGHT : decimal = $15
+  --
+  + GetPrice() : decimal
+  + GetDescription() : string
+}
+
+class ExtraBedDecorator {
+  + {static} PRICE_PER_NIGHT : decimal = $30
+  --
+  + GetPrice() : decimal
+  + GetDescription() : string
+}
+
+class AirportTransferDecorator {
+  + {static} PRICE_PER_NIGHT : decimal = $25
+  --
+  + GetPrice() : decimal
+  + GetDescription() : string
+}
+
+Room <|-- SingleRoom
+Room <|-- DoubleRoom
+Room <|-- RoomDecorator
+RoomDecorator <|-- BreakfastDecorator
+RoomDecorator <|-- ExtraBedDecorator
+RoomDecorator <|-- AirportTransferDecorator
+RoomDecorator o--> Room : wraps >
+
+note right of RoomDecorator
+  Each decorator adds its surcharge
+  on top of the wrapped room's GetPrice().
+  Decorators can be stacked:
+  Room → Breakfast → ExtraBed
+        → AirportTransfer
+end note
+
+note bottom of BreakfastDecorator
+  GetPrice() =
+  _wrappedRoom.GetPrice() + $15
+end note
+
+@enduml
