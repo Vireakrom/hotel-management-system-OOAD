@@ -38,6 +38,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.label2 = new System.Windows.Forms.Label();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnNewBooking = new System.Windows.Forms.Button();
             this.btnCancelBooking = new System.Windows.Forms.Button();
             this.btnCheckOut = new System.Windows.Forms.Button();
             this.btnProcessPayment = new System.Windows.Forms.Button();
@@ -163,6 +164,7 @@ namespace HotelManagementSystem.UI.Bookings
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.btnNewBooking);
             this.groupBox2.Controls.Add(this.btnProcessPayment);
             this.groupBox2.Controls.Add(this.btnCancelBooking);
             this.groupBox2.Controls.Add(this.btnCheckOut);
@@ -174,6 +176,20 @@ namespace HotelManagementSystem.UI.Bookings
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Actions";
+            // 
+            // btnNewBooking
+            // 
+            this.btnNewBooking.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(81)))), ((int)(((byte)(181)))));
+            this.btnNewBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnNewBooking.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnNewBooking.ForeColor = System.Drawing.Color.White;
+            this.btnNewBooking.Location = new System.Drawing.Point(150, 47);
+            this.btnNewBooking.Name = "btnNewBooking";
+            this.btnNewBooking.Size = new System.Drawing.Size(130, 27);
+            this.btnNewBooking.TabIndex = 5;
+            this.btnNewBooking.Text = "New Booking";
+            this.btnNewBooking.UseVisualStyleBackColor = false;
+            this.btnNewBooking.Click += new System.EventHandler(this.btnNewBooking_Click);
             // 
             // btnCancelBooking
             // 
@@ -290,6 +306,7 @@ namespace HotelManagementSystem.UI.Bookings
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button btnNewBooking;
         private System.Windows.Forms.Button btnViewDetails;
         private System.Windows.Forms.Button btnCheckIn;
         private System.Windows.Forms.Button btnCheckOut;

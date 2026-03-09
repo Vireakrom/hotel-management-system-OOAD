@@ -12,10 +12,10 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>C:\Publish\HotelManagementSystem\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
+    <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
@@ -23,8 +23,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <UpdateUrl>http://localhost/HotelManagementSystem/</UpdateUrl>
-    <ApplicationRevision>1</ApplicationRevision>
+    <InstallUrl>http://hotel-management-system-y4.s3-website-ap-southeast-1.amazonaws.com/</InstallUrl>
+    <UpdateUrl>http://hotel-management-system-y4.s3-website-ap-southeast-1.amazonaws.com/</UpdateUrl>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -61,6 +64,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icons8-hotel-48.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -89,12 +95,6 @@
     <Compile Include="DAL\PaymentRepository.cs" />
     <Compile Include="DAL\RoomRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\PasswordHelper.cs" />
     <Compile Include="Helpers\SessionManager.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
@@ -263,9 +263,6 @@
     <Compile Include="UI\Rooms\RoomStatusDashboard.Designer.cs">
       <DependentUpon>RoomStatusDashboard.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -274,7 +271,11 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UI\Auth\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Invoices\InvoiceForm.resx">
       <DependentUpon>InvoiceForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -286,6 +287,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Rooms\RoomManagementForm.resx">
       <DependentUpon>RoomManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Rooms\RoomStatusDashboard.resx">
+      <DependentUpon>RoomStatusDashboard.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Context\done_day.md" />
     <None Include="Documentation\Day30-Completion-Checklist.md" />
@@ -315,6 +319,7 @@
     <Content Include="Context\database.sql" />
     <Content Include="Context\features.html" />
     <Content Include="Context\plan.html" />
+    <Content Include="icons8-hotel-48.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

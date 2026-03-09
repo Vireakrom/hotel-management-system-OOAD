@@ -25,6 +25,7 @@ namespace HotelManagementSystem.UI.Auth
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
+            btnTogglePassword.Image = Properties.Resources.show;
             LoadSavedCredentials();
             txtUsername.Focus();
         }
@@ -91,12 +92,12 @@ namespace HotelManagementSystem.UI.Auth
             if (txtPassword.PasswordChar == '●')
             {
                 txtPassword.PasswordChar = '\0';
-                btnTogglePassword.Text = "🔒";
+                btnTogglePassword.Image = Properties.Resources.hide;
             }
             else
             {
                 txtPassword.PasswordChar = '●';
-                btnTogglePassword.Text = "👁";
+                btnTogglePassword.Image = Properties.Resources.show;
             }
         }
 

@@ -103,14 +103,14 @@ namespace HotelManagementSystem.Testing
             totalTests++;
             try
             {
-                bool connected = DatabaseManager.Instance.TestConnection();
+                bool connected = DatabaseManager.Instance.TestConnection(out string dbError);
                 if (connected)
                 {
                     LogPass("Database connection successful");
                 }
                 else
                 {
-                    LogFail("Database connection failed");
+                    LogFail($"Database connection failed: {dbError}");
                 }
             }
             catch (Exception ex)

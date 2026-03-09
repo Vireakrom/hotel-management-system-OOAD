@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<connectionStrings>
+		<add name="HotelDB"
+			 connectionString="Data Source=hotel-db.mssql.somee.com;Initial Catalog=hotel-db;User ID=Vireak_SQLLogin_1;Password=mghkhjnet9;TrustServerCertificate=True;Persist Security Info=False"
+			 providerName="System.Data.SqlClient"/>
+	</connectionStrings>
+    <startup> 
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.8" />
+    </startup>
+</configuration>

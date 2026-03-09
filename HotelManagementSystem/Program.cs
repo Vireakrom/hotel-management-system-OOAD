@@ -12,6 +12,8 @@ namespace HotelManagementSystem
 {
     static class Program
     {
+        internal static bool ShouldRestartWithLogin = false;
+
         [STAThread]
         static void Main()
         {
@@ -19,24 +21,25 @@ namespace HotelManagementSystem
             Application.SetCompatibleTextRenderingDefault(false);
 
             // Test database connection
-            if (!DatabaseManager.Instance.TestConnection())
+            if (!DatabaseManager.Instance.TestConnection(out string dbError))
             {
-                MessageBox.Show("Cannot connect to database. Please check your connection string.",
-                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Unable to connect to the database.\n\n{dbError}",
+                    "Connection Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // Show login form
-            LoginForm loginForm = new LoginForm();
-            if (loginForm.ShowDialog() == DialogResult.OK)
+            while (true)
             {
-                // Login successful - go straight to main form
+                LoginForm loginForm = new LoginForm();
+                if (loginForm.ShowDialog() != DialogResult.OK)
+                    break;
+
+                ShouldRestartWithLogin = false;
                 Application.Run(new MainForm());
-            }
-            else
-            {
-                // User cancelled login
-                Application.Exit();
+
+                if (!ShouldRestartWithLogin)
+                    break;
             }
         }
     }

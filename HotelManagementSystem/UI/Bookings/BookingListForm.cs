@@ -347,6 +347,13 @@ namespace HotelManagementSystem.UI.Bookings
             LoadBookings();
         }
 
+        private void btnNewBooking_Click(object sender, EventArgs e)
+        {
+            NewBookingForm bookingForm = new NewBookingForm();
+            bookingForm.ShowDialog(this);
+            LoadBookings();
+        }
+
         /// <summary>
         /// View booking details
         /// </summary>

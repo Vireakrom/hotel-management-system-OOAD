@@ -115,37 +115,6 @@ namespace HotelManagementSystem.UI
 
         private void ApplyMenuIcons()
         {
-            // Category Icons - Using Modern Colorful Emojis
-            fileToolStripMenuItem.Image = EmojiToImage("🏨");
-            roomsToolStripMenuItem.Image = EmojiToImage("🛌");
-            guestsToolStripMenuItem.Image = EmojiToImage("👥");
-            bookingsToolStripMenuItem.Image = EmojiToImage("📅");
-            billingToolStripMenuItem.Image = EmojiToImage("💰");
-            housekeepingToolStripMenuItem.Image = EmojiToImage("🧹");
-            reportsToolStripMenuItem.Image = EmojiToImage("📊");
-            helpToolStripMenuItem.Image = EmojiToImage("❓");
-
-            // Sub-menu Icons
-            logoutToolStripMenuItem.Image = EmojiToImage("🔓");
-            exitToolStripMenuItem.Image = EmojiToImage("❌");
-
-            roomManagementToolStripMenuItem.Image = EmojiToImage("🔧");
-            roomStatusDashboardToolStripMenuItem.Image = EmojiToImage("🖥️");
-
-            guestManagementToolStripMenuItem.Image = EmojiToImage("👤");
-
-            newBookingToolStripMenuItem.Image = EmojiToImage("➕");
-            viewAllBookingsToolStripMenuItem.Image = EmojiToImage("📋");
-
-            invoiceManagementToolStripMenuItem.Image = EmojiToImage("🧾");
-
-            viewTasksToolStripMenuItem.Image = EmojiToImage("📝");
-
-            dailyOperationToolStripMenuItem.Image = EmojiToImage("☀️");
-
-            userGuideToolStripMenuItem.Image = EmojiToImage("📖");
-            developerToolsToolStripMenuItem.Image = EmojiToImage("🛠️");
-            aboutToolStripMenuItem.Image = EmojiToImage("ℹ️");
             
             // Set the icon size for the menu strip
             menuStrip1.ImageScalingSize = new Size(20, 20);
@@ -226,14 +195,9 @@ namespace HotelManagementSystem.UI
                     childForm.Close();
                 }
 
-                // Clear session
+                // Clear session and signal Program to re-show login
                 SessionManager.Logout();
-
-                // Create and show login form
-                LoginForm loginForm = new LoginForm();
-                loginForm.Show();
-
-                // Close this form
+                Program.ShouldRestartWithLogin = true;
                 this.Close();
             }
         }
@@ -282,14 +246,6 @@ namespace HotelManagementSystem.UI
         #endregion
 
         #region Bookings Menu Events
-
-        private void newBookingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Day 15 - New Booking Form is now ready!
-            // Show as dialog instead of MDI child for better focus
-            HotelManagementSystem.UI.Bookings.NewBookingForm bookingForm = new HotelManagementSystem.UI.Bookings.NewBookingForm();
-            bookingForm.ShowDialog(this);
-        }
 
         private void viewAllBookingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1361,6 +1317,7 @@ namespace HotelManagementSystem.UI
 
             // Apply consistent styling to child forms (Day 31 Polish)
             childForm.MdiParent = this;
+            childForm.ControlBox = false;
             childForm.Font = new Font("Segoe UI", 9.5F);
             childForm.BackColor = Color.White;
 
@@ -1446,6 +1403,9 @@ namespace HotelManagementSystem.UI
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
+
+            // Open Room Status Dashboard as the default landing screen
+            OpenChildForm(new HotelManagementSystem.UI.Rooms.RoomStatusDashboard());
         }
 
 

@@ -31,32 +31,31 @@ namespace HotelManagementSystem.UI.Rooms
             this.panelTop = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelControls = new System.Windows.Forms.Panel();
-            this.btnClose = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.cmbFilterStatus = new System.Windows.Forms.ComboBox();
             this.lblFilter = new System.Windows.Forms.Label();
             this.panelStatusCounts = new System.Windows.Forms.Panel();
+            this.lblOccupancyRate = new System.Windows.Forms.Label();
             this.lblMaintenance = new System.Windows.Forms.Label();
             this.lblCleaning = new System.Windows.Forms.Label();
             this.lblReserved = new System.Windows.Forms.Label();
             this.lblOccupied = new System.Windows.Forms.Label();
             this.lblAvailable = new System.Windows.Forms.Label();
             this.lblTotalRooms = new System.Windows.Forms.Label();
-            this.lblOccupancyRate = new System.Windows.Forms.Label();
             this.panelMain = new System.Windows.Forms.Panel();
             this.flowLayoutPanelRooms = new System.Windows.Forms.FlowLayoutPanel();
             this.panelLegend = new System.Windows.Forms.Panel();
-            this.lblLegend = new System.Windows.Forms.Label();
-            this.panelLegendAvailable = new System.Windows.Forms.Panel();
-            this.lblLegendAvailable = new System.Windows.Forms.Label();
-            this.panelLegendOccupied = new System.Windows.Forms.Panel();
-            this.lblLegendOccupied = new System.Windows.Forms.Label();
-            this.panelLegendReserved = new System.Windows.Forms.Panel();
-            this.lblLegendReserved = new System.Windows.Forms.Label();
-            this.panelLegendCleaning = new System.Windows.Forms.Panel();
-            this.lblLegendCleaning = new System.Windows.Forms.Label();
             this.panelLegendMaintenance = new System.Windows.Forms.Panel();
             this.lblLegendMaintenance = new System.Windows.Forms.Label();
+            this.panelLegendCleaning = new System.Windows.Forms.Panel();
+            this.lblLegendCleaning = new System.Windows.Forms.Label();
+            this.panelLegendReserved = new System.Windows.Forms.Panel();
+            this.lblLegendReserved = new System.Windows.Forms.Label();
+            this.panelLegendOccupied = new System.Windows.Forms.Panel();
+            this.lblLegendOccupied = new System.Windows.Forms.Label();
+            this.panelLegendAvailable = new System.Windows.Forms.Panel();
+            this.lblLegendAvailable = new System.Windows.Forms.Label();
+            this.lblLegend = new System.Windows.Forms.Label();
             this.panelTop.SuspendLayout();
             this.panelControls.SuspendLayout();
             this.panelStatusCounts.SuspendLayout();
@@ -81,14 +80,13 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblTitle.ForeColor = System.Drawing.Color.White;
             this.lblTitle.Location = new System.Drawing.Point(15, 15);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(277, 32);
+            this.lblTitle.Size = new System.Drawing.Size(288, 32);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Room Status Dashboard";
             // 
             // panelControls
             // 
             this.panelControls.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.panelControls.Controls.Add(this.btnClose);
             this.panelControls.Controls.Add(this.btnRefresh);
             this.panelControls.Controls.Add(this.cmbFilterStatus);
             this.panelControls.Controls.Add(this.lblFilter);
@@ -98,21 +96,6 @@ namespace HotelManagementSystem.UI.Rooms
             this.panelControls.Size = new System.Drawing.Size(1200, 60);
             this.panelControls.TabIndex = 1;
             // 
-            // btnClose
-            // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(67)))), ((int)(((byte)(54)))));
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(1070, 15);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(110, 35);
-            this.btnClose.TabIndex = 3;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = false;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -120,7 +103,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(940, 15);
+            this.btnRefresh.Location = new System.Drawing.Point(1078, 12);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(110, 35);
             this.btnRefresh.TabIndex = 2;
@@ -152,7 +135,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblFilter.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblFilter.Location = new System.Drawing.Point(20, 21);
             this.lblFilter.Name = "lblFilter";
-            this.lblFilter.Size = new System.Drawing.Size(104, 19);
+            this.lblFilter.Size = new System.Drawing.Size(112, 19);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "Filter by Status:";
             // 
@@ -173,6 +156,17 @@ namespace HotelManagementSystem.UI.Rooms
             this.panelStatusCounts.Size = new System.Drawing.Size(1200, 80);
             this.panelStatusCounts.TabIndex = 2;
             // 
+            // lblOccupancyRate
+            // 
+            this.lblOccupancyRate.AutoSize = true;
+            this.lblOccupancyRate.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblOccupancyRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(126)))), ((int)(((byte)(234)))));
+            this.lblOccupancyRate.Location = new System.Drawing.Point(270, 45);
+            this.lblOccupancyRate.Name = "lblOccupancyRate";
+            this.lblOccupancyRate.Size = new System.Drawing.Size(163, 20);
+            this.lblOccupancyRate.TabIndex = 6;
+            this.lblOccupancyRate.Text = "Occupancy Rate: 0.0%";
+            // 
             // lblMaintenance
             // 
             this.lblMaintenance.AutoSize = true;
@@ -180,7 +174,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblMaintenance.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(117)))), ((int)(((byte)(117)))), ((int)(((byte)(117)))));
             this.lblMaintenance.Location = new System.Drawing.Point(20, 45);
             this.lblMaintenance.Name = "lblMaintenance";
-            this.lblMaintenance.Size = new System.Drawing.Size(115, 19);
+            this.lblMaintenance.Size = new System.Drawing.Size(110, 19);
             this.lblMaintenance.TabIndex = 5;
             this.lblMaintenance.Text = "Maintenance: 0";
             // 
@@ -191,7 +185,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblCleaning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(136)))), ((int)(((byte)(209)))));
             this.lblCleaning.Location = new System.Drawing.Point(680, 15);
             this.lblCleaning.Name = "lblCleaning";
-            this.lblCleaning.Size = new System.Drawing.Size(87, 19);
+            this.lblCleaning.Size = new System.Drawing.Size(83, 19);
             this.lblCleaning.TabIndex = 4;
             this.lblCleaning.Text = "Cleaning: 0";
             // 
@@ -202,7 +196,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblReserved.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(192)))), ((int)(((byte)(45)))));
             this.lblReserved.Location = new System.Drawing.Point(550, 15);
             this.lblReserved.Name = "lblReserved";
-            this.lblReserved.Size = new System.Drawing.Size(87, 19);
+            this.lblReserved.Size = new System.Drawing.Size(88, 19);
             this.lblReserved.TabIndex = 3;
             this.lblReserved.Text = "Reserved: 0";
             // 
@@ -213,7 +207,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblOccupied.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(198)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.lblOccupied.Location = new System.Drawing.Point(410, 15);
             this.lblOccupied.Name = "lblOccupied";
-            this.lblOccupied.Size = new System.Drawing.Size(89, 19);
+            this.lblOccupied.Size = new System.Drawing.Size(88, 19);
             this.lblOccupied.TabIndex = 2;
             this.lblOccupied.Text = "Occupied: 0";
             // 
@@ -224,7 +218,7 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblAvailable.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(125)))), ((int)(((byte)(50)))));
             this.lblAvailable.Location = new System.Drawing.Point(270, 15);
             this.lblAvailable.Name = "lblAvailable";
-            this.lblAvailable.Size = new System.Drawing.Size(91, 19);
+            this.lblAvailable.Size = new System.Drawing.Size(88, 19);
             this.lblAvailable.TabIndex = 1;
             this.lblAvailable.Text = "Available: 0";
             // 
@@ -235,20 +229,9 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblTotalRooms.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(126)))), ((int)(((byte)(234)))));
             this.lblTotalRooms.Location = new System.Drawing.Point(20, 15);
             this.lblTotalRooms.Name = "lblTotalRooms";
-            this.lblTotalRooms.Size = new System.Drawing.Size(127, 21);
+            this.lblTotalRooms.Size = new System.Drawing.Size(121, 21);
             this.lblTotalRooms.TabIndex = 0;
             this.lblTotalRooms.Text = "Total Rooms: 0";
-            // 
-            // lblOccupancyRate
-            // 
-            this.lblOccupancyRate.AutoSize = true;
-            this.lblOccupancyRate.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblOccupancyRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(126)))), ((int)(((byte)(234)))));
-            this.lblOccupancyRate.Location = new System.Drawing.Point(270, 45);
-            this.lblOccupancyRate.Name = "lblOccupancyRate";
-            this.lblOccupancyRate.Size = new System.Drawing.Size(180, 20);
-            this.lblOccupancyRate.TabIndex = 6;
-            this.lblOccupancyRate.Text = "Occupancy Rate: 0.0%";
             // 
             // panelMain
             // 
@@ -293,69 +276,23 @@ namespace HotelManagementSystem.UI.Rooms
             this.panelLegend.Size = new System.Drawing.Size(1200, 50);
             this.panelLegend.TabIndex = 4;
             // 
-            // lblLegend
+            // panelLegendMaintenance
             // 
-            this.lblLegend.AutoSize = true;
-            this.lblLegend.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblLegend.Location = new System.Drawing.Point(20, 15);
-            this.lblLegend.Name = "lblLegend";
-            this.lblLegend.Size = new System.Drawing.Size(63, 19);
-            this.lblLegend.TabIndex = 0;
-            this.lblLegend.Text = "Legend:";
+            this.panelLegendMaintenance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(117)))), ((int)(((byte)(117)))), ((int)(((byte)(117)))));
+            this.panelLegendMaintenance.Location = new System.Drawing.Point(580, 12);
+            this.panelLegendMaintenance.Name = "panelLegendMaintenance";
+            this.panelLegendMaintenance.Size = new System.Drawing.Size(25, 25);
+            this.panelLegendMaintenance.TabIndex = 9;
             // 
-            // panelLegendAvailable
+            // lblLegendMaintenance
             // 
-            this.panelLegendAvailable.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(125)))), ((int)(((byte)(50)))));
-            this.panelLegendAvailable.Location = new System.Drawing.Point(100, 12);
-            this.panelLegendAvailable.Name = "panelLegendAvailable";
-            this.panelLegendAvailable.Size = new System.Drawing.Size(25, 25);
-            this.panelLegendAvailable.TabIndex = 1;
-            // 
-            // lblLegendAvailable
-            // 
-            this.lblLegendAvailable.AutoSize = true;
-            this.lblLegendAvailable.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblLegendAvailable.Location = new System.Drawing.Point(130, 16);
-            this.lblLegendAvailable.Name = "lblLegendAvailable";
-            this.lblLegendAvailable.Size = new System.Drawing.Size(58, 15);
-            this.lblLegendAvailable.TabIndex = 2;
-            this.lblLegendAvailable.Text = "Available";
-            // 
-            // panelLegendOccupied
-            // 
-            this.panelLegendOccupied.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(198)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.panelLegendOccupied.Location = new System.Drawing.Point(220, 12);
-            this.panelLegendOccupied.Name = "panelLegendOccupied";
-            this.panelLegendOccupied.Size = new System.Drawing.Size(25, 25);
-            this.panelLegendOccupied.TabIndex = 3;
-            // 
-            // lblLegendOccupied
-            // 
-            this.lblLegendOccupied.AutoSize = true;
-            this.lblLegendOccupied.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblLegendOccupied.Location = new System.Drawing.Point(250, 16);
-            this.lblLegendOccupied.Name = "lblLegendOccupied";
-            this.lblLegendOccupied.Size = new System.Drawing.Size(60, 15);
-            this.lblLegendOccupied.TabIndex = 4;
-            this.lblLegendOccupied.Text = "Occupied";
-            // 
-            // panelLegendReserved
-            // 
-            this.panelLegendReserved.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(192)))), ((int)(((byte)(45)))));
-            this.panelLegendReserved.Location = new System.Drawing.Point(340, 12);
-            this.panelLegendReserved.Name = "panelLegendReserved";
-            this.panelLegendReserved.Size = new System.Drawing.Size(25, 25);
-            this.panelLegendReserved.TabIndex = 5;
-            // 
-            // lblLegendReserved
-            // 
-            this.lblLegendReserved.AutoSize = true;
-            this.lblLegendReserved.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblLegendReserved.Location = new System.Drawing.Point(370, 16);
-            this.lblLegendReserved.Name = "lblLegendReserved";
-            this.lblLegendReserved.Size = new System.Drawing.Size(57, 15);
-            this.lblLegendReserved.TabIndex = 6;
-            this.lblLegendReserved.Text = "Reserved";
+            this.lblLegendMaintenance.AutoSize = true;
+            this.lblLegendMaintenance.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLegendMaintenance.Location = new System.Drawing.Point(610, 16);
+            this.lblLegendMaintenance.Name = "lblLegendMaintenance";
+            this.lblLegendMaintenance.Size = new System.Drawing.Size(76, 15);
+            this.lblLegendMaintenance.TabIndex = 10;
+            this.lblLegendMaintenance.Text = "Maintenance";
             // 
             // panelLegendCleaning
             // 
@@ -371,27 +308,73 @@ namespace HotelManagementSystem.UI.Rooms
             this.lblLegendCleaning.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblLegendCleaning.Location = new System.Drawing.Point(490, 16);
             this.lblLegendCleaning.Name = "lblLegendCleaning";
-            this.lblLegendCleaning.Size = new System.Drawing.Size(56, 15);
+            this.lblLegendCleaning.Size = new System.Drawing.Size(54, 15);
             this.lblLegendCleaning.TabIndex = 8;
             this.lblLegendCleaning.Text = "Cleaning";
             // 
-            // panelLegendMaintenance
+            // panelLegendReserved
             // 
-            this.panelLegendMaintenance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(117)))), ((int)(((byte)(117)))), ((int)(((byte)(117)))));
-            this.panelLegendMaintenance.Location = new System.Drawing.Point(580, 12);
-            this.panelLegendMaintenance.Name = "panelLegendMaintenance";
-            this.panelLegendMaintenance.Size = new System.Drawing.Size(25, 25);
-            this.panelLegendMaintenance.TabIndex = 9;
+            this.panelLegendReserved.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(192)))), ((int)(((byte)(45)))));
+            this.panelLegendReserved.Location = new System.Drawing.Point(340, 12);
+            this.panelLegendReserved.Name = "panelLegendReserved";
+            this.panelLegendReserved.Size = new System.Drawing.Size(25, 25);
+            this.panelLegendReserved.TabIndex = 5;
             // 
-            // lblLegendMaintenance
+            // lblLegendReserved
             // 
-            this.lblLegendMaintenance.AutoSize = true;
-            this.lblLegendMaintenance.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblLegendMaintenance.Location = new System.Drawing.Point(610, 16);
-            this.lblLegendMaintenance.Name = "lblLegendMaintenance";
-            this.lblLegendMaintenance.Size = new System.Drawing.Size(79, 15);
-            this.lblLegendMaintenance.TabIndex = 10;
-            this.lblLegendMaintenance.Text = "Maintenance";
+            this.lblLegendReserved.AutoSize = true;
+            this.lblLegendReserved.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLegendReserved.Location = new System.Drawing.Point(370, 16);
+            this.lblLegendReserved.Name = "lblLegendReserved";
+            this.lblLegendReserved.Size = new System.Drawing.Size(54, 15);
+            this.lblLegendReserved.TabIndex = 6;
+            this.lblLegendReserved.Text = "Reserved";
+            // 
+            // panelLegendOccupied
+            // 
+            this.panelLegendOccupied.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(198)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.panelLegendOccupied.Location = new System.Drawing.Point(220, 12);
+            this.panelLegendOccupied.Name = "panelLegendOccupied";
+            this.panelLegendOccupied.Size = new System.Drawing.Size(25, 25);
+            this.panelLegendOccupied.TabIndex = 3;
+            // 
+            // lblLegendOccupied
+            // 
+            this.lblLegendOccupied.AutoSize = true;
+            this.lblLegendOccupied.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLegendOccupied.Location = new System.Drawing.Point(250, 16);
+            this.lblLegendOccupied.Name = "lblLegendOccupied";
+            this.lblLegendOccupied.Size = new System.Drawing.Size(58, 15);
+            this.lblLegendOccupied.TabIndex = 4;
+            this.lblLegendOccupied.Text = "Occupied";
+            // 
+            // panelLegendAvailable
+            // 
+            this.panelLegendAvailable.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(125)))), ((int)(((byte)(50)))));
+            this.panelLegendAvailable.Location = new System.Drawing.Point(100, 12);
+            this.panelLegendAvailable.Name = "panelLegendAvailable";
+            this.panelLegendAvailable.Size = new System.Drawing.Size(25, 25);
+            this.panelLegendAvailable.TabIndex = 1;
+            // 
+            // lblLegendAvailable
+            // 
+            this.lblLegendAvailable.AutoSize = true;
+            this.lblLegendAvailable.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLegendAvailable.Location = new System.Drawing.Point(130, 16);
+            this.lblLegendAvailable.Name = "lblLegendAvailable";
+            this.lblLegendAvailable.Size = new System.Drawing.Size(55, 15);
+            this.lblLegendAvailable.TabIndex = 2;
+            this.lblLegendAvailable.Text = "Available";
+            // 
+            // lblLegend
+            // 
+            this.lblLegend.AutoSize = true;
+            this.lblLegend.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblLegend.Location = new System.Drawing.Point(20, 15);
+            this.lblLegend.Name = "lblLegend";
+            this.lblLegend.Size = new System.Drawing.Size(62, 19);
+            this.lblLegend.TabIndex = 0;
+            this.lblLegend.Text = "Legend:";
             // 
             // RoomStatusDashboard
             // 
@@ -425,7 +408,6 @@ namespace HotelManagementSystem.UI.Rooms
         private System.Windows.Forms.Panel panelTop;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Panel panelControls;
-        private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.ComboBox cmbFilterStatus;
         private System.Windows.Forms.Label lblFilter;

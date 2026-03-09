@@ -154,8 +154,10 @@ namespace HotelManagementSystem.DAL
         /// <summary>
         /// Test database connection
         /// </summary>
-        public bool TestConnection()
+        /// <param name="errorMessage">Populated with a diagnostic message when the connection fails.</param>
+        public bool TestConnection(out string errorMessage)
         {
+            errorMessage = null;
             try
             {
                 using (SqlConnection conn = GetConnection())
@@ -164,8 +166,24 @@ namespace HotelManagementSystem.DAL
                     return true;
                 }
             }
-            catch
+            catch (SqlException ex) when (ex.Number == 53 || ex.Number == -1 || ex.Number == 2)
             {
+                errorMessage = "The database server could not be reached. Please make sure SQL Server is running and try again.";
+                return false;
+            }
+            catch (SqlException ex) when (ex.Number == 4060)
+            {
+                errorMessage = "Connected to SQL Server, but the database does not exist. Please check your configuration.";
+                return false;
+            }
+            catch (SqlException ex) when (ex.Number == 18456)
+            {
+                errorMessage = "Access denied. The login credentials for the database are incorrect.";
+                return false;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
                 return false;
             }
         }
