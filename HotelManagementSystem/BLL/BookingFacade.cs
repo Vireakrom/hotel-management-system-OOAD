@@ -54,10 +54,10 @@ namespace HotelManagementSystem.BLL
             }
 
             // Step 3: Validate room exists
-            Room room = _roomRepository.GetById(roomId);
+            Room room = _roomRepository.GetActiveById(roomId);
             if (room == null)
             {
-                throw new ArgumentException($"Room with ID {roomId} not found.");
+                throw new ArgumentException($"Room with ID {roomId} not found or is inactive.");
             }
 
             // Step 4: Check room capacity
@@ -151,7 +151,7 @@ namespace HotelManagementSystem.BLL
         {
             // Get the room
             Room room = _roomRepository.GetById(roomId);
-            if (room == null)
+            if (room == null || !room.IsActive)
             {
                 return false;
             }
@@ -343,6 +343,11 @@ namespace HotelManagementSystem.BLL
             if (booking.CheckInDate != existingBooking.CheckInDate || booking.CheckOutDate != existingBooking.CheckOutDate)
             {
                 Room room = _roomRepository.GetById(booking.RoomId);
+                if (room == null || !room.IsActive)
+                {
+                    throw new InvalidOperationException($"Room with ID {booking.RoomId} is inactive and cannot be used for booking updates.");
+                }
+
                 int numberOfNights = (booking.CheckOutDate - booking.CheckInDate).Days;
                 booking.RoomCharges = room.BasePrice * numberOfNights;
                 booking.TotalAmount = CalculateTotalAmount(booking.RoomCharges, booking.ServiceCharges);

@@ -118,6 +118,7 @@ namespace HotelManagementSystem.UI.Payments
                     row.DefaultCellStyle.ForeColor = Color.FromArgb(231, 76, 60);
                 }
             }
+            dgvPayments.ClearSelection();
         }
 
         private void UpdateStatistics()
@@ -136,6 +137,7 @@ namespace HotelManagementSystem.UI.Payments
                     lblProgress.Text = $"{progress}%";
                 }
             }
+            
         }
 
         private void dgvPayments_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -149,6 +151,7 @@ namespace HotelManagementSystem.UI.Payments
                     ShowReceipt(paymentId);
                 }
             }
+            dgvPayments.ClearSelection();
         }
 
         private void ShowReceipt(int paymentId)
@@ -264,6 +267,7 @@ namespace HotelManagementSystem.UI.Payments
                 e.CellStyle.ForeColor = Color.White;
                 e.CellStyle.Font = new Font(dgvPayments.Font, FontStyle.Bold);
             }
+            dgvPayments.ClearSelection();
         }
     }
 }

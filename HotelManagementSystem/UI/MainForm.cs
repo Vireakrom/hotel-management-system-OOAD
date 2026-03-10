@@ -50,7 +50,6 @@ namespace HotelManagementSystem.UI
             // Update menu text to match modern style
             billingToolStripMenuItem.Text = "Financials";
             invoiceManagementToolStripMenuItem.Text = "Invoices & Payments";
-            viewAllBookingsToolStripMenuItem.Text = "Manage Bookings (Check-In/Out)";
         }
 
         private void ConfigureUiTheme()

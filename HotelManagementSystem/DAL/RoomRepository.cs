@@ -10,14 +10,16 @@ namespace HotelManagementSystem.DAL
 {
     public class RoomRepository : IRepository<Room>
     {
+        private const string ActiveRoomClause = "IsActive = 1";
+
         /// <summary>
         /// Insert a new room
         /// </summary>
         public int Insert(Room room)
         {
             string query = @"
-                INSERT INTO Rooms (RoomNumber, RoomType, FloorNumber, Status, BasePrice, MaxOccupancy, Description)
-                VALUES (@RoomNumber, @RoomType, @FloorNumber, @Status, @BasePrice, @MaxOccupancy, @Description);
+                INSERT INTO Rooms (RoomNumber, RoomType, FloorNumber, Status, BasePrice, MaxOccupancy, Description, IsActive)
+                VALUES (@RoomNumber, @RoomType, @FloorNumber, @Status, @BasePrice, @MaxOccupancy, @Description, @IsActive);
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
@@ -31,6 +33,7 @@ namespace HotelManagementSystem.DAL
                     cmd.Parameters.AddWithValue("@BasePrice", room.BasePrice);
                     cmd.Parameters.AddWithValue("@MaxOccupancy", room.MaxOccupancy);
                     cmd.Parameters.AddWithValue("@Description", room.Description ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@IsActive", room.IsActive);
 
                     conn.Open();
                     int newId = (int)cmd.ExecuteScalar();
@@ -44,7 +47,23 @@ namespace HotelManagementSystem.DAL
         /// </summary>
         public Room GetById(int id)
         {
-            string query = "SELECT * FROM Rooms WHERE RoomId = @RoomId";
+            return GetByIdInternal(id, includeInactive: true);
+        }
+
+        /// <summary>
+        /// Get an active room by ID
+        /// </summary>
+        public Room GetActiveById(int id)
+        {
+            return GetByIdInternal(id, includeInactive: false);
+        }
+
+        private Room GetByIdInternal(int id, bool includeInactive)
+        {
+            string query = $@"
+                SELECT * FROM Rooms
+                WHERE RoomId = @RoomId
+                {(includeInactive ? string.Empty : $"AND {ActiveRoomClause}")}";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
@@ -71,7 +90,7 @@ namespace HotelManagementSystem.DAL
         public List<Room> GetAll()
         {
             List<Room> rooms = new List<Room>();
-            string query = "SELECT * FROM Rooms ORDER BY RoomNumber";
+            string query = $"SELECT * FROM Rooms WHERE {ActiveRoomClause} ORDER BY RoomNumber";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
@@ -144,12 +163,16 @@ namespace HotelManagementSystem.DAL
         }
 
         /// <summary>
-        /// Delete room (sets status to Maintenance)
-        /// Note: Rooms are not physically deleted, just marked as Maintenance
+        /// Soft delete room (marks it inactive)
         /// </summary>
         public bool Delete(int id)
         {
-            string query = "UPDATE Rooms SET Status = 'Maintenance', ModifiedDate = GETDATE() WHERE RoomId = @RoomId";
+            string query = @"
+                UPDATE Rooms
+                SET IsActive = 0,
+                    ModifiedDate = GETDATE()
+                WHERE RoomId = @RoomId
+                    AND IsActive = 1";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
@@ -172,7 +195,8 @@ namespace HotelManagementSystem.DAL
             List<Room> rooms = new List<Room>();
             string query = @"
                 SELECT * FROM Rooms 
-                WHERE Status = 'Available'
+                WHERE IsActive = 1
+                AND Status = 'Available'
                 AND RoomId NOT IN (
                     SELECT RoomId FROM Bookings 
                     WHERE Status IN ('Confirmed', 'CheckedIn')
@@ -207,7 +231,7 @@ namespace HotelManagementSystem.DAL
         /// </summary>
         public bool UpdateRoomStatus(int roomId, string status)
         {
-            string query = "UPDATE Rooms SET Status = @Status, ModifiedDate = GETDATE() WHERE RoomId = @RoomId";
+            string query = $"UPDATE Rooms SET Status = @Status, ModifiedDate = GETDATE() WHERE RoomId = @RoomId AND {ActiveRoomClause}";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
@@ -228,7 +252,20 @@ namespace HotelManagementSystem.DAL
         /// </summary>
         public Room GetByRoomNumber(string roomNumber)
         {
-            string query = "SELECT * FROM Rooms WHERE RoomNumber = @RoomNumber";
+            return GetByRoomNumberInternal(roomNumber, includeInactive: true);
+        }
+
+        public Room GetActiveByRoomNumber(string roomNumber)
+        {
+            return GetByRoomNumberInternal(roomNumber, includeInactive: false);
+        }
+
+        private Room GetByRoomNumberInternal(string roomNumber, bool includeInactive)
+        {
+            string query = $@"
+                SELECT * FROM Rooms
+                WHERE RoomNumber = @RoomNumber
+                {(includeInactive ? string.Empty : $"AND {ActiveRoomClause}")}";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
@@ -257,10 +294,10 @@ namespace HotelManagementSystem.DAL
             string query = @"
                 INSERT INTO Rooms (RoomNumber, RoomType, FloorNumber, Status, BasePrice, MaxOccupancy, 
                                    BedType, Area, ViewType, Description, Amenities, HasBalcony, HasSeaView, 
-                                   HasJacuzzi, HasPrivatePool, CreatedDate)
+                                   HasJacuzzi, HasPrivatePool, CreatedDate, IsActive)
                 VALUES (@RoomNumber, @RoomType, @FloorNumber, @Status, @BasePrice, @MaxOccupancy,
                         @BedType, @Area, @ViewType, @Description, @Amenities, @HasBalcony, @HasSeaView,
-                        @HasJacuzzi, @HasPrivatePool, @CreatedDate)";
+                        @HasJacuzzi, @HasPrivatePool, @CreatedDate, @IsActive)";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
@@ -282,6 +319,7 @@ namespace HotelManagementSystem.DAL
                     cmd.Parameters.AddWithValue("@HasJacuzzi", room.HasJacuzzi);
                     cmd.Parameters.AddWithValue("@HasPrivatePool", room.HasPrivatePool);
                     cmd.Parameters.AddWithValue("@CreatedDate", room.CreatedDate);
+                    cmd.Parameters.AddWithValue("@IsActive", room.IsActive);
 
                     conn.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -317,6 +355,8 @@ namespace HotelManagementSystem.DAL
                 createdDate: (DateTime)reader["CreatedDate"],
                 modifiedDate: reader["ModifiedDate"] != DBNull.Value ? (DateTime?)reader["ModifiedDate"] : null
             );
+
+            room.IsActive = reader["IsActive"] != DBNull.Value && (bool)reader["IsActive"];
 
             return room;
         }

@@ -279,6 +279,9 @@
     <EmbeddedResource Include="UI\Auth\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Bookings\BookingListForm.resx">
+      <DependentUpon>BookingListForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Invoices\InvoiceForm.resx">
       <DependentUpon>InvoiceForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -31,17 +31,17 @@ namespace HotelManagementSystem.UI.Bookings
             this.dgvBookings = new System.Windows.Forms.DataGridView();
             this.lblTitle = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.cmbStatusFilter = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cmbStatusFilter = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtSearch = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnNewBooking = new System.Windows.Forms.Button();
+            this.btnProcessPayment = new System.Windows.Forms.Button();
             this.btnCancelBooking = new System.Windows.Forms.Button();
             this.btnCheckOut = new System.Windows.Forms.Button();
-            this.btnProcessPayment = new System.Windows.Forms.Button();
             this.btnCheckIn = new System.Windows.Forms.Button();
             this.btnViewDetails = new System.Windows.Forms.Button();
             this.lblTotalBookings = new System.Windows.Forms.Label();
@@ -54,6 +54,8 @@ namespace HotelManagementSystem.UI.Bookings
             // 
             this.dgvBookings.AllowUserToAddRows = false;
             this.dgvBookings.AllowUserToDeleteRows = false;
+            this.dgvBookings.AllowUserToResizeColumns = false;
+            this.dgvBookings.AllowUserToResizeRows = false;
             this.dgvBookings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -72,7 +74,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
             this.lblTitle.Location = new System.Drawing.Point(12, 9);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(219, 26);
+            this.lblTitle.Size = new System.Drawing.Size(193, 26);
             this.lblTitle.TabIndex = 1;
             this.lblTitle.Text = "Booking List - All";
             // 
@@ -93,6 +95,20 @@ namespace HotelManagementSystem.UI.Bookings
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search && Filter";
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(76)))), ((int)(((byte)(175)))), ((int)(((byte)(80)))));
+            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRefresh.ForeColor = System.Drawing.Color.White;
+            this.btnRefresh.Location = new System.Drawing.Point(670, 30);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(90, 30);
+            this.btnRefresh.TabIndex = 5;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = false;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // btnSearch
             // 
             this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
@@ -107,24 +123,15 @@ namespace HotelManagementSystem.UI.Bookings
             this.btnSearch.UseVisualStyleBackColor = false;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // txtSearch
+            // label2
             // 
-            this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearch.Location = new System.Drawing.Point(115, 33);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(200, 23);
-            this.txtSearch.TabIndex = 0;
-            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(15, 36);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Guest / Room #:";
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(335, 36);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 15);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Status:";
             // 
             // cmbStatusFilter
             // 
@@ -137,29 +144,24 @@ namespace HotelManagementSystem.UI.Bookings
             this.cmbStatusFilter.TabIndex = 2;
             this.cmbStatusFilter.SelectedIndexChanged += new System.EventHandler(this.cmbStatusFilter_SelectedIndexChanged);
             // 
-            // label2
+            // label1
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(335, 36);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 15);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Status:";
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(15, 36);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(95, 15);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Guest / Room #:";
             // 
-            // btnRefresh
+            // txtSearch
             // 
-            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(76)))), ((int)(((byte)(175)))), ((int)(((byte)(80)))));
-            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRefresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(670, 30);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(90, 30);
-            this.btnRefresh.TabIndex = 5;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = false;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSearch.Location = new System.Drawing.Point(115, 33);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(200, 23);
+            this.txtSearch.TabIndex = 0;
+            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
             // 
             // groupBox2
             // 
@@ -191,20 +193,6 @@ namespace HotelManagementSystem.UI.Bookings
             this.btnNewBooking.UseVisualStyleBackColor = false;
             this.btnNewBooking.Click += new System.EventHandler(this.btnNewBooking_Click);
             // 
-            // btnCancelBooking
-            // 
-            this.btnCancelBooking.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(67)))), ((int)(((byte)(54)))));
-            this.btnCancelBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancelBooking.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCancelBooking.ForeColor = System.Drawing.Color.White;
-            this.btnCancelBooking.Location = new System.Drawing.Point(150, 75);
-            this.btnCancelBooking.Name = "btnCancelBooking";
-            this.btnCancelBooking.Size = new System.Drawing.Size(130, 27);
-            this.btnCancelBooking.TabIndex = 4;
-            this.btnCancelBooking.Text = "Cancel Booking";
-            this.btnCancelBooking.UseVisualStyleBackColor = false;
-            this.btnCancelBooking.Click += new System.EventHandler(this.btnCancelBooking_Click);
-            // 
             // btnProcessPayment
             // 
             this.btnProcessPayment.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(150)))), ((int)(((byte)(243)))));
@@ -218,6 +206,20 @@ namespace HotelManagementSystem.UI.Bookings
             this.btnProcessPayment.Text = "Process Payment";
             this.btnProcessPayment.UseVisualStyleBackColor = false;
             this.btnProcessPayment.Click += new System.EventHandler(this.btnProcessPayment_Click);
+            // 
+            // btnCancelBooking
+            // 
+            this.btnCancelBooking.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(67)))), ((int)(((byte)(54)))));
+            this.btnCancelBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancelBooking.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCancelBooking.ForeColor = System.Drawing.Color.White;
+            this.btnCancelBooking.Location = new System.Drawing.Point(150, 75);
+            this.btnCancelBooking.Name = "btnCancelBooking";
+            this.btnCancelBooking.Size = new System.Drawing.Size(130, 27);
+            this.btnCancelBooking.TabIndex = 4;
+            this.btnCancelBooking.Text = "Cancel Booking";
+            this.btnCancelBooking.UseVisualStyleBackColor = false;
+            this.btnCancelBooking.Click += new System.EventHandler(this.btnCancelBooking_Click);
             // 
             // btnCheckOut
             // 
@@ -267,7 +269,7 @@ namespace HotelManagementSystem.UI.Bookings
             this.lblTotalBookings.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalBookings.Location = new System.Drawing.Point(14, 135);
             this.lblTotalBookings.Name = "lblTotalBookings";
-            this.lblTotalBookings.Size = new System.Drawing.Size(129, 17);
+            this.lblTotalBookings.Size = new System.Drawing.Size(135, 17);
             this.lblTotalBookings.TabIndex = 4;
             this.lblTotalBookings.Text = "Total Bookings: 0";
             // 

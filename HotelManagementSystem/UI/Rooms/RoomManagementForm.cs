@@ -257,13 +257,24 @@ namespace HotelManagementSystem.UI.Rooms
 
             Room selectedRoom = dgvRooms.SelectedRows[0].DataBoundItem as Room;
 
+            if (selectedRoom.Status == "Occupied" || selectedRoom.Status == "Reserved")
+            {
+                MessageBox.Show(
+                    "This room has an active stay or reservation and cannot be deleted.\n\n" +
+                    "Please complete the stay or cancel the booking first.",
+                    "Delete Not Allowed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             // Confirm deletion
             DialogResult result = MessageBox.Show(
                 $"Are you sure you want to delete Room {selectedRoom.RoomNumber}?\n\n" +
                 $"Type: {selectedRoom.RoomType}\n" +
                 $"Floor: {selectedRoom.FloorNumber}\n" +
                 $"Status: {selectedRoom.Status}\n\n" +
-                "This will perform a soft delete (room will be marked as inactive).",
+                "This will perform a soft delete.\nThe room will be marked inactive and removed from active room lists.",
                 "Confirm Delete",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning
@@ -277,14 +288,14 @@ namespace HotelManagementSystem.UI.Rooms
                     
                     if (success)
                     {
-                        MessageBox.Show("Room deleted successfully!", "Success", 
+                        MessageBox.Show("Room deactivated successfully!", "Success", 
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         LoadRooms();
                         UpdateStatusCounts();
                     }
                     else
                     {
-                        MessageBox.Show("Failed to delete room.", "Error", 
+                        MessageBox.Show("Failed to deactivate room.", "Error", 
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }

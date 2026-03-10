@@ -15,7 +15,8 @@ namespace HotelManagementSystem.Models
         public int RoomId { get; set; }
         public string RoomNumber { get; set; }
         public string RoomType { get; set; }
-        public string Status { get; set; }  // Available, Occupied, Reserved, Maintenance, Cleaning
+        public string Status { get; set; }  // Operational status: Available, Occupied, Reserved, Maintenance, Cleaning
+        public bool IsActive { get; set; } = true; // Soft delete flag
         public decimal BasePrice { get; set; }
         public int FloorNumber { get; set; }
         public int MaxOccupancy { get; set; }
@@ -55,7 +56,7 @@ namespace HotelManagementSystem.Models
         /// </summary>
         public virtual bool IsAvailable()
         {
-            return Status == "Available" || Status == "Cleaning";
+            return IsActive && (Status == "Available" || Status == "Cleaning");
         }
 
         /// <summary>

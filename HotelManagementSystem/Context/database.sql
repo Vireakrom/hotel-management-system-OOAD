@@ -67,12 +67,14 @@ CREATE TABLE Rooms (
     Amenities NVARCHAR(MAX), -- JSON format: ["WiFi", "TV", "MiniBar"]
     Description NVARCHAR(1000),
     CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
-    ModifiedDate DATETIME NOT NULL DEFAULT GETDATE()
+    ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    IsActive BIT NOT NULL DEFAULT 1
 );
 
 CREATE INDEX IX_Rooms_Status ON Rooms(Status);
 CREATE INDEX IX_Rooms_RoomType ON Rooms(RoomType);
 CREATE INDEX IX_Rooms_RoomNumber ON Rooms(RoomNumber);
+CREATE INDEX IX_Rooms_IsActive ON Rooms(IsActive);
 GO
 
 -- 3. Users Table
@@ -331,7 +333,8 @@ BEGIN
     SELECT 
         R.*
     FROM Rooms R
-    WHERE R.Status IN ('Available', 'Cleaning')
+    WHERE R.IsActive = 1
+        AND R.Status IN ('Available', 'Cleaning')
         AND (@RoomType IS NULL OR R.RoomType = @RoomType)
         AND R.RoomId NOT IN (
             SELECT DISTINCT RoomId 
@@ -368,7 +371,7 @@ BEGIN
         DECLARE @NumberOfDays INT;
         DECLARE @RoomCharges DECIMAL(10,2);
         
-        SELECT @BasePrice = BasePrice FROM Rooms WHERE RoomId = @RoomId;
+        SELECT @BasePrice = BasePrice FROM Rooms WHERE RoomId = @RoomId AND IsActive = 1;
         SET @NumberOfDays = DATEDIFF(DAY, @CheckInDate, @CheckOutDate);
         SET @RoomCharges = @BasePrice * @NumberOfDays;
         
@@ -385,7 +388,7 @@ BEGIN
         SET @BookingId = SCOPE_IDENTITY();
         
         -- Update room status
-        UPDATE Rooms SET Status = 'Reserved' WHERE RoomId = @RoomId;
+        UPDATE Rooms SET Status = 'Reserved' WHERE RoomId = @RoomId AND IsActive = 1;
         
         COMMIT TRANSACTION;
         
@@ -420,7 +423,7 @@ BEGIN
         WHERE BookingId = @BookingId;
         
         -- Update room status
-        UPDATE Rooms SET Status = 'Occupied', ModifiedDate = GETDATE() WHERE RoomId = @RoomId;
+        UPDATE Rooms SET Status = 'Occupied', ModifiedDate = GETDATE() WHERE RoomId = @RoomId AND IsActive = 1;
         
         COMMIT TRANSACTION;
         
@@ -489,7 +492,7 @@ BEGIN
         WHERE BookingId = @BookingId;
         
         -- Update room status
-        UPDATE Rooms SET Status = 'Cleaning', ModifiedDate = GETDATE() WHERE RoomId = @RoomId;
+        UPDATE Rooms SET Status = 'Cleaning', ModifiedDate = GETDATE() WHERE RoomId = @RoomId AND IsActive = 1;
         
         -- Create housekeeping task
         INSERT INTO HousekeepingTasks (RoomId, TaskType, Priority, Status, ScheduledDate, CreatedByUserId)
@@ -527,7 +530,8 @@ FROM Rooms R
 LEFT JOIN Bookings B ON R.RoomId = B.RoomId 
     AND B.Status IN ('Confirmed', 'CheckedIn')
     AND GETDATE() BETWEEN B.CheckInDate AND B.CheckOutDate
-LEFT JOIN Guests G ON B.GuestId = G.GuestId;
+LEFT JOIN Guests G ON B.GuestId = G.GuestId
+WHERE R.IsActive = 1;
 GO
 
 -- View for booking summary with guest and room details

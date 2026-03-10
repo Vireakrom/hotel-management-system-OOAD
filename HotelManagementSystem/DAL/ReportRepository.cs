@@ -35,8 +35,8 @@ namespace HotelManagementSystem.DAL
                     (SELECT COUNT(*) FROM Bookings WHERE CheckOutDate >= @StartDate AND CheckOutDate < @EndDate AND Status = 'CheckedOut') AS ActualCheckOuts,
                     (SELECT COUNT(*) FROM Bookings WHERE CheckOutDate >= @StartDate AND CheckOutDate < @EndDate AND Status = 'CheckedIn') AS PendingCheckOuts,
                     (SELECT ISNULL(SUM(Amount), 0) FROM Payments WHERE PaymentDate >= @StartDate AND PaymentDate < @EndDate AND Status = 'Completed') AS TodayRevenue,
-                    (SELECT COUNT(*) FROM Rooms WHERE Status = 'Occupied') AS OccupiedRooms,
-                    (SELECT COUNT(*) FROM Rooms) AS TotalRooms";
+                    (SELECT COUNT(*) FROM Rooms WHERE Status = 'Occupied' AND IsActive = 1) AS OccupiedRooms,
+                    (SELECT COUNT(*) FROM Rooms WHERE IsActive = 1) AS TotalRooms";
 
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
@@ -75,6 +75,7 @@ namespace HotelManagementSystem.DAL
                     COUNT(*) AS RoomCount,
                     STRING_AGG(RoomNumber, ', ') WITHIN GROUP (ORDER BY RoomNumber) AS RoomNumbers
                 FROM Rooms
+                WHERE IsActive = 1
                 GROUP BY Status
                 ORDER BY COUNT(*) DESC";
 

@@ -211,7 +211,7 @@ namespace HotelManagementSystem.UI.Payments
             // Hotel name (left)
             using (var fnt = new Font("Segoe UI", 13f, FontStyle.Bold))
             using (var br  = new SolidBrush(Color.White))
-                g.DrawString("🏨  Hotel Management System", fnt, br, new PointF(18, 20));
+                g.DrawString("Hotel Management System", fnt, br, new PointF(18, 20));
 
             // Subtitle
             using (var fnt = new Font("Segoe UI", 9f))
