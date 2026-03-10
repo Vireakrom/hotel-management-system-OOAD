@@ -93,12 +93,15 @@
     <Compile Include="DAL\InvoiceRepository.cs" />
     <Compile Include="DAL\IRepository.cs" />
     <Compile Include="DAL\PaymentRepository.cs" />
+    <Compile Include="DAL\ReportRepository.cs" />
     <Compile Include="DAL\RoomRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
     <Compile Include="Helpers\PasswordHelper.cs" />
     <Compile Include="Helpers\SessionManager.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\Booking.cs" />
+    <Compile Include="Models\BookingListItem.cs" />
+    <Compile Include="Models\DailyOperationsReportData.cs" />
     <Compile Include="Models\Guest.cs" />
     <Compile Include="Models\HousekeepingTask.cs" />
     <Compile Include="Models\Invoice.cs" />

@@ -16,8 +16,7 @@ namespace HotelManagementSystem.UI.Bookings
         private GuestRepository guestRepository;
         private RoomRepository roomRepository;
         private InvoiceRepository invoiceRepository;
-        private List<Booking> allBookings;
-        private List<BookingDisplayInfo> displayBookings;
+        private List<BookingListItem> displayBookings;
 
         // Observer Pattern (Design Pattern #5)
         private RoomSubject roomSubject;
@@ -66,35 +65,8 @@ namespace HotelManagementSystem.UI.Bookings
         {
             try
             {
-                allBookings = bookingRepository.GetAll();
-                
-                // Create display list with guest and room names
-                displayBookings = new List<BookingDisplayInfo>();
-                
-                foreach (var booking in allBookings)
-                {
-                    var guest = guestRepository.GetById(booking.GuestId);
-                    var room = roomRepository.GetById(booking.RoomId);
-                    
-                    displayBookings.Add(new BookingDisplayInfo
-                    {
-                        BookingId = booking.BookingId,
-                        GuestName = guest != null ? guest.FullName : "Unknown",
-                        RoomNumber = room != null ? room.RoomNumber : "N/A",
-                        RoomType = room != null ? room.RoomType : "N/A",
-                        CheckInDate = booking.CheckInDate,
-                        CheckOutDate = booking.CheckOutDate,
-                        Status = booking.Status,
-                        NumberOfGuests = booking.NumberOfGuests,
-                        TotalAmount = booking.TotalAmount,
-                        BookingDate = booking.BookingDate,
-                        NumberOfNights = booking.NumberOfNights
-                    });
-                }
-
+                displayBookings = bookingRepository.GetBookingListItems();
                 ApplyFilters();
-
-                
             }
             catch (Exception ex)
             {
@@ -290,14 +262,14 @@ namespace HotelManagementSystem.UI.Bookings
         /// </summary>
         private void UpdateBookingCount()
         {
-            if (allBookings == null)
+            if (displayBookings == null)
             {
                 lblTotalBookings.Text = "Total Bookings: 0";
                 return;
             }
 
             int displayedCount = dgvBookings.Rows.Count;
-            int totalCount = allBookings.Count;
+            int totalCount = displayBookings.Count;
             
             if (displayedCount == totalCount)
             {
@@ -366,8 +338,7 @@ namespace HotelManagementSystem.UI.Bookings
                 return;
             }
 
-            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
-            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+            Booking booking = GetSelectedBooking();
             
             if (booking != null)
             {
@@ -401,8 +372,7 @@ namespace HotelManagementSystem.UI.Bookings
                 return;
             }
 
-            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
-            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+            Booking booking = GetSelectedBooking();
 
             if (booking == null) return;
 
@@ -449,7 +419,7 @@ namespace HotelManagementSystem.UI.Bookings
             {
                 try
                 {
-                    bool success = bookingRepository.CheckIn(bookingId);
+                    bool success = bookingRepository.CheckIn(booking.BookingId);
                     
                     if (success)
                     {
@@ -487,8 +457,7 @@ namespace HotelManagementSystem.UI.Bookings
                 return;
             }
 
-            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
-            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+            Booking booking = GetSelectedBooking();
 
             if (booking == null) return;
 
@@ -515,7 +484,7 @@ namespace HotelManagementSystem.UI.Bookings
             {
                 try
                 {
-                    bool success = bookingRepository.CheckOut(bookingId);
+                    bool success = bookingRepository.CheckOut(booking.BookingId);
                     
                     if (success)
                     {
@@ -524,7 +493,7 @@ namespace HotelManagementSystem.UI.Bookings
                         
                         // Observer Pattern (Day 21) - Notify observers about checkout
                         // This will auto-create a housekeeping cleaning task
-                        roomSubject.Notify(booking.RoomId, "CheckOut", bookingId);
+                        roomSubject.Notify(booking.RoomId, "CheckOut", booking.BookingId);
                         
                         // Auto-generate invoice (Day 20 feature!)
                         Invoice invoice = GenerateInvoiceForBooking(booking);
@@ -639,8 +608,7 @@ namespace HotelManagementSystem.UI.Bookings
                 return;
             }
 
-            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
-            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+            Booking booking = GetSelectedBooking();
 
             if (booking == null) return;
 
@@ -653,7 +621,7 @@ namespace HotelManagementSystem.UI.Bookings
             }
 
             // Get the invoice for this booking
-            Invoice invoice = invoiceRepository.GetByBookingId(bookingId);
+            Invoice invoice = invoiceRepository.GetByBookingId(booking.BookingId);
 
             if (invoice == null)
             {
@@ -695,8 +663,7 @@ namespace HotelManagementSystem.UI.Bookings
                 return;
             }
 
-            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
-            Booking booking = allBookings.FirstOrDefault(b => b.BookingId == bookingId);
+            Booking booking = GetSelectedBooking();
 
             if (booking == null) return;
 
@@ -770,7 +737,7 @@ namespace HotelManagementSystem.UI.Bookings
                 {
                     try
                     {
-                        bool success = bookingRepository.CancelBooking(bookingId, reason);
+                        bool success = bookingRepository.CancelBooking(booking.BookingId, reason);
                         
                         if (success)
                         {
@@ -796,23 +763,16 @@ namespace HotelManagementSystem.UI.Bookings
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Helper class for displaying booking information in DataGridView
-    /// </summary>
-    public class BookingDisplayInfo
-    {
-        public int BookingId { get; set; }
-        public string GuestName { get; set; }
-        public string RoomNumber { get; set; }
-        public string RoomType { get; set; }
-        public DateTime CheckInDate { get; set; }
-        public DateTime CheckOutDate { get; set; }
-        public string Status { get; set; }
-        public int NumberOfGuests { get; set; }
-        public decimal TotalAmount { get; set; }
-        public DateTime BookingDate { get; set; }
-        public int NumberOfNights { get; set; }
+        private Booking GetSelectedBooking()
+        {
+            if (dgvBookings.SelectedRows.Count == 0)
+            {
+                return null;
+            }
+
+            int bookingId = (int)dgvBookings.SelectedRows[0].Cells["BookingId"].Value;
+            return bookingRepository.GetById(bookingId);
+        }
     }
 }

@@ -134,6 +134,8 @@ CREATE INDEX IX_Bookings_RoomId ON Bookings(RoomId);
 CREATE INDEX IX_Bookings_Status ON Bookings(Status);
 CREATE INDEX IX_Bookings_CheckInDate ON Bookings(CheckInDate);
 CREATE INDEX IX_Bookings_CheckOutDate ON Bookings(CheckOutDate);
+CREATE INDEX IX_Bookings_RoomId_Status_CheckInDate_CheckOutDate
+    ON Bookings(RoomId, Status, CheckInDate, CheckOutDate);
 GO
 
 -- 5. Invoices Table

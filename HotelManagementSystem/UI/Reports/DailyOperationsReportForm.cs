@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -18,22 +16,13 @@ namespace HotelManagementSystem.UI.Reports
     /// </summary>
     public partial class DailyOperationsReportForm : Form
     {
-        private RoomRepository roomRepository;
-        private BookingRepository bookingRepository;
-        private InvoiceRepository invoiceRepository;
-        private PaymentRepository paymentRepository;
-        private GuestRepository guestRepository;
+        private readonly ReportRepository reportRepository;
 
         public DailyOperationsReportForm()
         {
             InitializeComponent();
 
-            // Initialize repositories
-            roomRepository = new RoomRepository();
-            bookingRepository = new BookingRepository();
-            invoiceRepository = new InvoiceRepository();
-            paymentRepository = new PaymentRepository();
-            guestRepository = new GuestRepository();
+            reportRepository = new ReportRepository();
 
             // Set up grids
             SetupRoomStatusGrid();
@@ -219,13 +208,14 @@ namespace HotelManagementSystem.UI.Reports
             try
             {
                 DateTime reportDate = dtpReportDate.Value.Date;
+                DailyOperationsReportData reportData = reportRepository.GetDailyOperationsReportData(reportDate);
                 lblReportDate.Text = reportDate.ToString("dddd, MMMM dd, yyyy");
                 lblStatus.Text = "Loading report...";
 
-                LoadStatistics(reportDate);
-                LoadRoomStatusBreakdown();
-                LoadRevenueBreakdown(reportDate);
-                LoadRecentBookings(reportDate);
+                LoadStatistics(reportData);
+                LoadRoomStatusBreakdown(reportData);
+                LoadRevenueBreakdown(reportData);
+                LoadRecentBookings(reportDate, reportData);
 
                 // Defer clear until after the DataGridView finishes rendering
                 if (IsHandleCreated)
@@ -255,91 +245,34 @@ namespace HotelManagementSystem.UI.Reports
         /// <summary>
         /// Load the 4 main statistics cards: check-ins, check-outs, revenue, occupancy
         /// </summary>
-        private void LoadStatistics(DateTime reportDate)
+        private void LoadStatistics(DailyOperationsReportData reportData)
         {
-            List<Booking> allBookings = bookingRepository.GetAll();
-
-            // Today's check-ins: bookings where check-in date is today and status is CheckedIn
-            int checkIns = allBookings.Count(b =>
-                b.CheckInDate.Date == reportDate.Date &&
-                (b.Status == "CheckedIn" || b.Status == "CheckedOut"));
-
-            // If no actual check-ins, count confirmed bookings scheduled for today
-            if (checkIns == 0)
-            {
-                checkIns = allBookings.Count(b =>
-                    b.CheckInDate.Date == reportDate.Date &&
-                    b.Status == "Confirmed");
-            }
-
-            lblCheckInsValue.Text = checkIns.ToString();
-
-            // Today's check-outs: bookings where check-out date is today
-            int checkOuts = allBookings.Count(b =>
-                b.CheckOutDate.Date == reportDate.Date &&
-                b.Status == "CheckedOut");
-
-            // If no actual check-outs, count checked-in bookings scheduled for checkout today
-            if (checkOuts == 0)
-            {
-                checkOuts = allBookings.Count(b =>
-                    b.CheckOutDate.Date == reportDate.Date &&
-                    b.Status == "CheckedIn");
-            }
-
-            lblCheckOutsValue.Text = checkOuts.ToString();
-
-            // Today's revenue: sum of payments received today
-            List<Payment> todayPayments = paymentRepository.GetPaymentsByDateRange(
-                reportDate, reportDate.AddDays(1).AddSeconds(-1));
-            decimal todayRevenue = todayPayments
-                .Where(p => p.Status == "Completed")
-                .Sum(p => p.Amount);
-
-            lblRevenueValue.Text = todayRevenue.ToString("C2");
-
-            // Occupancy rate: occupied rooms / total rooms
-            List<Room> allRooms = roomRepository.GetAll();
-            int totalRooms = allRooms.Count;
-            int occupiedRooms = allRooms.Count(r => r.Status == "Occupied");
-
-            decimal occupancyRate = totalRooms > 0
-                ? Math.Round((decimal)occupiedRooms / totalRooms * 100, 1)
-                : 0;
-
-            lblOccupancyValue.Text = $"{occupancyRate}%";
+            lblCheckInsValue.Text = reportData.CheckIns.ToString();
+            lblCheckOutsValue.Text = reportData.CheckOuts.ToString();
+            lblRevenueValue.Text = reportData.TodayRevenue.ToString("C2");
+            lblOccupancyValue.Text = $"{reportData.OccupancyRate}%";
         }
 
         /// <summary>
         /// Load room status breakdown into the grid
         /// </summary>
-        private void LoadRoomStatusBreakdown()
+        private void LoadRoomStatusBreakdown(DailyOperationsReportData reportData)
         {
             dgvRoomStatus.Rows.Clear();
 
-            List<Room> allRooms = roomRepository.GetAll();
-            int totalRooms = allRooms.Count;
+            if (reportData.TotalRooms == 0) return;
 
-            if (totalRooms == 0) return;
-
-            // Group rooms by status
-            var statusGroups = allRooms
-                .GroupBy(r => r.Status)
-                .OrderByDescending(g => g.Count())
-                .ToList();
-
-            foreach (var group in statusGroups)
+            foreach (RoomStatusSummary roomStatus in reportData.RoomStatuses)
             {
-                string status = group.Key;
-                int count = group.Count();
-                decimal percentage = Math.Round((decimal)count / totalRooms * 100, 1);
-                string roomNumbers = string.Join(", ", group.Select(r => r.RoomNumber).OrderBy(n => n));
-
-                int rowIndex = dgvRoomStatus.Rows.Add(status, count, $"{percentage}%", roomNumbers);
+                int rowIndex = dgvRoomStatus.Rows.Add(
+                    roomStatus.Status,
+                    roomStatus.Count,
+                    $"{roomStatus.Percentage}%",
+                    roomStatus.RoomNumbers);
 
                 // Color-code status rows
                 DataGridViewRow row = dgvRoomStatus.Rows[rowIndex];
-                switch (status)
+                switch (roomStatus.Status)
                 {
                     case "Available":
                         row.DefaultCellStyle.BackColor = Color.FromArgb(232, 245, 233);
@@ -360,7 +293,7 @@ namespace HotelManagementSystem.UI.Reports
             }
 
             // Add total row
-            int totalRowIndex = dgvRoomStatus.Rows.Add("TOTAL", totalRooms, "100%", "");
+            int totalRowIndex = dgvRoomStatus.Rows.Add("TOTAL", reportData.TotalRooms, "100%", "");
             dgvRoomStatus.Rows[totalRowIndex].DefaultCellStyle.Font = new Font(dgvRoomStatus.Font, FontStyle.Bold);
             dgvRoomStatus.Rows[totalRowIndex].DefaultCellStyle.BackColor = Color.FromArgb(236, 240, 241);
         }
@@ -368,43 +301,27 @@ namespace HotelManagementSystem.UI.Reports
         /// <summary>
         /// Load revenue breakdown by payment method for the selected date
         /// </summary>
-        private void LoadRevenueBreakdown(DateTime reportDate)
+        private void LoadRevenueBreakdown(DailyOperationsReportData reportData)
         {
             dgvRevenueBreakdown.Rows.Clear();
 
-            List<Payment> todayPayments = paymentRepository.GetPaymentsByDateRange(
-                reportDate, reportDate.AddDays(1).AddSeconds(-1));
-
-            // Only completed payments
-            var completedPayments = todayPayments.Where(p => p.Status == "Completed").ToList();
-            decimal totalRevenue = completedPayments.Sum(p => p.Amount);
-
-            if (completedPayments.Count == 0)
+            if (reportData.RevenueBreakdown.Count == 0)
             {
                 dgvRevenueBreakdown.Rows.Add("No payments", "0", "$0.00", "-");
                 return;
             }
 
-            // Group by payment method
-            var methodGroups = completedPayments
-                .GroupBy(p => p.PaymentMethod)
-                .OrderByDescending(g => g.Sum(p => p.Amount))
-                .ToList();
-
-            foreach (var group in methodGroups)
+            foreach (PaymentMethodSummary paymentMethod in reportData.RevenueBreakdown)
             {
-                string method = group.Key;
-                int count = group.Count();
-                decimal amount = group.Sum(p => p.Amount);
-                decimal percentage = totalRevenue > 0
-                    ? Math.Round(amount / totalRevenue * 100, 1)
-                    : 0;
-
-                int rowIndex = dgvRevenueBreakdown.Rows.Add(method, count, amount, $"{percentage}%");
+                int rowIndex = dgvRevenueBreakdown.Rows.Add(
+                    paymentMethod.PaymentMethod,
+                    paymentMethod.TransactionCount,
+                    paymentMethod.Amount,
+                    $"{paymentMethod.Percentage}%");
 
                 // Color-code payment methods
                 DataGridViewRow row = dgvRevenueBreakdown.Rows[rowIndex];
-                switch (method)
+                switch (paymentMethod.PaymentMethod)
                 {
                     case "Cash":
                         row.DefaultCellStyle.BackColor = Color.FromArgb(232, 245, 233);
@@ -419,7 +336,8 @@ namespace HotelManagementSystem.UI.Reports
             }
 
             // Add total row
-            int totalRowIndex = dgvRevenueBreakdown.Rows.Add("TOTAL", completedPayments.Count, totalRevenue, "100%");
+            int transactionCount = reportData.RevenueBreakdown.Sum(item => item.TransactionCount);
+            int totalRowIndex = dgvRevenueBreakdown.Rows.Add("TOTAL", transactionCount, reportData.TodayRevenue, "100%");
             dgvRevenueBreakdown.Rows[totalRowIndex].DefaultCellStyle.Font = new Font(dgvRevenueBreakdown.Font, FontStyle.Bold);
             dgvRevenueBreakdown.Rows[totalRowIndex].DefaultCellStyle.BackColor = Color.FromArgb(236, 240, 241);
         }
@@ -427,59 +345,24 @@ namespace HotelManagementSystem.UI.Reports
         /// <summary>
         /// Load recent bookings for the selected date and surrounding days
         /// </summary>
-        private void LoadRecentBookings(DateTime reportDate)
+        private void LoadRecentBookings(DateTime reportDate, DailyOperationsReportData reportData)
         {
             dgvRecentBookings.Rows.Clear();
 
-            List<Booking> allBookings = bookingRepository.GetAll();
-            List<Room> allRooms = roomRepository.GetAll();
-            List<Guest> allGuests = guestRepository.GetAll();
+            lblRecentBookingsTitle.Text = reportData.ShowingLatestBookings
+                ? "Recent Bookings (Latest)"
+                : $"Bookings for {reportDate:MMM dd, yyyy}";
 
-            // Get bookings relevant to the report date:
-            // check-in or check-out on the selected date, or currently active
-            var relevantBookings = allBookings
-                .Where(b =>
-                    b.CheckInDate.Date == reportDate.Date ||
-                    b.CheckOutDate.Date == reportDate.Date ||
-                    (b.CheckInDate.Date <= reportDate.Date && b.CheckOutDate.Date >= reportDate.Date &&
-                     b.Status != "Cancelled"))
-                .OrderByDescending(b => b.BookingDate)
-                .Take(20)
-                .ToList();
-
-            // If no relevant bookings for the date, show the most recent bookings overall
-            if (relevantBookings.Count == 0)
+            foreach (RecentBookingSummary booking in reportData.RecentBookings)
             {
-                relevantBookings = allBookings
-                    .Where(b => b.Status != "Cancelled")
-                    .OrderByDescending(b => b.BookingDate)
-                    .Take(15)
-                    .ToList();
-                lblRecentBookingsTitle.Text = "Recent Bookings (Latest)";
-            }
-            else
-            {
-                lblRecentBookingsTitle.Text = $"Bookings for {reportDate:MMM dd, yyyy}";
-            }
-
-            foreach (var booking in relevantBookings)
-            {
-                // Find guest and room info
-                Guest guest = allGuests.FirstOrDefault(g => g.GuestId == booking.GuestId);
-                Room room = allRooms.FirstOrDefault(r => r.RoomId == booking.RoomId);
-
-                string guestName = guest != null ? guest.FullName : $"Guest #{booking.GuestId}";
-                string roomNumber = room != null ? room.RoomNumber : $"#{booking.RoomId}";
-                string roomType = room != null ? room.RoomType : "N/A";
-
                 int rowIndex = dgvRecentBookings.Rows.Add(
                     booking.BookingId,
-                    guestName,
-                    roomNumber,
-                    roomType,
-                    booking.CheckInDate,
-                    booking.CheckOutDate,
-                    booking.NumberOfNights,
+                    booking.GuestName,
+                    booking.RoomNumber,
+                    booking.RoomType,
+                    booking.CheckIn,
+                    booking.CheckOut,
+                    booking.Nights,
                     booking.TotalAmount,
                     booking.Status
                 );
@@ -582,6 +465,7 @@ namespace HotelManagementSystem.UI.Reports
         public string GenerateTextReport(DateTime reportDate)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            DailyOperationsReportData reportData = reportRepository.GetDailyOperationsReportData(reportDate);
 
             sb.AppendLine("╔══════════════════════════════════════════════════════════╗");
             sb.AppendLine("║            HOTEL MANAGEMENT SYSTEM                      ║");
@@ -592,59 +476,33 @@ namespace HotelManagementSystem.UI.Reports
             sb.AppendLine($"  Generated:   {DateTime.Now:MMM dd, yyyy hh:mm tt}");
             sb.AppendLine();
 
-            // Get data
-            List<Booking> allBookings = bookingRepository.GetAll();
-            List<Room> allRooms = roomRepository.GetAll();
-            List<Payment> todayPayments = paymentRepository.GetPaymentsByDateRange(
-                reportDate, reportDate.AddDays(1).AddSeconds(-1));
-
-            int totalRooms = allRooms.Count;
-            int occupiedRooms = allRooms.Count(r => r.Status == "Occupied");
-            decimal occupancyRate = totalRooms > 0 ? Math.Round((decimal)occupiedRooms / totalRooms * 100, 1) : 0;
-
-            int checkIns = allBookings.Count(b =>
-                b.CheckInDate.Date == reportDate.Date &&
-                (b.Status == "CheckedIn" || b.Status == "CheckedOut" || b.Status == "Confirmed"));
-            int checkOuts = allBookings.Count(b =>
-                b.CheckOutDate.Date == reportDate.Date &&
-                (b.Status == "CheckedOut" || b.Status == "CheckedIn"));
-
-            var completedPayments = todayPayments.Where(p => p.Status == "Completed").ToList();
-            decimal todayRevenue = completedPayments.Sum(p => p.Amount);
-
             // Summary section
             sb.AppendLine("  ─────────── SUMMARY ───────────");
-            sb.AppendLine($"  Check-Ins Today:    {checkIns}");
-            sb.AppendLine($"  Check-Outs Today:   {checkOuts}");
-            sb.AppendLine($"  Today's Revenue:    {todayRevenue:C2}");
-            sb.AppendLine($"  Occupancy Rate:     {occupancyRate}%");
-            sb.AppendLine($"  Occupied Rooms:     {occupiedRooms} / {totalRooms}");
+            sb.AppendLine($"  Check-Ins Today:    {reportData.CheckIns}");
+            sb.AppendLine($"  Check-Outs Today:   {reportData.CheckOuts}");
+            sb.AppendLine($"  Today's Revenue:    {reportData.TodayRevenue:C2}");
+            sb.AppendLine($"  Occupancy Rate:     {reportData.OccupancyRate}%");
+            sb.AppendLine($"  Occupied Rooms:     {reportData.OccupiedRooms} / {reportData.TotalRooms}");
             sb.AppendLine();
 
             // Room status
             sb.AppendLine("  ─────────── ROOM STATUS ───────────");
-            var roomGroups = allRooms.GroupBy(r => r.Status).OrderByDescending(g => g.Count());
-            foreach (var group in roomGroups)
+            foreach (RoomStatusSummary roomStatus in reportData.RoomStatuses)
             {
-                decimal pct = Math.Round((decimal)group.Count() / totalRooms * 100, 1);
-                string rooms = string.Join(", ", group.Select(r => r.RoomNumber).OrderBy(n => n));
-                sb.AppendLine($"  {group.Key,-15} {group.Count(),3} ({pct,5}%)  [{rooms}]");
+                sb.AppendLine($"  {roomStatus.Status,-15} {roomStatus.Count,3} ({roomStatus.Percentage,5}%)  [{roomStatus.RoomNumbers}]");
             }
-            sb.AppendLine($"  {"TOTAL",-15} {totalRooms,3} (100.0%)");
+            sb.AppendLine($"  {"TOTAL",-15} {reportData.TotalRooms,3} (100.0%)");
             sb.AppendLine();
 
             // Revenue breakdown
             sb.AppendLine("  ─────────── REVENUE BREAKDOWN ───────────");
-            if (completedPayments.Count > 0)
+            if (reportData.RevenueBreakdown.Count > 0)
             {
-                var methodGroups = completedPayments.GroupBy(p => p.PaymentMethod).OrderByDescending(g => g.Sum(p => p.Amount));
-                foreach (var group in methodGroups)
+                foreach (PaymentMethodSummary paymentMethod in reportData.RevenueBreakdown)
                 {
-                    decimal amt = group.Sum(p => p.Amount);
-                    decimal pct = todayRevenue > 0 ? Math.Round(amt / todayRevenue * 100, 1) : 0;
-                    sb.AppendLine($"  {group.Key,-15} {group.Count(),3} txn(s)  {amt,12:C2}  ({pct}%)");
+                    sb.AppendLine($"  {paymentMethod.PaymentMethod,-15} {paymentMethod.TransactionCount,3} txn(s)  {paymentMethod.Amount,12:C2}  ({paymentMethod.Percentage}%)");
                 }
-                sb.AppendLine($"  {"TOTAL",-15} {completedPayments.Count,3} txn(s)  {todayRevenue,12:C2}");
+                sb.AppendLine($"  {"TOTAL",-15} {reportData.RevenueBreakdown.Sum(item => item.TransactionCount),3} txn(s)  {reportData.TodayRevenue,12:C2}");
             }
             else
             {
