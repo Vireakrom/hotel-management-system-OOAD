@@ -87,6 +87,58 @@ namespace HotelManagementSystem.DAL
             return bookings;
         }
 
+        public List<BookingListItem> GetBookingListItems()
+        {
+            List<BookingListItem> bookings = new List<BookingListItem>();
+            string query = @"
+                SELECT
+                    b.BookingId,
+                    b.GuestId,
+                    b.RoomId,
+                    b.CheckInDate,
+                    b.CheckOutDate,
+                    b.Status,
+                    b.NumberOfGuests,
+                    b.TotalAmount,
+                    b.BookingDate,
+                    LTRIM(RTRIM(g.FirstName + ' ' + g.LastName)) AS GuestName,
+                    r.RoomNumber,
+                    r.RoomType
+                FROM Bookings b
+                INNER JOIN Guests g ON g.GuestId = b.GuestId
+                INNER JOIN Rooms r ON r.RoomId = b.RoomId
+                ORDER BY b.BookingDate DESC";
+
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bookings.Add(new BookingListItem
+                        {
+                            BookingId = reader.GetInt32(reader.GetOrdinal("BookingId")),
+                            GuestId = reader.GetInt32(reader.GetOrdinal("GuestId")),
+                            RoomId = reader.GetInt32(reader.GetOrdinal("RoomId")),
+                            GuestName = reader.GetString(reader.GetOrdinal("GuestName")),
+                            RoomNumber = reader.GetString(reader.GetOrdinal("RoomNumber")),
+                            RoomType = reader.GetString(reader.GetOrdinal("RoomType")),
+                            CheckInDate = reader.GetDateTime(reader.GetOrdinal("CheckInDate")),
+                            CheckOutDate = reader.GetDateTime(reader.GetOrdinal("CheckOutDate")),
+                            Status = reader.GetString(reader.GetOrdinal("Status")),
+                            NumberOfGuests = reader.GetInt32(reader.GetOrdinal("NumberOfGuests")),
+                            TotalAmount = reader.GetDecimal(reader.GetOrdinal("TotalAmount")),
+                            BookingDate = reader.GetDateTime(reader.GetOrdinal("BookingDate"))
+                        });
+                    }
+                }
+            }
+
+            return bookings;
+        }
+
         public bool Update(Booking booking)
         {
             string query = @"

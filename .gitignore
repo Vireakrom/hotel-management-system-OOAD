@@ -1,0 +1,8 @@
+.vs/
+.dotnet/
+**/bin/
+**/obj/
+**/publish/
+*.user
+*.suo
+*.cache
