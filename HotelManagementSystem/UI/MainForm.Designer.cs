@@ -52,18 +52,6 @@ namespace HotelManagementSystem.UI
             this.staffManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.developerToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testFactoryPatternToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testBookingRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testBookingFacadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testDay17IntegrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testDay28IntegrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testObserverPatternToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testStrategyPatternToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testInvoiceManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testInvoiceFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testPaymentEnhancementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testDailyOperationsReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchGuestsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -181,7 +169,7 @@ namespace HotelManagementSystem.UI
             // viewAllBookingsToolStripMenuItem
             // 
             this.viewAllBookingsToolStripMenuItem.Name = "viewAllBookingsToolStripMenuItem";
-            this.viewAllBookingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.viewAllBookingsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.viewAllBookingsToolStripMenuItem.Text = "Manage Booking";
             this.viewAllBookingsToolStripMenuItem.Click += new System.EventHandler(this.viewAllBookingsToolStripMenuItem_Click);
             // 
@@ -253,7 +241,6 @@ namespace HotelManagementSystem.UI
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.userGuideToolStripMenuItem,
-            this.developerToolsToolStripMenuItem,
             this.toolStripSeparator2,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Image = global::HotelManagementSystem.Properties.Resources.help;
@@ -264,114 +251,19 @@ namespace HotelManagementSystem.UI
             // userGuideToolStripMenuItem
             // 
             this.userGuideToolStripMenuItem.Name = "userGuideToolStripMenuItem";
-            this.userGuideToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.userGuideToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.userGuideToolStripMenuItem.Text = "User Guide";
             this.userGuideToolStripMenuItem.Click += new System.EventHandler(this.userGuideToolStripMenuItem_Click);
-            // 
-            // developerToolsToolStripMenuItem
-            // 
-            this.developerToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testFactoryPatternToolStripMenuItem,
-            this.testBookingRepositoryToolStripMenuItem,
-            this.testBookingFacadeToolStripMenuItem,
-            this.testDay17IntegrationToolStripMenuItem,
-            this.testDay28IntegrationToolStripMenuItem,
-            this.testObserverPatternToolStripMenuItem,
-            this.testStrategyPatternToolStripMenuItem,
-            this.testInvoiceManagementToolStripMenuItem,
-            this.testInvoiceFormToolStripMenuItem,
-            this.testPaymentEnhancementToolStripMenuItem,
-            this.testDailyOperationsReportToolStripMenuItem});
-            this.developerToolsToolStripMenuItem.Name = "developerToolsToolStripMenuItem";
-            this.developerToolsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.developerToolsToolStripMenuItem.Text = "Developer Tools (Tests)";
-            // 
-            // testFactoryPatternToolStripMenuItem
-            // 
-            this.testFactoryPatternToolStripMenuItem.Name = "testFactoryPatternToolStripMenuItem";
-            this.testFactoryPatternToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testFactoryPatternToolStripMenuItem.Text = "Test Factory Pattern";
-            this.testFactoryPatternToolStripMenuItem.Click += new System.EventHandler(this.testFactoryPatternToolStripMenuItem_Click);
-            // 
-            // testBookingRepositoryToolStripMenuItem
-            // 
-            this.testBookingRepositoryToolStripMenuItem.Name = "testBookingRepositoryToolStripMenuItem";
-            this.testBookingRepositoryToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testBookingRepositoryToolStripMenuItem.Text = "Test Booking Repository";
-            this.testBookingRepositoryToolStripMenuItem.Click += new System.EventHandler(this.testBookingRepositoryToolStripMenuItem_Click);
-            // 
-            // testBookingFacadeToolStripMenuItem
-            // 
-            this.testBookingFacadeToolStripMenuItem.Name = "testBookingFacadeToolStripMenuItem";
-            this.testBookingFacadeToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testBookingFacadeToolStripMenuItem.Text = "Test Booking Facade";
-            this.testBookingFacadeToolStripMenuItem.Click += new System.EventHandler(this.testBookingFacadeToolStripMenuItem_Click);
-            // 
-            // testDay17IntegrationToolStripMenuItem
-            // 
-            this.testDay17IntegrationToolStripMenuItem.Name = "testDay17IntegrationToolStripMenuItem";
-            this.testDay17IntegrationToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testDay17IntegrationToolStripMenuItem.Text = "Test Day 17 Integration";
-            this.testDay17IntegrationToolStripMenuItem.Click += new System.EventHandler(this.testDay17IntegrationToolStripMenuItem_Click);
-            // 
-            // testDay28IntegrationToolStripMenuItem
-            // 
-            this.testDay28IntegrationToolStripMenuItem.Name = "testDay28IntegrationToolStripMenuItem";
-            this.testDay28IntegrationToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testDay28IntegrationToolStripMenuItem.Text = "Test Day 28 Integration";
-            this.testDay28IntegrationToolStripMenuItem.Click += new System.EventHandler(this.testDay28IntegrationToolStripMenuItem_Click);
-            // 
-            // testObserverPatternToolStripMenuItem
-            // 
-            this.testObserverPatternToolStripMenuItem.Name = "testObserverPatternToolStripMenuItem";
-            this.testObserverPatternToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testObserverPatternToolStripMenuItem.Text = "Test Observer Pattern";
-            this.testObserverPatternToolStripMenuItem.Click += new System.EventHandler(this.testObserverPatternToolStripMenuItem_Click);
-            // 
-            // testStrategyPatternToolStripMenuItem
-            // 
-            this.testStrategyPatternToolStripMenuItem.Name = "testStrategyPatternToolStripMenuItem";
-            this.testStrategyPatternToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testStrategyPatternToolStripMenuItem.Text = "Test Strategy Pattern ⭐";
-            this.testStrategyPatternToolStripMenuItem.Click += new System.EventHandler(this.testStrategyPatternToolStripMenuItem_Click);
-            // 
-            // testInvoiceManagementToolStripMenuItem
-            // 
-            this.testInvoiceManagementToolStripMenuItem.Name = "testInvoiceManagementToolStripMenuItem";
-            this.testInvoiceManagementToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testInvoiceManagementToolStripMenuItem.Text = "Test Invoice Management 📋";
-            this.testInvoiceManagementToolStripMenuItem.Click += new System.EventHandler(this.testInvoiceManagementToolStripMenuItem_Click);
-            // 
-            // testInvoiceFormToolStripMenuItem
-            // 
-            this.testInvoiceFormToolStripMenuItem.Name = "testInvoiceFormToolStripMenuItem";
-            this.testInvoiceFormToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testInvoiceFormToolStripMenuItem.Text = "Test Invoice Form 📄";
-            this.testInvoiceFormToolStripMenuItem.Click += new System.EventHandler(this.testInvoiceFormToolStripMenuItem_Click);
-            // 
-            // testPaymentEnhancementToolStripMenuItem
-            // 
-            this.testPaymentEnhancementToolStripMenuItem.Name = "testPaymentEnhancementToolStripMenuItem";
-            this.testPaymentEnhancementToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testPaymentEnhancementToolStripMenuItem.Text = "Test Payment Enhancement 💳 NEW!";
-            this.testPaymentEnhancementToolStripMenuItem.Click += new System.EventHandler(this.testPaymentEnhancementToolStripMenuItem_Click);
-            // 
-            // testDailyOperationsReportToolStripMenuItem
-            // 
-            this.testDailyOperationsReportToolStripMenuItem.Name = "testDailyOperationsReportToolStripMenuItem";
-            this.testDailyOperationsReportToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
-            this.testDailyOperationsReportToolStripMenuItem.Text = "Test Daily Operations Report 📊 NEW!";
-            this.testDailyOperationsReportToolStripMenuItem.Click += new System.EventHandler(this.testDailyOperationsReportToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(192, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -460,7 +352,6 @@ namespace HotelManagementSystem.UI
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem developerToolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem separatorToolStripMenuItem;
@@ -486,17 +377,6 @@ namespace HotelManagementSystem.UI
         private System.Windows.Forms.ToolStripMenuItem staffManagementToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem userGuideToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testFactoryPatternToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testBookingRepositoryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testBookingFacadeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testDay17IntegrationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testDay28IntegrationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testObserverPatternToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testStrategyPatternToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testInvoiceManagementToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testInvoiceFormToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testPaymentEnhancementToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testDailyOperationsReportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Timer timerStatusBar;

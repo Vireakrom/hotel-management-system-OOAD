@@ -50,6 +50,32 @@ namespace HotelManagementSystem.UI
             // Update menu text to match modern style
             billingToolStripMenuItem.Text = "Financials";
             invoiceManagementToolStripMenuItem.Text = "Invoices & Payments";
+            ConfigureHelpMenu();
+        }
+
+        private void ConfigureHelpMenu()
+        {
+            helpToolStripMenuItem.Text = "Help Center";
+            helpToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
+            helpToolStripMenuItem.ToolTipText = "Open guidance, support information, and system details.";
+
+            userGuideToolStripMenuItem.Text = "Quick Start Guide";
+            userGuideToolStripMenuItem.ShortcutKeys = Keys.F1;
+            userGuideToolStripMenuItem.ShowShortcutKeys = true;
+            userGuideToolStripMenuItem.ToolTipText = "View navigation tips and role-based guidance.";
+
+            aboutToolStripMenuItem.Text = "About System";
+            aboutToolStripMenuItem.ToolTipText = "View the application version and core capabilities.";
+
+            //developerToolsToolStripMenuItem.Text = "Diagnostics & Testing";
+        }
+
+        private void UpdateHelpMenuVisibility()
+        {
+            bool isAdmin = SessionManager.IsAdmin;
+
+            //developerToolsToolStripMenuItem.Visible = isAdmin;
+            toolStripSeparator2.Visible = isAdmin;
         }
 
         private void ConfigureUiTheme()
@@ -345,18 +371,23 @@ namespace HotelManagementSystem.UI
 
         private void userGuideToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string role = RoleHelper.ToDisplayName(SessionManager.CurrentUser?.Role);
+
             MessageBox.Show(
-                "Hotel Management System - User Guide\n\n" +
-                "NAVIGATION:\n" +
-                "• Use the menu bar to access different modules\n" +
-                "• All forms open within this main window (MDI)\n" +
-                "• Your role determines which menus you can see\n\n" +
-                "TIPS:\n" +
-                "• Check the status bar for your login info\n" +
-                "• Use File → Logout to switch users\n" +
-                "• Forms stay open until you close them\n\n" +
-                "For detailed documentation, see the project files.",
-                "User Guide",
+                "Help Center\n\n" +
+                "Getting Started\n" +
+                "• Use the menu bar to open Rooms, Guests, Bookings, Financials, Reports, and Administration.\n" +
+                "• Only the tools available to your role are shown.\n" +
+                "• Each workspace opens inside the main window for a consistent workflow.\n\n" +
+                "Recommended Workflow\n" +
+                "• Start from the dashboard or list view that matches your task.\n" +
+                "• Complete updates in one screen before opening another module.\n" +
+                "• Review the status bar to confirm the signed-in account and current time.\n\n" +
+                $"Current Access Level\n• Signed in as: {role}\n\n" +
+                "Need Assistance?\n" +
+                "• Use File > Logout to switch accounts securely.\n" +
+                "• Contact your system administrator for setup, permissions, or technical support.",
+                "Help Center",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
@@ -365,21 +396,16 @@ namespace HotelManagementSystem.UI
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "HOTEL MANAGEMENT SYSTEM\n" +
-                "Version 1.0.0 - Day 31 Complete\n\n" +
-                "Developed for OOAD Final Project\n" +
-                "Computer Science - Year 4\n\n" +
-                "DESIGN PATTERNS IMPLEMENTED:\n" +
-                "✅ Singleton (DatabaseManager)\n" +
-                "✅ Repository (DAL)\n" +
-                "✅ Factory (RoomFactory)\n" +
-                "✅ Facade (BookingFacade)\n" +
-                "✅ Observer (Housekeeping Pattern)\n" +
-                "✅ Strategy (Payment Strategies)\n\n" +
-                "PROGRESS: 100% Core Features Complete ✓\n" +
-                "Day 31 Milestone: UI Polish & Consistency ✓\n\n" +
-                "© 2026 - All Rights Reserved\n" +
-                "Deadline: March 10, 2026",
+                "Hotel Management System\n" +
+                $"Version {Application.ProductVersion}\n\n" +
+                "Designed to support hotel operations with a clear and efficient desktop workflow.\n\n" +
+                "Core capabilities:\n" +
+                "• Room and availability management\n" +
+                "• Guest and booking administration\n" +
+                "• Invoicing and payment processing\n" +
+                "• Daily operations and reporting\n\n" +
+                "For account, configuration, or technical assistance, please contact your system administrator.\n\n" +
+                $"© {DateTime.Now.Year} Hotel Management System",
                 "About Hotel Management System",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
@@ -1393,6 +1419,7 @@ namespace HotelManagementSystem.UI
 
             // Apply role-based menu access
             ApplyRoleBasedAccess();
+            UpdateHelpMenuVisibility();
 
             // Welcome message
             MessageBox.Show(
