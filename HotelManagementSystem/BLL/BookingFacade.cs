@@ -67,7 +67,7 @@ namespace HotelManagementSystem.BLL
             }
 
             // Step 5: Check room availability for the selected dates
-            if (!IsRoomAvailable(roomId, checkInDate, checkOutDate))
+            if (!IsRoomAvailableForDates(room, checkInDate, checkOutDate))
             {
                 throw new InvalidOperationException($"Room {room.RoomNumber} is not available for the selected dates.");
             }
@@ -156,6 +156,14 @@ namespace HotelManagementSystem.BLL
                 return false;
             }
 
+            return IsRoomAvailableForDates(room, checkInDate, checkOutDate);
+        }
+
+        /// <summary>
+        /// Check availability using an already-fetched Room object to avoid an extra DB call.
+        /// </summary>
+        private bool IsRoomAvailableForDates(Room room, DateTime checkInDate, DateTime checkOutDate)
+        {
             // Room must be Available or Reserved status
             if (room.Status != "Available" && room.Status != "Reserved")
             {
@@ -164,7 +172,7 @@ namespace HotelManagementSystem.BLL
 
             // Check for conflicting bookings
             List<Booking> conflictingBookings = _bookingRepository.GetBookingsByDateRange(
-                roomId, checkInDate, checkOutDate);
+                room.RoomId, checkInDate, checkOutDate);
 
             // If there are any active bookings in this date range, room is not available
             return conflictingBookings.Count == 0;

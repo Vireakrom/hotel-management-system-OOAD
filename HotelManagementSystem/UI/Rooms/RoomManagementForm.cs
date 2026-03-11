@@ -197,11 +197,17 @@ namespace HotelManagementSystem.UI.Rooms
         {
             if (allRooms == null) return;
 
-            int available = allRooms.Count(r => r.Status == "Available");
-            int occupied = allRooms.Count(r => r.Status == "Occupied");
-            int reserved = allRooms.Count(r => r.Status == "Reserved");
-            int cleaning = allRooms.Count(r => r.Status == "Cleaning");
-            int maintenance = allRooms.Count(r => r.Status == "Maintenance");
+            // Build counts in a single pass instead of iterating the list five times
+            var counts = allRooms
+                .GroupBy(r => r.Status)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            int available = 0, occupied = 0, reserved = 0, cleaning = 0, maintenance = 0;
+            counts.TryGetValue("Available", out available);
+            counts.TryGetValue("Occupied", out occupied);
+            counts.TryGetValue("Reserved", out reserved);
+            counts.TryGetValue("Cleaning", out cleaning);
+            counts.TryGetValue("Maintenance", out maintenance);
 
             lblStatusCounts.Text = $"Available: {available} | Occupied: {occupied} | " +
                                    $"Reserved: {reserved} | Cleaning: {cleaning} | " +

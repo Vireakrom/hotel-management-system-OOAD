@@ -31,25 +31,27 @@ namespace HotelManagementSystem.DAL
                      GETDATE(), GETDATE());
                     SELECT CAST(SCOPE_IDENTITY() as int);";
 
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@BookingId", entity.BookingId);
-                cmd.Parameters.AddWithValue("@InvoiceNumber", entity.InvoiceNumber);
-                cmd.Parameters.AddWithValue("@IssueDate", entity.IssueDate);
-                cmd.Parameters.AddWithValue("@DueDate", entity.DueDate);
-                cmd.Parameters.AddWithValue("@SubTotal", entity.SubTotal);
-                cmd.Parameters.AddWithValue("@TaxRate", entity.TaxRate);
-                cmd.Parameters.AddWithValue("@TaxAmount", entity.TaxAmount);
-                cmd.Parameters.AddWithValue("@Discount", entity.Discount);
-                cmd.Parameters.AddWithValue("@TotalAmount", entity.TotalAmount);
-                cmd.Parameters.AddWithValue("@PaidAmount", entity.PaidAmount);
-                cmd.Parameters.AddWithValue("@BalanceAmount", entity.BalanceAmount);
-                cmd.Parameters.AddWithValue("@Status", entity.Status);
-                cmd.Parameters.AddWithValue("@PaymentTerms", (object)entity.PaymentTerms ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Notes", (object)entity.Notes ?? DBNull.Value);
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@BookingId", entity.BookingId);
+                    cmd.Parameters.AddWithValue("@InvoiceNumber", entity.InvoiceNumber);
+                    cmd.Parameters.AddWithValue("@IssueDate", entity.IssueDate);
+                    cmd.Parameters.AddWithValue("@DueDate", entity.DueDate);
+                    cmd.Parameters.AddWithValue("@SubTotal", entity.SubTotal);
+                    cmd.Parameters.AddWithValue("@TaxRate", entity.TaxRate);
+                    cmd.Parameters.AddWithValue("@TaxAmount", entity.TaxAmount);
+                    cmd.Parameters.AddWithValue("@Discount", entity.Discount);
+                    cmd.Parameters.AddWithValue("@TotalAmount", entity.TotalAmount);
+                    cmd.Parameters.AddWithValue("@PaidAmount", entity.PaidAmount);
+                    cmd.Parameters.AddWithValue("@BalanceAmount", entity.BalanceAmount);
+                    cmd.Parameters.AddWithValue("@Status", entity.Status);
+                    cmd.Parameters.AddWithValue("@PaymentTerms", (object)entity.PaymentTerms ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Notes", (object)entity.Notes ?? DBNull.Value);
 
-                conn.Open();
-                entity.InvoiceId = (int)cmd.ExecuteScalar();
-                return entity.InvoiceId;
+                    conn.Open();
+                    entity.InvoiceId = (int)cmd.ExecuteScalar();
+                    return entity.InvoiceId;
+                }
             }
         }
 
@@ -63,15 +65,18 @@ namespace HotelManagementSystem.DAL
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
                 string query = @"SELECT * FROM Invoices WHERE InvoiceId = @InvoiceId";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@InvoiceId", id);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    return MapReaderToInvoice(reader);
+                    cmd.Parameters.AddWithValue("@InvoiceId", id);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapReaderToInvoice(reader);
+                        }
+                    }
                 }
 
                 return null;
@@ -89,14 +94,16 @@ namespace HotelManagementSystem.DAL
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
                 string query = @"SELECT * FROM Invoices ORDER BY IssueDate DESC";
-                SqlCommand cmd = new SqlCommand(query, conn);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    invoices.Add(MapReaderToInvoice(reader));
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            invoices.Add(MapReaderToInvoice(reader));
+                        }
+                    }
                 }
             }
 
@@ -126,22 +133,24 @@ namespace HotelManagementSystem.DAL
                     ModifiedDate = GETDATE()
                     WHERE InvoiceId = @InvoiceId";
 
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@InvoiceId", entity.InvoiceId);
-                cmd.Parameters.AddWithValue("@SubTotal", entity.SubTotal);
-                cmd.Parameters.AddWithValue("@TaxRate", entity.TaxRate);
-                cmd.Parameters.AddWithValue("@TaxAmount", entity.TaxAmount);
-                cmd.Parameters.AddWithValue("@Discount", entity.Discount);
-                cmd.Parameters.AddWithValue("@TotalAmount", entity.TotalAmount);
-                cmd.Parameters.AddWithValue("@PaidAmount", entity.PaidAmount);
-                cmd.Parameters.AddWithValue("@BalanceAmount", entity.BalanceAmount);
-                cmd.Parameters.AddWithValue("@Status", entity.Status);
-                cmd.Parameters.AddWithValue("@PaymentTerms", (object)entity.PaymentTerms ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Notes", (object)entity.Notes ?? DBNull.Value);
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@InvoiceId", entity.InvoiceId);
+                    cmd.Parameters.AddWithValue("@SubTotal", entity.SubTotal);
+                    cmd.Parameters.AddWithValue("@TaxRate", entity.TaxRate);
+                    cmd.Parameters.AddWithValue("@TaxAmount", entity.TaxAmount);
+                    cmd.Parameters.AddWithValue("@Discount", entity.Discount);
+                    cmd.Parameters.AddWithValue("@TotalAmount", entity.TotalAmount);
+                    cmd.Parameters.AddWithValue("@PaidAmount", entity.PaidAmount);
+                    cmd.Parameters.AddWithValue("@BalanceAmount", entity.BalanceAmount);
+                    cmd.Parameters.AddWithValue("@Status", entity.Status);
+                    cmd.Parameters.AddWithValue("@PaymentTerms", (object)entity.PaymentTerms ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Notes", (object)entity.Notes ?? DBNull.Value);
 
-                conn.Open();
-                int rowsAffected = cmd.ExecuteNonQuery();
-                return rowsAffected > 0;
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
             }
         }
 
@@ -156,12 +165,14 @@ namespace HotelManagementSystem.DAL
             {
                 string query = @"UPDATE Invoices SET Status = 'Cancelled', ModifiedDate = GETDATE() 
                                  WHERE InvoiceId = @InvoiceId";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@InvoiceId", id);
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@InvoiceId", id);
 
-                conn.Open();
-                int rowsAffected = cmd.ExecuteNonQuery();
-                return rowsAffected > 0;
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
             }
         }
 
@@ -175,15 +186,18 @@ namespace HotelManagementSystem.DAL
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
                 string query = @"SELECT * FROM Invoices WHERE BookingId = @BookingId";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@BookingId", bookingId);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    return MapReaderToInvoice(reader);
+                    cmd.Parameters.AddWithValue("@BookingId", bookingId);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapReaderToInvoice(reader);
+                        }
+                    }
                 }
 
                 return null;
@@ -202,15 +216,18 @@ namespace HotelManagementSystem.DAL
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             {
                 string query = @"SELECT * FROM Invoices WHERE Status = @Status ORDER BY IssueDate DESC";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@Status", status);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    invoices.Add(MapReaderToInvoice(reader));
+                    cmd.Parameters.AddWithValue("@Status", status);
+
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            invoices.Add(MapReaderToInvoice(reader));
+                        }
+                    }
                 }
             }
 
@@ -230,14 +247,16 @@ namespace HotelManagementSystem.DAL
                 string query = @"SELECT * FROM Invoices 
                                  WHERE Status IN ('Pending', 'PartiallyPaid') 
                                  ORDER BY IssueDate DESC";
-                SqlCommand cmd = new SqlCommand(query, conn);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    invoices.Add(MapReaderToInvoice(reader));
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            invoices.Add(MapReaderToInvoice(reader));
+                        }
+                    }
                 }
             }
 
@@ -252,32 +271,30 @@ namespace HotelManagementSystem.DAL
         /// <returns>True if successful, false otherwise</returns>
         public bool UpdatePaymentStatus(int invoiceId, decimal paidAmount)
         {
-            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
-            {
-                // First get the invoice to calculate balance
-                Invoice invoice = GetById(invoiceId);
-                if (invoice == null) return false;
-
-                decimal newPaidAmount = invoice.PaidAmount + paidAmount;
-                decimal newBalance = invoice.TotalAmount - newPaidAmount;
-                string newStatus = newBalance <= 0 ? "Paid" : (newPaidAmount > 0 ? "PartiallyPaid" : "Pending");
-
-                string query = @"UPDATE Invoices SET 
-                    PaidAmount = @PaidAmount, 
-                    BalanceAmount = @BalanceAmount, 
-                    Status = @Status, 
-                    ModifiedDate = GETDATE()
+            // Use a single atomic UPDATE with CROSS APPLY so the computed
+            // NewPaidAmount is calculated once and reused, eliminating the
+            // previous SELECT + UPDATE round-trip.
+            string query = @"UPDATE Invoices
+                    SET PaidAmount    = v.NewPaidAmount,
+                        BalanceAmount = TotalAmount - v.NewPaidAmount,
+                        Status        = CASE
+                                            WHEN TotalAmount - v.NewPaidAmount <= 0 THEN 'Paid'
+                                            WHEN v.NewPaidAmount > 0               THEN 'PartiallyPaid'
+                                            ELSE 'Pending'
+                                        END,
+                        ModifiedDate  = GETDATE()
+                    FROM Invoices
+                    CROSS APPLY (SELECT PaidAmount + @NewPayment AS NewPaidAmount) v
                     WHERE InvoiceId = @InvoiceId";
 
-                SqlCommand cmd = new SqlCommand(query, conn);
+            using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
                 cmd.Parameters.AddWithValue("@InvoiceId", invoiceId);
-                cmd.Parameters.AddWithValue("@PaidAmount", newPaidAmount);
-                cmd.Parameters.AddWithValue("@BalanceAmount", newBalance);
-                cmd.Parameters.AddWithValue("@Status", newStatus);
+                cmd.Parameters.AddWithValue("@NewPayment", paidAmount);
 
                 conn.Open();
-                int rowsAffected = cmd.ExecuteNonQuery();
-                return rowsAffected > 0;
+                return cmd.ExecuteNonQuery() > 0;
             }
         }
 
