@@ -27,7 +27,7 @@
     <UpdateUrl>http://hotel-management-system-y4.s3-website-ap-southeast-1.amazonaws.com/</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -282,6 +282,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Bookings\BookingListForm.resx">
       <DependentUpon>BookingListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Bookings\NewBookingForm.resx">
+      <DependentUpon>NewBookingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Invoices\InvoiceForm.resx">
       <DependentUpon>InvoiceForm.cs</DependentUpon>

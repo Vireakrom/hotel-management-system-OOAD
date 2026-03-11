@@ -14,7 +14,7 @@ The primary purpose of this system is to replace manual hotel operations with an
 
 | Module | Capabilities |
 |---|---|
-| **Authentication** | Secure login with hashed passwords (SHA-256 + salt), role‑based access control (Admin, Receptionist, Housekeeping), "Remember Me" functionality |
+| **Authentication** | Secure login with hashed passwords (SHA-256 + salt), role‑based access control (Admin, Manager, Receptionist, Housekeeping), "Remember Me" functionality |
 | **Guest Management** | Register new guests, update guest profiles, search guests by name/email/phone, soft‑delete records, view guest booking history |
 | **Room Management** | Add/edit rooms of 4 types (Single, Double, Suite, Deluxe), track room status (Available, Occupied, Reserved, Maintenance, Cleaning), visual status dashboard |
 | **Booking Management** | Create, confirm, modify, and cancel bookings; check‑in/check‑out guests; automatic room charge calculation based on room price × nights; date conflict detection; optional add-on services (Breakfast, Extra Bed, Airport Transfer) via Decorator pattern |
@@ -182,7 +182,7 @@ Manages cleaning and maintenance tasks.
 Admin interface for managing system users.
 
 - CRUD operations for staff accounts via `AddEditStaffDialog`
-- Role assignment: Admin, Receptionist, Housekeeping
+- Role assignment: Admin, Manager, Receptionist, Housekeeping
 - Password management with secure SHA-256 hashing
 
 #### Form 12 — Daily Operations Report (`DailyOperationsReportForm.cs`)
