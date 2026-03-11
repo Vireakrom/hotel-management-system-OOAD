@@ -75,7 +75,7 @@ namespace HotelManagementSystem.UI.Invoices
                 Name = "BookingId",
                 HeaderText = "Booking ID",
                 DataPropertyName = "BookingId",
-                Width = 100
+                Width = 150
             });
 
             dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
