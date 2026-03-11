@@ -41,6 +41,7 @@ namespace HotelManagementSystem.UI.Invoices
             this.lblTotalRevenue = new System.Windows.Forms.Label();
             this.dgvInvoices = new System.Windows.Forms.DataGridView();
             this.panelButtons = new System.Windows.Forms.Panel();
+            this.btnProcessPayment = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnViewDetails = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -201,6 +202,7 @@ namespace HotelManagementSystem.UI.Invoices
             // panelButtons
             // 
             this.panelButtons.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panelButtons.Controls.Add(this.btnProcessPayment);
             this.panelButtons.Controls.Add(this.btnClose);
             this.panelButtons.Controls.Add(this.btnViewDetails);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -209,6 +211,20 @@ namespace HotelManagementSystem.UI.Invoices
             this.panelButtons.Padding = new System.Windows.Forms.Padding(10);
             this.panelButtons.Size = new System.Drawing.Size(1000, 60);
             this.panelButtons.TabIndex = 4;
+            // 
+            // btnProcessPayment
+            // 
+            this.btnProcessPayment.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnProcessPayment.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProcessPayment.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnProcessPayment.ForeColor = System.Drawing.Color.White;
+            this.btnProcessPayment.Location = new System.Drawing.Point(175, 13);
+            this.btnProcessPayment.Name = "btnProcessPayment";
+            this.btnProcessPayment.Size = new System.Drawing.Size(150, 35);
+            this.btnProcessPayment.TabIndex = 2;
+            this.btnProcessPayment.Text = "Process Payment";
+            this.btnProcessPayment.UseVisualStyleBackColor = false;
+            this.btnProcessPayment.Click += new System.EventHandler(this.btnProcessPayment_Click);
             // 
             // btnClose
             // 
@@ -296,6 +312,7 @@ namespace HotelManagementSystem.UI.Invoices
         private System.Windows.Forms.DataGridView dgvInvoices;
         private System.Windows.Forms.Panel panelButtons;
         private System.Windows.Forms.Button btnViewDetails;
+        private System.Windows.Forms.Button btnProcessPayment;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Label lblTotalPaid;
         private System.Windows.Forms.Label lblTotalBalance;

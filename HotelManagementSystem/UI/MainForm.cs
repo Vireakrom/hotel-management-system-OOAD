@@ -311,10 +311,10 @@ namespace HotelManagementSystem.UI
             MessageBox.Show(
                 "Process Payment\n\n" +
                 "To process a payment:\n" +
-                "1. Go to Bookings → View All Bookings\n" +
-                "2. Select a checked-out booking with an invoice\n" +
-                "3. Click 'Process Payment' button\n\n" +
-                "Or use: Billing → Invoice Management to view all invoices.",
+                "1. Go to Billing → Invoice Management\n" +
+                "2. Select the invoice you want to collect payment for\n" +
+                "3. Click 'Process Payment'\n\n" +
+                "Tip: checked-out bookings automatically create invoices, so payment is now handled from the invoice list.",
                 "How to Process Payment",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information

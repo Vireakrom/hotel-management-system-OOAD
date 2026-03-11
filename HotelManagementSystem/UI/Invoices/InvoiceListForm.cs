@@ -75,7 +75,7 @@ namespace HotelManagementSystem.UI.Invoices
                 Name = "BookingId",
                 HeaderText = "Booking ID",
                 DataPropertyName = "BookingId",
-                Width = 80
+                Width = 100
             });
 
             dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
@@ -246,6 +246,45 @@ namespace HotelManagementSystem.UI.Invoices
         }
 
         /// <summary>
+        /// Process payment for the selected invoice.
+        /// </summary>
+        private void btnProcessPayment_Click(object sender, EventArgs e)
+        {
+            Invoice invoice = GetSelectedInvoice();
+            if (invoice == null)
+                return;
+
+            if (invoice.Status == "Cancelled")
+            {
+                MessageBox.Show("Cancelled invoices cannot be paid.", "Invalid Invoice Status",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (invoice.Status == "Paid" || invoice.BalanceAmount <= 0)
+            {
+                MessageBox.Show(
+                    $"This invoice has already been paid in full.\n\n" +
+                    $"Invoice: {invoice.InvoiceNumber}\n" +
+                    $"Total: {invoice.TotalAmount:C}\n" +
+                    $"Paid: {invoice.PaidAmount:C}",
+                    "Already Paid",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            using (var paymentForm = new UI.Payments.PaymentForm(invoice))
+            {
+                if (paymentForm.ShowDialog(this) == DialogResult.OK)
+                {
+                    string selectedStatus = cmbFilterStatus.SelectedItem?.ToString() ?? "All";
+                    LoadInvoices(selectedStatus);
+                }
+            }
+        }
+
+        /// <summary>
         /// Show detailed invoice information with payment history
         /// </summary>
         private void ShowInvoiceDetails(int invoiceId)
@@ -303,6 +342,27 @@ namespace HotelManagementSystem.UI.Invoices
         {
             string selectedStatus = cmbFilterStatus.SelectedItem?.ToString() ?? "All";
             LoadInvoices(selectedStatus);
+        }
+
+        private Invoice GetSelectedInvoice()
+        {
+            if (dgvInvoices.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an invoice to process payment.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+            }
+
+            int invoiceId = Convert.ToInt32(dgvInvoices.SelectedRows[0].Cells["InvoiceId"].Value);
+            Invoice invoice = invoiceRepository.GetById(invoiceId);
+
+            if (invoice == null)
+            {
+                MessageBox.Show("Invoice not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
+            return invoice;
         }
 
         /// <summary>
