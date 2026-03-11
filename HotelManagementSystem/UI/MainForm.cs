@@ -1404,8 +1404,11 @@ namespace HotelManagementSystem.UI
                 MessageBoxIcon.Information
             );
 
-            // Open Room Status Dashboard as the default landing screen
-            OpenChildForm(new HotelManagementSystem.UI.Rooms.RoomStatusDashboard());
+            // Open the most relevant landing screen for the signed-in role.
+            if (RoleHelper.IsRole(role, RoleHelper.Housekeeping))
+                OpenChildForm(new HotelManagementSystem.UI.Housekeeping.HousekeepingTasksForm());
+            else
+                OpenChildForm(new HotelManagementSystem.UI.Rooms.RoomStatusDashboard());
         }
 
 
