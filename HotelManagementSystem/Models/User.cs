@@ -16,7 +16,7 @@ namespace HotelManagementSystem.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Role { get; set; }  // Admin, Receptionist
+        public string Role { get; set; }  // Admin, Manager, Receptionist, Housekeeping
         public bool IsActive { get; set; }
         public DateTime? LastLogin { get; set; }
         public DateTime CreatedDate { get; set; }

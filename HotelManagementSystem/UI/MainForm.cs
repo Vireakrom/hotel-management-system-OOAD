@@ -126,7 +126,7 @@ namespace HotelManagementSystem.UI
         /// </summary>
         private void ApplyRoleBasedAccess()
         {
-            string role = SessionManager.CurrentUser.Role;
+            string role = RoleHelper.Normalize(SessionManager.CurrentUser.Role);
 
             switch (role)
             {
@@ -1384,10 +1384,11 @@ namespace HotelManagementSystem.UI
         {
             // Display welcome message
             string userName = SessionManager.CurrentUser.FullName;
-            string role = SessionManager.CurrentUser.Role;
+            string role = RoleHelper.Normalize(SessionManager.CurrentUser.Role);
+            string roleDisplay = RoleHelper.ToDisplayName(role);
 
             // Update status bar
-            toolStripStatusLabelUser.Text = $"Logged in as: {userName} ({role})";
+            toolStripStatusLabelUser.Text = $"Logged in as: {userName} ({roleDisplay})";
             toolStripStatusLabelTime.Text = DateTime.Now.ToString("dddd, MMMM dd, yyyy hh:mm tt");
 
             // Apply role-based menu access
@@ -1396,7 +1397,7 @@ namespace HotelManagementSystem.UI
             // Welcome message
             MessageBox.Show(
                 $"Welcome to Hotel Management System, {userName}!\n\n" +
-                $"Role: {role}\n" +
+                $"Role: {roleDisplay}\n" +
                 $"Login Time: {DateTime.Now:hh:mm tt}",
                 "Login Successful",
                 MessageBoxButtons.OK,

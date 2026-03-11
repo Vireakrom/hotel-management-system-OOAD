@@ -2,7 +2,6 @@ using HotelManagementSystem.DAL;
 using HotelManagementSystem.Helpers;
 using HotelManagementSystem.Models;
 using System;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace HotelManagementSystem.UI.Staff
@@ -13,7 +12,8 @@ namespace HotelManagementSystem.UI.Staff
         private User _currentUser;
         private bool _isEditMode;
 
-        private static readonly string[] Roles = { "Admin", "Manager", "FrontDesk", "Housekeeping" };
+        private static readonly string[] RoleValues = RoleHelper.AssignableRoles;
+        private static readonly string[] RoleLabels = Array.ConvertAll(RoleValues, RoleHelper.ToDisplayName);
 
         public AddEditStaffDialog()
         {
@@ -31,7 +31,7 @@ namespace HotelManagementSystem.UI.Staff
         private void AddEditStaffDialog_Load(object sender, EventArgs e)
         {
             cmbRole.Items.Clear();
-            cmbRole.Items.AddRange(Roles);
+            cmbRole.Items.AddRange(RoleLabels);
 
             if (_isEditMode)
             {
@@ -61,7 +61,7 @@ namespace HotelManagementSystem.UI.Staff
             txtEmail.Text = _currentUser.Email ?? "";
             txtPhone.Text = _currentUser.Phone ?? "";
 
-            int roleIndex = Array.IndexOf(Roles, _currentUser.Role);
+            int roleIndex = Array.IndexOf(RoleValues, RoleHelper.Normalize(_currentUser.Role));
             cmbRole.SelectedIndex = roleIndex >= 0 ? roleIndex : 0;
         }
 
@@ -96,7 +96,7 @@ namespace HotelManagementSystem.UI.Staff
                 Username  = txtUsername.Text.Trim(),
                 Email     = txtEmail.Text.Trim(),
                 Phone     = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim(),
-                Role      = cmbRole.SelectedItem.ToString(),
+                Role      = GetSelectedRoleValue(),
                 // PasswordHash is used as the plain-text input; UserRepository.Insert hashes it
                 PasswordHash = txtPassword.Text,
                 IsActive  = true
@@ -123,7 +123,7 @@ namespace HotelManagementSystem.UI.Staff
             _currentUser.LastName  = txtLastName.Text.Trim();
             _currentUser.Email     = txtEmail.Text.Trim();
             _currentUser.Phone     = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim();
-            _currentUser.Role      = cmbRole.SelectedItem.ToString();
+            _currentUser.Role      = GetSelectedRoleValue();
 
             bool success = _userRepo.Update(_currentUser);
 
@@ -203,6 +203,14 @@ namespace HotelManagementSystem.UI.Staff
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private string GetSelectedRoleValue()
+        {
+            if (cmbRole.SelectedIndex < 0 || cmbRole.SelectedIndex >= RoleValues.Length)
+                return string.Empty;
+
+            return RoleValues[cmbRole.SelectedIndex];
         }
     }
 }

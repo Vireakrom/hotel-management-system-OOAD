@@ -97,6 +97,7 @@
     <Compile Include="DAL\RoomRepository.cs" />
     <Compile Include="DAL\UserRepository.cs" />
     <Compile Include="Helpers\PasswordHelper.cs" />
+    <Compile Include="Helpers\RoleHelper.cs" />
     <Compile Include="Helpers\SessionManager.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Models\Booking.cs" />

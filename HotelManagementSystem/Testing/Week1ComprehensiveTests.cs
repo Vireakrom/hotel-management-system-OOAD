@@ -896,6 +896,22 @@ namespace HotelManagementSystem.Testing
                     return;
                 }
 
+                SessionManager.CurrentUser = new User
+                {
+                    UserId = 1000,
+                    Username = "frontdeskuser",
+                    FirstName = "Front",
+                    LastName = "Desk",
+                    Role = "FrontDesk"
+                };
+
+                if (!SessionManager.IsReceptionist)
+                {
+                    LogFail("SessionManager failed - FrontDesk alias should map to Receptionist");
+                    SessionManager.CurrentUser = currentUser;
+                    return;
+                }
+
                 // Test logout
                 SessionManager.Logout();
                 if (SessionManager.IsLoggedIn)

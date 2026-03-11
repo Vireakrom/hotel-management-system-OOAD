@@ -16,9 +16,9 @@ namespace HotelManagementSystem.Helpers
 
         public static bool IsLoggedIn => CurrentUser != null;
 
-        public static bool IsAdmin => CurrentUser?.Role == "Admin";
+        public static bool IsAdmin => RoleHelper.IsRole(CurrentUser?.Role, RoleHelper.Admin);
 
-        public static bool IsReceptionist => CurrentUser?.Role == "Receptionist";
+        public static bool IsReceptionist => RoleHelper.IsRole(CurrentUser?.Role, RoleHelper.Receptionist);
 
         public static void Logout()
         {

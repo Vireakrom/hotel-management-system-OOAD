@@ -1,4 +1,5 @@
 using HotelManagementSystem.DAL;
+using HotelManagementSystem.Helpers;
 using HotelManagementSystem.Models;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace HotelManagementSystem.UI.Staff
 {
     public partial class StaffManagementForm : Form
     {
+        private const string AllRolesFilter = "All Roles";
         private readonly UserRepository _userRepo = new UserRepository();
         private readonly HousekeepingTaskRepository _taskRepo = new HousekeepingTaskRepository();
         private List<User> _allStaff;
@@ -78,11 +80,9 @@ namespace HotelManagementSystem.UI.Staff
         private void PopulateRoleFilter()
         {
             cmbRoleFilter.Items.Clear();
-            cmbRoleFilter.Items.Add("All Roles");
-            cmbRoleFilter.Items.Add("Admin");
-            cmbRoleFilter.Items.Add("Manager");
-            cmbRoleFilter.Items.Add("FrontDesk");
-            cmbRoleFilter.Items.Add("Housekeeping");
+            cmbRoleFilter.Items.Add(AllRolesFilter);
+            foreach (string role in RoleHelper.AssignableRoles)
+                cmbRoleFilter.Items.Add(RoleHelper.ToDisplayName(role));
             cmbRoleFilter.SelectedIndex = 0;
         }
 
@@ -122,19 +122,23 @@ namespace HotelManagementSystem.UI.Staff
         private void ApplyFilters()
         {
             if (_allStaff == null) return;
-            string roleFilter = cmbRoleFilter.SelectedItem?.ToString() ?? "All Roles";
+            string roleFilter = cmbRoleFilter.SelectedItem?.ToString() ?? AllRolesFilter;
             string search = txtSearch.Text.Trim().ToLower();
 
             var filtered = _allStaff.AsEnumerable();
 
-            if (roleFilter != "All Roles")
-                filtered = filtered.Where(u => u.Role == roleFilter);
+            if (roleFilter != AllRolesFilter)
+            {
+                string normalizedRole = RoleHelper.Normalize(roleFilter);
+                filtered = filtered.Where(u => RoleHelper.IsRole(u.Role, normalizedRole));
+            }
 
             if (!string.IsNullOrEmpty(search))
                 filtered = filtered.Where(u =>
                     u.FullName.ToLower().Contains(search) ||
                     u.Username.ToLower().Contains(search) ||
-                    (u.Email != null && u.Email.ToLower().Contains(search)));
+                    (u.Email != null && u.Email.ToLower().Contains(search)) ||
+                    RoleHelper.ToDisplayName(u.Role).ToLower().Contains(search));
 
             var list = filtered.ToList();
 
@@ -145,7 +149,7 @@ namespace HotelManagementSystem.UI.Staff
             for (int i = 0; i < dgvStaff.Rows.Count; i++)
             {
                 var user = (User)dgvStaff.Rows[i].DataBoundItem;
-                if (user.Role == "Housekeeping")
+                if (RoleHelper.IsRole(user.Role, RoleHelper.Housekeeping))
                 {
                     int count = _activeTaskCounts.ContainsKey(user.UserId) ? _activeTaskCounts[user.UserId] : 0;
                     dgvStaff.Rows[i].Cells["colTasks"].Value = count;
@@ -171,18 +175,23 @@ namespace HotelManagementSystem.UI.Staff
             if (e.RowIndex < 0 || dgvStaff.Rows[e.RowIndex].DataBoundItem == null) return;
             var user = (User)dgvStaff.Rows[e.RowIndex].DataBoundItem;
 
+            if (dgvStaff.Columns[e.ColumnIndex].Name == "colRole")
+            {
+                e.Value = RoleHelper.ToDisplayName(user.Role);
+                e.FormattingApplied = true;
+            }
+
             Color rowColor;
-            if (user.Role == "Admin")
+            if (RoleHelper.IsRole(user.Role, RoleHelper.Admin))
                 rowColor = Color.FromArgb(253, 245, 230);       // soft amber
-            else if (user.Role == "Manager")
+            else if (RoleHelper.IsRole(user.Role, RoleHelper.Manager))
                 rowColor = Color.FromArgb(235, 245, 255);       // soft blue
-            else if (user.Role == "Housekeeping")
+            else if (RoleHelper.IsRole(user.Role, RoleHelper.Housekeeping))
                 rowColor = Color.FromArgb(235, 255, 240);       // soft green
             else
                 rowColor = Color.White;
 
-            if (e.ColumnIndex == 0)
-                dgvStaff.Rows[e.RowIndex].DefaultCellStyle.BackColor = rowColor;
+            dgvStaff.Rows[e.RowIndex].DefaultCellStyle.BackColor = rowColor;
         }
 
         // ── Button handlers ───────────────────────────────────────────────────────

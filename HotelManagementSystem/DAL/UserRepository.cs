@@ -15,6 +15,7 @@ namespace HotelManagementSystem.DAL
         {
             string salt = PasswordHelper.GenerateSalt();
             string passwordHash = PasswordHelper.HashPassword(user.PasswordHash, salt);
+            string normalizedRole = RoleHelper.Normalize(user.Role);
 
             string query = @"
                 INSERT INTO Users (Username, PasswordHash, Salt, FirstName, LastName, Email, Phone, Role, LastPasswordChange)
@@ -31,7 +32,7 @@ namespace HotelManagementSystem.DAL
                 cmd.Parameters.AddWithValue("@LastName", user.LastName);
                 cmd.Parameters.AddWithValue("@Email", user.Email);
                 cmd.Parameters.AddWithValue("@Phone", user.Phone ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@Role", user.Role);
+                cmd.Parameters.AddWithValue("@Role", normalizedRole);
 
                 conn.Open();
                 return (int)cmd.ExecuteScalar();
@@ -77,6 +78,8 @@ namespace HotelManagementSystem.DAL
 
         public bool Update(User user)
         {
+            string normalizedRole = RoleHelper.Normalize(user.Role);
+
             string query = @"
                 UPDATE Users 
                 SET FirstName = @FirstName, LastName = @LastName, Email = @Email,
@@ -91,7 +94,7 @@ namespace HotelManagementSystem.DAL
                 cmd.Parameters.AddWithValue("@LastName", user.LastName);
                 cmd.Parameters.AddWithValue("@Email", user.Email);
                 cmd.Parameters.AddWithValue("@Phone", user.Phone ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@Role", user.Role);
+                cmd.Parameters.AddWithValue("@Role", normalizedRole);
 
                 conn.Open();
                 return cmd.ExecuteNonQuery() > 0;
@@ -117,12 +120,13 @@ namespace HotelManagementSystem.DAL
         public List<User> GetByRole(string role)
         {
             List<User> users = new List<User>();
+            string normalizedRole = RoleHelper.Normalize(role);
             string query = "SELECT * FROM Users WHERE Role = @Role AND IsActive = 1";
 
             using (SqlConnection conn = DatabaseManager.Instance.GetConnection())
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@Role", role);
+                cmd.Parameters.AddWithValue("@Role", normalizedRole);
                 conn.Open();
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -206,7 +210,7 @@ namespace HotelManagementSystem.DAL
                 LastName = reader["LastName"].ToString(),
                 Email = reader["Email"].ToString(),
                 Phone = reader["Phone"] != DBNull.Value ? reader["Phone"].ToString() : null,
-                Role = reader["Role"].ToString(),
+                Role = RoleHelper.Normalize(reader["Role"].ToString()),
                 IsActive = (bool)reader["IsActive"],
                 LastLogin = reader["LastLogin"] != DBNull.Value ? (DateTime?)reader["LastLogin"] : null,
                 CreatedDate = (DateTime)reader["CreatedDate"]
